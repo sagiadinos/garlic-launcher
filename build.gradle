@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+repositories {
+    google()
+    jcenter()
+}
+
+android {
+    compileSdkVersion 25
+    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/Utilis'] } }
+    defaultConfig {
+        minSdkVersion 25
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations-java5:15.0'
+}

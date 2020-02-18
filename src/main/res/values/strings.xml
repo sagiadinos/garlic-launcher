@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
+
+    Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
+    This file is part of the garlic-player source code
+
+    This program is free software: you can redistribute it and/or  modify
+    it under the terms of the GNU Affero General Public License, version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+    <string name="app_name">GarlicLauncher</string>
+    <string name="device_admin">GarlicLauncher</string>
+    <string name="device_admin_description">GarlicLauncher</string>
+    <string name="become_launcher">Become Launcher</string>
+    <string name="restore_old_launcher">Restore old Launcher</string>
+    <string name="play">Play</string>
+    <string name="unpin_app">UnPin App</string>
+    <string name="pin_app">Pin App</string>
+    <string name="count_down">Cancel autoplay in %1$ss</string>
+    <string name="no_garlic_info">Insert an USB-Stick with garlic-player.apk</string>
+    <string name="set_content_url">Set Content Url</string>
+</resources>
