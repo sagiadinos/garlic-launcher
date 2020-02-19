@@ -32,3 +32,5 @@ One solution is to root Android, but rooted devices are a potential security ris
  - Garlic-launcher must set as Device Owner
 
 Garlic-launcher is tested also with Android 9 on a non-rooted consumer Tablet.
+
+![Android CI](https://github.com/sagiadinos/garlic-launcher/workflows/Android%20CI/badge.svg)
