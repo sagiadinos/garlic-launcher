@@ -1,4 +1,4 @@
-# garlic-launcher Open Source Android Launcher for Digital Signage Player-Hardware with [garlic-player](https://garlic-player.com)
+# Garlic-Launcher - Android Launcher for Digital Signage
 
 The Garlic-Launcher is useful to create digital signage media player on Android-hardware in combination with the [garlic-player](https://garlic-player.com).
 
