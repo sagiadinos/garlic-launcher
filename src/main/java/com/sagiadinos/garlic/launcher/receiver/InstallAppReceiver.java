@@ -43,10 +43,15 @@ public class InstallAppReceiver extends BroadcastReceiver
 {
     MainActivity MyActivity;
 
-    public InstallAppReceiver(com.sagiadinos.garlic.launcher.MainActivity act)
+    public InstallAppReceiver()
+    {
+    }
+
+    public void setMyActivity(MainActivity act)
     {
         MyActivity = act;
     }
+
 
     @Override
     public void onReceive(Context context, Intent intent)

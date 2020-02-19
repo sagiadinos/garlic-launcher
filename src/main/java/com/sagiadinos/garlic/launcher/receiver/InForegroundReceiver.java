@@ -34,7 +34,11 @@ public class InForegroundReceiver extends BroadcastReceiver
 {
     MainActivity MyActivity;
 
-    public InForegroundReceiver(MainActivity act)
+    public InForegroundReceiver()
+    {
+    }
+
+    public void setMyActivity(MainActivity act)
     {
         MyActivity = act;
     }

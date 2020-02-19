@@ -36,10 +36,16 @@ public class PlayerClosedReceiver extends BroadcastReceiver
 {
     MainActivity MyActivity;
 
-    public PlayerClosedReceiver(com.sagiadinos.garlic.launcher.MainActivity act)
+    public PlayerClosedReceiver()
+    {
+    }
+
+    public void setMyActivity(MainActivity act)
     {
         MyActivity = act;
     }
+
+
 
     @Override
     public void onReceive(Context context, Intent intent)

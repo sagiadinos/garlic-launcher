@@ -29,10 +29,15 @@ public class RebootReceiver extends BroadcastReceiver
 {
     MainActivity MyActivity;
 
-    public RebootReceiver(com.sagiadinos.garlic.launcher.MainActivity act)
+    public RebootReceiver()
+    {
+    }
+
+    public void setMyActivity(MainActivity act)
     {
         MyActivity = act;
     }
+
 
     @Override
     public void onReceive(Context context, Intent intent)

@@ -36,35 +36,40 @@ public class ReceiverManager
 
 //      AdminReceiver has default constructor and is initialized in AndroidManifest
 
-        MyPlayerNotInForegroundReceiver =  new InForegroundReceiver(MainActivity);
+        MyPlayerNotInForegroundReceiver =  new InForegroundReceiver();
         MainActivity.registerReceiver(
                 MyPlayerNotInForegroundReceiver,
                 createIntentFilter("InForegroundReceiver")
         );
+        MyPlayerNotInForegroundReceiver.setMyActivity(MainActivity);
 
-        MyPlayerClosedReceiver =  new PlayerClosedReceiver(MainActivity);
+        MyPlayerClosedReceiver =  new PlayerClosedReceiver();
         MainActivity.registerReceiver(
                 MyPlayerClosedReceiver,
                 createIntentFilter("PlayerClosedReceiver")
         );
+        MyPlayerClosedReceiver.setMyActivity(MainActivity);
 
-        MySecondAppReceiver =  new SecondAppReceiver(MainActivity);
+        MySecondAppReceiver =  new SecondAppReceiver();
         MainActivity.registerReceiver(
                 MySecondAppReceiver,
                 createIntentFilter("SecondAppReceiver")
         );
+        MySecondAppReceiver.setMyActivity(MainActivity);
 
-        MyRebootReceiver =  new RebootReceiver(MainActivity);
+        MyRebootReceiver =  new RebootReceiver();
         MainActivity.registerReceiver(
                 MyRebootReceiver,
                 createIntentFilter("RebootReceiver")
         );
+        MyRebootReceiver.setMyActivity(MainActivity);
 
-        MyInstallAppReceiver =  new InstallAppReceiver(MainActivity);
+        MyInstallAppReceiver =  new InstallAppReceiver();
         MainActivity.registerReceiver(
                 MyInstallAppReceiver,
                 createIntentFilter("InstallAppReceiver")
         );
+        MyInstallAppReceiver.setMyActivity(MainActivity);
     }
 
     public static void unregisterAllReceiver(MainActivity MainActivity)

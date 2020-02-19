@@ -35,7 +35,11 @@ public class SecondAppReceiver extends BroadcastReceiver
 {
     MainActivity MyActivity;
 
-    public SecondAppReceiver(com.sagiadinos.garlic.launcher.MainActivity act)
+    public SecondAppReceiver()
+    {
+    }
+
+    public void setMyActivity(MainActivity act)
     {
         MyActivity = act;
     }
