@@ -83,6 +83,15 @@
             android:visibility="invisible" />
 
         <Button
+            android:id="@+id/buttonConfigureWiFi"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="configWiFi"
+            android:text="@string/config_wifi"
+            android:textSize="24sp" />
+
+        <Button
             android:id="@+id/buttonGarlicPlayer"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="350dp"

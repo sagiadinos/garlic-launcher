@@ -28,12 +28,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sagiadinos.garlic.launcher.helper.Configuration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.Permissions;
+import com.sagiadinos.garlic.launcher.helper.WiFi;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
 public class MainActivity extends Activity
@@ -47,11 +49,13 @@ public class MainActivity extends Activity
     private TextView       text_information       = null;
     private CountDownTimer PlayerCountDown        = null;
     private DeviceOwner    MyDeviceOwner          = null;
+    private Configuration  MyConfiguration        = null;
     private KioskManager    MyKiosk               = null;
     private final static String TAG               = "MainActivity";
 
      @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
@@ -60,6 +64,7 @@ public class MainActivity extends Activity
 
          if (MyDeviceOwner.isDeviceOwner())
          {
+             MyConfiguration = new Configuration(this);
              text_information.setVisibility(View.INVISIBLE);
              Permissions.verifyStoragePermissions(this);
              initButtonViews();
@@ -171,6 +176,12 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
+        if (MyConfiguration.getSmilIndex("").isEmpty() || !WiFi.isWifiConnected(this))
+        {
+            button_player.setText(R.string.play);
+            return;
+        }
+
         PlayerCountDown      = new CountDownTimer(15000, 1000)
         {
             public void onTick(long millisUntilFinished)
@@ -206,12 +217,20 @@ public class MainActivity extends Activity
 
     public void setContentUrl(View view)
     {
-        PlayerCountDown.cancel();
-        button_player.setText(R.string.play);
+        stopPlayerRestart();
 
         Intent intent = new Intent(this, ContentUrlActivity.class);
         startActivity(intent);
     }
+
+    public void configWiFi(View view)
+    {
+        stopPlayerRestart();
+
+        Intent intent = new Intent(this, ConfigWiFiActivity.class);
+        startActivity(intent);
+    }
+
 
     public void rebootOS(View view)
     {
@@ -221,14 +240,14 @@ public class MainActivity extends Activity
     public void startGarlicPlayer(View view)
     {
         has_second_app_started = false;
-        has_player_started = true;
+        has_player_started     = true;
         startApp(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
     }
 
     public void startSecondApp(String package_name)
     {
         has_second_app_started = true;
-        has_player_started = false;
+        has_player_started     = false;
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
     }
@@ -267,4 +286,14 @@ public class MainActivity extends Activity
         }
     }
 
+    private void stopPlayerRestart()
+    {
+        has_second_app_started = false;
+        has_player_started     = false;
+        if (PlayerCountDown != null)
+        {
+            PlayerCountDown.cancel();
+        }
+        button_player.setText(R.string.play);
+    }
 }

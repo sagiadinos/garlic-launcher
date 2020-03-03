@@ -20,48 +20,31 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.sagiadinos.garlic.launcher.helper.Configuration;
 
 public class ContentUrlActivity extends Activity
 {
     private EditText ed_content_url;
-    private String config_file_path  = "";
-    private SharedPreferences pref;
-    final private String SMIL_INDEX_URI = "smil_index_uri";
-
+    private Configuration MyConfiguration = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPTAEN";
-        final String CONFIG_FILE_NAME    = "config.xml";
-        final String DEFAULT_INDEX_URI_1 = "http://";
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_url);
+        MyConfiguration = new Configuration(this);
+
         ed_content_url = (EditText) findViewById(R.id.editContentUrl);
-
-        pref = getSharedPreferences(APP_KEY, MODE_PRIVATE);
-
-
-        ed_content_url.setText(pref.getString(SMIL_INDEX_URI, DEFAULT_INDEX_URI_1));
-
-        config_file_path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + CONFIG_FILE_NAME;
+        ed_content_url.setText(MyConfiguration.getSmilIndex("http://"));
     }
 
     public void setContentUrl(View view)
     {
-        writeSharedPreferences();
-        writeConfigXml(generateConfigXML());
+        MyConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
     }
 
     public void closeActivity(View view)
@@ -69,41 +52,5 @@ public class ContentUrlActivity extends Activity
         finish();
     }
 
-    private void writeSharedPreferences()
-    {
-        SharedPreferences.Editor ed = pref.edit();
-        ed.putString(SMIL_INDEX_URI, ed_content_url.getText().toString().trim());
-        ed.apply();
-    }
 
-    private void writeConfigXml(String content)
-    {
-        try
-        {
-            File file = new File(config_file_path);
-
-            if (!file.exists() && !file.createNewFile())
-            {
-                throw new IOException("File could not be created");
-            }
-            FileWriter writer = new FileWriter(file);
-            writer.write(content);
-            writer.flush();
-            writer.close();
-        }
-        catch (IOException e)
-        {
-            Log.e("config_xml", e.getMessage());
-        }
-    }
-
-    private String generateConfigXML()
-    {
-        return "<configuration>\n" +
-              "\t<userPref>\n" +
-              "\t\t<prop name=\"content.bootFromServer\" value=\"true\"/>\n" +
-              "\t\t<prop name=\"content.serverUrl\" value=\""+ ed_content_url.getText() +"\"/>\n" +
-              "\t</userPref>\n" +
-              "</configuration>";
-    }
 }
