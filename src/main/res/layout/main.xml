@@ -27,7 +27,6 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        style="?android:attr/buttonBarStyle"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
@@ -35,12 +34,14 @@
 
         <Button
             android:id="@+id/buttonToggleLockTask"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:onClick="toggleLockTask"
             android:text="@string/pin_app"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/buttonToggleLauncher"
@@ -49,18 +50,17 @@
             android:layout_height="wrap_content"
             android:onClick="toggleLauncher"
             android:text="@string/restore_old_launcher"
-            android:textSize="24sp" />
-
+            android:textSize="24sp"
+            android:visibility="invisible" />
     </LinearLayout>
 
-
     <TextView
-        android:id="@+id/textViewNoGarlicInfo"
+        android:id="@+id/textViewInformation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:text="@string/no_garlic_info"
+        android:visibility="invisible"
         android:textAlignment="center"
         android:textSize="24sp" />
 
@@ -73,20 +73,25 @@
 
         <Button
             android:id="@+id/buttonSetContentURI"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:onClick="setContentUrl"
             android:padding="20sp"
             android:text="@string/set_content_url"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="invisible" />
+
         <Button
             android:id="@+id/buttonGarlicPlayer"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:onClick="handleGarlicPlayerStartTimer"
             android:padding="20sp"
             android:text="@string/play"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="invisible" />
 
     </LinearLayout>
 

@@ -27,6 +27,7 @@
     <string name="unpin_app">UnPin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_info">Insert an USB-Stick with garlic-player.apk</string>
+    <string name="no_garlic_info">Install garlic-player first</string>
     <string name="set_content_url">Set Content Url</string>
+    <string name="no_device_owner">This app must be set as device owner to work</string>
 </resources>

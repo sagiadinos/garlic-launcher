@@ -73,6 +73,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         File config_xml = new File(path + "/config.xml");
         if (checkAccessibility(config_xml))
         {
+
             sendBroadcastForConfigXml(config_xml);
             return;
         }

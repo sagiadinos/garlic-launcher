@@ -44,53 +44,80 @@ public class MainActivity extends Activity
     private Button         button_toggle_launcher = null;
     private Button         button_player          = null;
     private Button         button_content_uri     = null;
-    private TextView       no_garlic_info         = null;
+    private TextView       text_information       = null;
     private CountDownTimer PlayerCountDown        = null;
     private DeviceOwner    MyDeviceOwner          = null;
-    private HomeLauncherManager MyLauncher        = null;
-    private LockTaskManager MyLockTask            = null;
     private KioskManager    MyKiosk               = null;
     private final static String TAG               = "MainActivity";
 
      @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        Permissions.verifyStoragePermissions(this);
-        initViews();
-        initHelperClasses();
+    public void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
 
-        startGarlicPlayerDelayed();
-    }
+         setContentView(R.layout.main);
+         text_information = (TextView) findViewById(R.id.textViewInformation);
+         MyDeviceOwner    = new DeviceOwner(this);
 
+         if (MyDeviceOwner.isDeviceOwner())
+         {
+             text_information.setVisibility(View.INVISIBLE);
+             Permissions.verifyStoragePermissions(this);
+             initButtonViews();
+             initHelperClasses();
+             startGarlicPlayerDelayed();
+         }
+         else
+         {
+             text_information.setVisibility(View.VISIBLE);
+             text_information.setText(R.string.no_device_owner);
+         }
+     }
     private void initHelperClasses()
     {
-        MyDeviceOwner = new DeviceOwner(this);
-        MyLauncher    = new HomeLauncherManager(MyDeviceOwner, this);
-        MyLockTask    = new LockTaskManager(this);
-        MyKiosk       = new KioskManager(MyDeviceOwner, MyLauncher, MyLockTask, this);
+        MyKiosk       = new KioskManager(MyDeviceOwner,
+                                            new HomeLauncherManager(MyDeviceOwner, this),
+                                            new LockTaskManager(this),
+                                            this
+        );
 
         ReceiverManager.registerAllReceiver(this);
         startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
 
-        MyKiosk.startKioskMode(); // Pin this app and set it as Launcher
-        button_toggle_lock.setText(R.string.unpin_app);
-        button_toggle_launcher.setText(R.string.restore_old_launcher);
+        if (MyKiosk.startKioskMode()) // Pin this app and set it as Launcher
+        {
+            button_toggle_lock.setText(R.string.unpin_app);
+            button_toggle_launcher.setText(R.string.restore_old_launcher);
+        }
 
     }
 
-    private void initViews()
+    private void initButtonViews()
     {
-        setContentView(R.layout.main);
         button_toggle_lock     = (Button) findViewById(R.id.buttonToggleLockTask);
         button_toggle_launcher = (Button) findViewById(R.id.buttonToggleLauncher);
         button_player          = (Button) findViewById(R.id.buttonGarlicPlayer);
         button_content_uri     = (Button) findViewById(R.id.buttonSetContentURI);
-        no_garlic_info         = (TextView) findViewById(R.id.textViewNoGarlicInfo);
-        if (!BuildConfig.DEBUG)
+        if (Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME)
+                ||  Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME_ALT)
+        )
         {
-            button_toggle_lock.setVisibility(View.INVISIBLE);
-            button_toggle_launcher.setVisibility(View.INVISIBLE);
+            button_content_uri.setVisibility(View.VISIBLE);
+            button_player.setVisibility(View.VISIBLE);
+            text_information.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            button_content_uri.setVisibility(View.INVISIBLE);
+            button_player.setVisibility(View.INVISIBLE);
+            text_information.setText(R.string.no_garlic_info);
+            text_information.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (BuildConfig.DEBUG)
+        {
+            button_toggle_lock.setVisibility(View.VISIBLE);
+            button_toggle_launcher.setVisibility(View.VISIBLE);
         }
         hideBars();
     }
@@ -98,7 +125,10 @@ public class MainActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        ReceiverManager.unregisterAllReceiver(this);
+        if (MyDeviceOwner.isDeviceOwner())
+        {
+            ReceiverManager.unregisterAllReceiver(this);
+        }
         super.onDestroy();
     }
 
@@ -140,23 +170,6 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = false;
-        if (Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME)
-                ||  Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME_ALT)
-        )
-        {
-            button_content_uri.setVisibility(View.VISIBLE);
-            button_player.setVisibility(View.VISIBLE);
-
-            no_garlic_info.setVisibility(View.INVISIBLE);
-        }
-        else
-        {
-            button_content_uri.setVisibility(View.INVISIBLE);
-            button_player.setVisibility(View.INVISIBLE);
-
-            no_garlic_info.setVisibility(View.VISIBLE);
-            return;
-        }
 
         PlayerCountDown      = new CountDownTimer(15000, 1000)
         {

@@ -55,13 +55,16 @@ public class KioskManager
     }
 
 
-    public void startKioskMode()
+    public boolean startKioskMode()
     {
+        boolean ret = false;
         if (canEnterKioskMode())
         {
             MyLockTasks.startLockTask();
             MyLauncher.becomeHomeActivity();
+            ret = true;
         }
+        return ret;
   }
 
     /**
