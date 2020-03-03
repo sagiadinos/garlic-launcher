@@ -21,14 +21,18 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sagiadinos.garlic.launcher.helper.Configuration;
+import com.sagiadinos.garlic.launcher.helper.Network;
+import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.Installer;
@@ -36,6 +40,8 @@ import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.Permissions;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
+import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
+import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
 public class MainActivity extends Activity
@@ -49,7 +55,7 @@ public class MainActivity extends Activity
     private TextView       text_information       = null;
     private CountDownTimer PlayerCountDown        = null;
     private DeviceOwner    MyDeviceOwner          = null;
-    private Configuration  MyConfiguration        = null;
+    private SharedConfiguration mySharedConfiguration = null;
     private KioskManager    MyKiosk               = null;
     private final static String TAG               = "MainActivity";
 
@@ -64,7 +70,7 @@ public class MainActivity extends Activity
 
          if (MyDeviceOwner.isDeviceOwner())
          {
-             MyConfiguration = new Configuration(this);
+             mySharedConfiguration = new SharedConfiguration(this);
              text_information.setVisibility(View.INVISIBLE);
              Permissions.verifyStoragePermissions(this);
              initButtonViews();
@@ -102,6 +108,7 @@ public class MainActivity extends Activity
         button_toggle_launcher = (Button) findViewById(R.id.buttonToggleLauncher);
         button_player          = (Button) findViewById(R.id.buttonGarlicPlayer);
         button_content_uri     = (Button) findViewById(R.id.buttonSetContentURI);
+
         if (Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME)
                 ||  Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME_ALT)
         )
@@ -116,7 +123,6 @@ public class MainActivity extends Activity
             button_player.setVisibility(View.INVISIBLE);
             text_information.setText(R.string.no_garlic_info);
             text_information.setVisibility(View.VISIBLE);
-            return;
         }
 
         if (BuildConfig.DEBUG)
@@ -124,6 +130,7 @@ public class MainActivity extends Activity
             button_toggle_lock.setVisibility(View.VISIBLE);
             button_toggle_launcher.setVisibility(View.VISIBLE);
         }
+
         hideBars();
     }
 
@@ -176,7 +183,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (MyConfiguration.getSmilIndex("").isEmpty() || !WiFi.isWifiConnected(this))
+        if (mySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this))
         {
             button_player.setText(R.string.play);
             return;
@@ -229,6 +236,18 @@ public class MainActivity extends Activity
 
         Intent intent = new Intent(this, ConfigWiFiActivity.class);
         startActivity(intent);
+
+  /*
+  TFor tests
+        NetworkData MyNetWorkData = new NetworkData();
+        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData);
+        String xml = MyConfigXMLModel.readConfigXml(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config_wlan_dhcp.xml");
+        MyConfigXMLModel.parseConfigXml(xml);
+        WiFi MyWiFi = new WiFi((WifiManager) getSystemService(WIFI_SERVICE), new WifiConfiguration());
+
+        MyWiFi.prepareConnection(MyNetWorkData);
+        MyWiFi.connectToNetwork();
+*/
     }
 
 

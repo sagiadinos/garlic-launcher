@@ -95,6 +95,9 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     private void sendBroadcastForConfigXml(File file)
     {
         GarlicLauncherApplication MyApplication = (GarlicLauncherApplication) ctx.getApplicationContext();
+
+        // parse configFile first for Wifi etc...
+
         if (!MyApplication.isOnForeground())
         {
             sendBroadcastToPlayer(createIntentForConfigXml(file));
@@ -103,6 +106,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         {
             // start garlic-player with params
         }
+
     }
 
     private Intent createIntentForConfigXml(File file)

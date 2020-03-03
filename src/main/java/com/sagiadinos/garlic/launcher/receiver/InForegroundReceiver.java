@@ -70,7 +70,7 @@ public class InForegroundReceiver extends BroadcastReceiver
         // => in this case do nothing!
         if (MyActivity.hasPlayerStarted() || MyActivity.hasSecondAppStarted())
         {
-            MyActivity.startGarlicPlayer(null);
+       //     MyActivity.startGarlicPlayer(null);
         }
     }
 

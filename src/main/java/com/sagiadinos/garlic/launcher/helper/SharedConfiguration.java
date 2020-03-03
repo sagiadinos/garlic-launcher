@@ -20,19 +20,13 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.util.Log;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-public class Configuration
+public class SharedConfiguration
 {
     private SharedPreferences pref;
     final private String SMIL_INDEX_URI      = "smil_index_uri";
 
-    public Configuration(Context ctx)
+    public SharedConfiguration(Context ctx)
     {
         final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPITAEN";
         pref  = ctx.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
@@ -43,7 +37,6 @@ public class Configuration
         SharedPreferences.Editor ed = pref.edit();
         ed.putString(SMIL_INDEX_URI, smil_index);
         ed.apply();
-        writeConfigXml(generateConfigXML());
     }
 
     public String getSmilIndex(String default_value)
@@ -51,34 +44,4 @@ public class Configuration
         return pref.getString(SMIL_INDEX_URI, default_value);
     }
 
-    private void writeConfigXml(String content)
-    {
-        try
-        {
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config.xml");
-
-            if (!file.exists() && !file.createNewFile())
-            {
-                throw new IOException("File could not be created");
-            }
-            FileWriter writer = new FileWriter(file);
-            writer.write(content);
-            writer.flush();
-            writer.close();
-        }
-        catch (IOException e)
-        {
-            Log.e("config_xml", e.getMessage());
-        }
-    }
-
-    private String generateConfigXML()
-    {
-        return "<configuration>\n" +
-                "\t<userPref>\n" +
-                "\t\t<prop name=\"content.bootFromServer\" value=\"true\"/>\n" +
-                "\t\t<prop name=\"content.serverUrl\" value=\""+  getSmilIndex("") +"\"/>\n" +
-                "\t</userPref>\n" +
-                "</configuration>";
-    }
 }
