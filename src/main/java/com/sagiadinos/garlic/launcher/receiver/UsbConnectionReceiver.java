@@ -23,10 +23,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.util.Log;
 
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
+import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.helper.WiFi;
+import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
+import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -96,7 +109,18 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         GarlicLauncherApplication MyApplication = (GarlicLauncherApplication) ctx.getApplicationContext();
 
-        // parse configFile first for Wifi etc...
+        // parse configFile first for Wifi content Url etc...
+        NetworkData MyNetWorkData = new NetworkData();
+        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new SharedConfiguration(ctx));
+        String xml = MyConfigXMLModel.readConfigXml(file);
+        MyConfigXMLModel.parseConfigXml(xml);
+        WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
+
+        MyWiFi.prepareConnection(MyNetWorkData);
+        MyWiFi.connectToNetwork();
+
+
+        // set time and time zone
 
         if (!MyApplication.isOnForeground())
         {
@@ -104,7 +128,16 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
         else
         {
-            // start garlic-player with params
+            // move ConfigFile to DownloadDirectory when player starts it later
+            try
+            {
+                MyConfigXMLModel.copy(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config.xml"));
+            }
+            catch (IOException e)
+            {
+                Log.e("Usb config_xml", e.getMessage());
+
+            }
         }
 
     }
@@ -133,5 +166,4 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         return (file.exists() && file.canRead());
     }
-
 }

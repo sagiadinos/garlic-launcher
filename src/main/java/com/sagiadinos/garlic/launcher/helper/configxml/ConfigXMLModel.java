@@ -1,9 +1,9 @@
 package com.sagiadinos.garlic.launcher.helper.configxml;
 
-import android.graphics.drawable.shapes.PathShape;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
+
+import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -11,37 +11,38 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 
 public class ConfigXMLModel
 {
     private String smil_index_url   = "http://indexes.smil-control.com";
     private NetworkData MyNetworkData = null;
+    private SharedConfiguration MySharedConfiguration = null;
 
-    public ConfigXMLModel(NetworkData myNetworkData)
+    public ConfigXMLModel(NetworkData myNetworkData, SharedConfiguration mySharedConfiguration)
     {
-        this.MyNetworkData = myNetworkData;
+        this.MyNetworkData        = myNetworkData;
+        this.MySharedConfiguration = mySharedConfiguration;
     }
 
     public void setSmilIndexUrl(String smil_index_url)
     {
+        MySharedConfiguration.writeSmilIndex(smil_index_url);
         this.smil_index_url = smil_index_url;
     }
 
-    public NetworkData getMyNetworkData()
-    {
-        return MyNetworkData;
-    }
-
-    public String readConfigXml(String config_xml_path)
+    public String readConfigXml(File config_xml)
     {
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(config_xml_path)));
+            BufferedReader reader = new BufferedReader(new FileReader(config_xml));
             StringBuilder stringBuilder = new StringBuilder();
             char[] buffer = new char[10];
             while (reader.read(buffer) != -1)
@@ -100,6 +101,10 @@ public class ConfigXMLModel
                         else if (attribute_name.equals("net.ethernet.dnsServers"))
                             MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
 
+                        else if (attribute_name.equals("content.serverUrl"))
+                        {
+                            setSmilIndexUrl(xpp.getAttributeValue(null, "value"));
+                        }
 
                     }
                 }
@@ -115,6 +120,23 @@ public class ConfigXMLModel
             Log.e("config_xml", e.getMessage());
         }
 
+    }
+
+    public void copy(File src, File dst) throws IOException
+    {
+        try (InputStream in = new FileInputStream(src))
+        {
+            try (OutputStream out = new FileOutputStream(dst))
+            {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0)
+                {
+                    out.write(buf, 0, len);
+                }
+            }
+        }
     }
 
     public void storeConfigXmlForPlayer()

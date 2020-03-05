@@ -72,15 +72,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonSetContentURI"
+            android:id="@+id/buttonAdminConfiguration"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="350dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="setContentUrl"
-            android:padding="20sp"
-            android:text="@string/set_content_url"
-            android:textSize="24sp"
-            android:visibility="invisible" />
+            android:onClick="configAdmin"
+            android:text="@string/config_admin"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/buttonConfigureWiFi"
@@ -91,10 +89,32 @@
             android:text="@string/config_wifi"
             android:textSize="24sp" />
 
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonSetContentURI"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="setContentUrl"
+            android:padding="20sp"
+            android:text="@string/set_content_url"
+            android:textSize="24sp"
+            android:visibility="invisible" />
+
+
         <Button
             android:id="@+id/buttonGarlicPlayer"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="350dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="handleGarlicPlayerStartTimer"
             android:padding="20sp"

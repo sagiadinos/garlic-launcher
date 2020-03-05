@@ -99,6 +99,7 @@ public class Installer
         return true;
     }
 
+
     public boolean uninstall(String package_name)
     {
         Intent intent = new Intent(ctx, ctx.getClass());

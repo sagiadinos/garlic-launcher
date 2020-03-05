@@ -20,12 +20,15 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -230,24 +233,18 @@ public class MainActivity extends Activity
         startActivity(intent);
     }
 
+    public void configAdmin(View view)
+    {
+        stopPlayerRestart();
+        Intent intent = new Intent(this, ActivityConfigAdmin.class);
+        startActivity(intent);
+    }
+
     public void configWiFi(View view)
     {
         stopPlayerRestart();
-
-        Intent intent = new Intent(this, ConfigWiFiActivity.class);
-        startActivity(intent);
-
-  /*
-  TFor tests
-        NetworkData MyNetWorkData = new NetworkData();
-        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData);
-        String xml = MyConfigXMLModel.readConfigXml(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config_wlan_dhcp.xml");
-        MyConfigXMLModel.parseConfigXml(xml);
-        WiFi MyWiFi = new WiFi((WifiManager) getSystemService(WIFI_SERVICE), new WifiConfiguration());
-
-        MyWiFi.prepareConnection(MyNetWorkData);
-        MyWiFi.connectToNetwork();
-*/
+        MyDeviceOwner.activateRestrictions();
+        startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
     }
 
 

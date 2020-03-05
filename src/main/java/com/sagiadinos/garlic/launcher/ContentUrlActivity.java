@@ -26,25 +26,23 @@ import android.widget.EditText;
 
 
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
 
 public class ContentUrlActivity extends Activity
 {
     private EditText ed_content_url;
-    private SharedConfiguration mySharedConfiguration = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_url);
-        mySharedConfiguration = new SharedConfiguration(this);
-
-        ed_content_url = (EditText) findViewById(R.id.editContentUrl);
-        ed_content_url.setText(mySharedConfiguration.getSmilIndex("http://"));
     }
 
     public void setContentUrl(View view)
     {
-        mySharedConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
+        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(null, new SharedConfiguration(this));
+        MyConfigXMLModel.setSmilIndexUrl(ed_content_url.getText().toString().trim());
+        MyConfigXMLModel.storeConfigXmlForPlayer();
     }
 
     public void closeActivity(View view)

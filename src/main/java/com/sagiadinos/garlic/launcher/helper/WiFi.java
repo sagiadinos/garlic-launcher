@@ -51,6 +51,7 @@ public class WiFi
         }
     }
 
+    /** not neccessary currently maybe later
     public List<String> scanSSID()
     {
         enableWifi();
@@ -66,6 +67,7 @@ public class WiFi
         }
         return ssid_list;
     }
+     */
 
     private void prepareWPA()
     {

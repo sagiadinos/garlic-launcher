@@ -22,6 +22,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.UserManager;
 import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
@@ -30,7 +31,14 @@ import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 
 /**
  *  DeviceOwner handles the methods to check for device owner
- *  and encapsulates some simple functiosn like reboot.
+ *  and encapsulates some simple functions like reboot.
+ *
+ *  set device admin with
+ *  adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
+ *
+ *  for removing
+ *  adb shell dpm remove-active-admin com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
+ *
  *
  */
 public class DeviceOwner
@@ -50,7 +58,6 @@ public class DeviceOwner
         ctx         = c;
         deviceAdmin = new ComponentName(ctx, AdminReceiver.class);
         dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-
         if (deviceAdmin == null || dpm == null)
         {
             showToast("handle device owner is null");
@@ -69,6 +76,18 @@ public class DeviceOwner
         {
             showToast("This app is not the device owner!");
         }
+    }
+
+    public void activateRestrictions()
+    {
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
+
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_ADD_USER);
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
+
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
     }
 
     public boolean isLockTaskPermitted()
