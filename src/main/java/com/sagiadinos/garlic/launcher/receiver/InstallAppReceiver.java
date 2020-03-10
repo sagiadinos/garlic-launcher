@@ -66,14 +66,14 @@ public class InstallAppReceiver extends BroadcastReceiver
             MyInstaller.installPackage(file_path);
 
             // delete downloaded files which are in player cache but not on usb
-            if (file_path != null && file_path.contains("cache"))
+            if (file_path != null && (file_path.contains("cache") || file_path.contains("Download")))
             {
                 File file = new File(file_path);
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
 
-            DeviceOwner.reboot(ctx);
+         //   DeviceOwner.reboot(ctx);
         }
         catch (IOException e)
         {

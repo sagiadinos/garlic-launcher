@@ -31,16 +31,20 @@ import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
 public class ContentUrlActivity extends Activity
 {
     private EditText ed_content_url;
+    SharedConfiguration MySharedConfiguration;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        MySharedConfiguration = new SharedConfiguration(this);
         setContentView(R.layout.activity_content_url);
+        ed_content_url = findViewById(R.id.editContentUrl);
+        ed_content_url.setText(MySharedConfiguration.getSmilIndex(""));
     }
 
     public void setContentUrl(View view)
     {
-        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(null, new SharedConfiguration(this));
+        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(null, MySharedConfiguration);
         MyConfigXMLModel.setSmilIndexUrl(ed_content_url.getText().toString().trim());
         MyConfigXMLModel.storeConfigXmlForPlayer();
     }

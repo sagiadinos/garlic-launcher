@@ -22,6 +22,7 @@ package com.sagiadinos.garlic.launcher.helper;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -53,14 +54,14 @@ public class Installer
             throws IOException
     {
         InputStream fileInputStream           = createInputStream(package_path);
-        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+        PackageInstaller.SessionParams params  = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         String package_name                    = getAppNameFromPkgName(ctx, package_path);
         if (package_name.equals(""))
         {
             return;
         }
-
         params.setAppPackageName(package_name);
+
         // set params
         int                      session_id = packageInstaller.createSession(params);
         PackageInstaller.Session session    = packageInstaller.openSession(session_id);
@@ -77,7 +78,6 @@ public class Installer
         out.close();
 
         Intent intent = new Intent(ctx, MainActivity.class);
-        intent.putExtra("info", "somedata");  // for extra data if needed..
 
         Random generator = new Random();
 
@@ -98,7 +98,6 @@ public class Installer
         }
         return true;
     }
-
 
     public boolean uninstall(String package_name)
     {
