@@ -22,7 +22,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 25
     sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/Utilis'] } }
     defaultConfig {
         minSdkVersion 25
