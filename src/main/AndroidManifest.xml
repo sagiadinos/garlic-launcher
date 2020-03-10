@@ -8,11 +8,13 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
     <application
         android:name=".GarlicLauncherApplication"
@@ -67,6 +69,9 @@
             android:name=".receiver.PlayerClosedReceiver"
             android:enabled="true" />
         <receiver
+            android:name=".receiver.InstallAppReceiver"
+            android:enabled="true" />
+        <receiver
             android:name=".receiver.UsbConnectionReceiver"
             android:enabled="true">
             <intent-filter>
@@ -78,9 +83,6 @@
                 <data android:scheme="file" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receiver.InstallAppReceiver"
-            android:enabled="true" />
     </application>
 
 </manifest>

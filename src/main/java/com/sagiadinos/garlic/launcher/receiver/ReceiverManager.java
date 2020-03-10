@@ -64,12 +64,8 @@ public class ReceiverManager
         );
         MyRebootReceiver.setMyActivity(MainActivity);
 
-        MyInstallAppReceiver =  new InstallAppReceiver();
-        MainActivity.registerReceiver(
-                MyInstallAppReceiver,
-                createIntentFilter("InstallAppReceiver")
-        );
-        MyInstallAppReceiver.setMyActivity(MainActivity);
+        //   InstallAppReceiver has default constructor and is initialized in AndroidManifest
+        //   USBConnectionReceiver has default constructor and is initialized in AndroidManifest
     }
 
     public static void unregisterAllReceiver(MainActivity MainActivity)
@@ -79,7 +75,6 @@ public class ReceiverManager
         MainActivity.unregisterReceiver(MyPlayerClosedReceiver);
         MainActivity.unregisterReceiver(MySecondAppReceiver);
         MainActivity.unregisterReceiver(MyRebootReceiver);
-        MainActivity.unregisterReceiver(MyInstallAppReceiver);
 
     }
 

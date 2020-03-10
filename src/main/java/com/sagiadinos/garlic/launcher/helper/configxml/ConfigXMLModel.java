@@ -3,6 +3,7 @@ package com.sagiadinos.garlic.launcher.helper.configxml;
 import android.os.Environment;
 import android.util.Log;
 
+import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 
 import org.xmlpull.v1.XmlPullParser;

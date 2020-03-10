@@ -19,7 +19,9 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -29,17 +31,16 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.helper.Installer;
+import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
 import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
 import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -55,6 +56,12 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         ctx = context;
         if (intent == null || intent.getAction() == null)
+        {
+            return;
+        }
+        // otherwise it can crash beacause we
+        // try to do things which do not work without device owner rights
+        if (!DeviceOwner.isDeviceOwner(ctx))
         {
             return;
         }
@@ -75,11 +82,10 @@ public class UsbConnectionReceiver extends BroadcastReceiver
      */
     private void dispatchFilesOnUsb(String path)
     {
-
         File smil_index = new File(path + "/index.smil");
         if (checkAccessibility(smil_index))
         {
-            sendBroadcastToPlayer(createIntentForSmilIndex(smil_index));
+            ctx.sendBroadcast(createIntentForSmilIndex(smil_index));
             return;
         }
 
@@ -92,9 +98,10 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
 
         File player_apk = new File(path + "/garlic-player.apk");
-        if (checkAccessibility(player_apk))
+        String s = Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath());
+        if (checkAccessibility(player_apk)  && s.equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
         {
-            sendBroadcastToPlayer(createIntentForPlayerApk(player_apk));
+            ctx.sendBroadcast(createIntentForPlayerApk(player_apk));
         }
     }
 
@@ -122,9 +129,9 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
         // set time and time zone
 
-        if (!MyApplication.isOnForeground())
+        if (!MyApplication.isOnForeground() && PlayerDownload.isGarlicPlayerInstalled(ctx))
         {
-            sendBroadcastToPlayer(createIntentForConfigXml(file));
+            ctx.sendBroadcast(createIntentForConfigXml(file));
         }
         else
         {
@@ -139,7 +146,6 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
             }
         }
-
     }
 
     private Intent createIntentForConfigXml(File file)
@@ -155,12 +161,6 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         intent.putExtra("apk_path", file.getAbsolutePath());
         return intent;
     }
-
-    private void sendBroadcastToPlayer(Intent intent)
-    {
-        ctx.sendBroadcast(intent);
-    }
-
 
     private boolean checkAccessibility(File file)
     {

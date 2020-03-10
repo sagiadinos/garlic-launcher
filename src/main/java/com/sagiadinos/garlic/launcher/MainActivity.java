@@ -20,31 +20,22 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.helper.Network;
+import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
-import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.Permissions;
-import com.sagiadinos.garlic.launcher.helper.WiFi;
-import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
-import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
 public class MainActivity extends Activity
@@ -85,7 +76,8 @@ public class MainActivity extends Activity
              text_information.setVisibility(View.VISIBLE);
              text_information.setText(R.string.no_device_owner);
          }
-     }
+    }
+
     private void initHelperClasses()
     {
         MyKiosk       = new KioskManager(MyDeviceOwner,
@@ -112,9 +104,7 @@ public class MainActivity extends Activity
         button_player          = (Button) findViewById(R.id.buttonGarlicPlayer);
         button_content_uri     = (Button) findViewById(R.id.buttonSetContentURI);
 
-        if (Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME)
-                ||  Installer.isPackageInstalled(MainActivity.this, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME_ALT)
-        )
+        if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
         {
             button_content_uri.setVisibility(View.VISIBLE);
             button_player.setVisibility(View.VISIBLE);
@@ -122,9 +112,18 @@ public class MainActivity extends Activity
         }
         else
         {
+            if (Network.isConnected(MainActivity.this))
+            {
+                PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this);
+                MyPlayerDownload.startDownload();
+                text_information.setText(R.string.download_player_in_progress);
+            }
+            else
+            {
+                text_information.setText(R.string.no_garlic_info);
+            }
             button_content_uri.setVisibility(View.INVISIBLE);
             button_player.setVisibility(View.INVISIBLE);
-            text_information.setText(R.string.no_garlic_info);
             text_information.setVisibility(View.VISIBLE);
         }
 
@@ -186,7 +185,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (mySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this))
+        if (mySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !PlayerDownload.isGarlicPlayerInstalled(this))
         {
             button_player.setText(R.string.play);
             return;
@@ -235,6 +234,7 @@ public class MainActivity extends Activity
 
     public void configAdmin(View view)
     {
+        MyDeviceOwner.deactivateRestrictions();
         stopPlayerRestart();
         Intent intent = new Intent(this, ActivityConfigAdmin.class);
         startActivity(intent);

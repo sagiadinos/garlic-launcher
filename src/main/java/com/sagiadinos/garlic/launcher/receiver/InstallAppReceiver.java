@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.Installer;
 
 
@@ -41,54 +42,42 @@ import com.sagiadinos.garlic.launcher.helper.Installer;
  */
 public class InstallAppReceiver extends BroadcastReceiver
 {
-    MainActivity MyActivity;
 
     public InstallAppReceiver()
     {
     }
 
-    public void setMyActivity(MainActivity act)
-    {
-        MyActivity = act;
-    }
-
-
     @Override
-    public void onReceive(Context context, Intent intent)
+    public void onReceive(Context ctx, Intent intent)
     {
         if (intent == null || intent.getAction() == null)
         {
             return;
         }
         if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver") ||
-                !context.getPackageName().equals(MyActivity.getPackageName()))
+                !ctx.getPackageName().equals(DeviceOwner.GARLIC_LAUNCHER_PACKAGE_NAME))
         {
             return;
         }
         try
         {
-            Installer MyInstaller = new Installer(context);
+            Installer MyInstaller = new Installer(ctx);
             String file_path = intent.getStringExtra("apk_path");
             MyInstaller.installPackage(file_path);
 
             // delete downloaded files which are in player cache but not on usb
-            if (file_path.contains("cache"))
+            if (file_path != null && file_path.contains("cache"))
             {
                 File file = new File(file_path);
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-            // if a player was downloaded restart player
-            if (file_path.contains("garlic-player.apk"))
-            {
 
-                MyActivity.rebootOS(null);
-            }
-
+            DeviceOwner.reboot(ctx);
         }
         catch (IOException e)
         {
-            Toast.makeText(MyActivity, e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
 
         }
     }

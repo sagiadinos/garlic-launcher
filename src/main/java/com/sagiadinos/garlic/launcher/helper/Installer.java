@@ -54,7 +54,7 @@ public class Installer
     {
         InputStream fileInputStream           = createInputStream(package_path);
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        String package_name                    = getAppNameFromPkgName(package_path);
+        String package_name                    = getAppNameFromPkgName(ctx, package_path);
         if (package_name.equals(""))
         {
             return;
@@ -108,11 +108,11 @@ public class Installer
         return true;
     }
 
-    private String getAppNameFromPkgName(String package_path)
+    public static String getAppNameFromPkgName(Context ctx, String package_path)
     {
-            PackageManager packageManager = ctx.getPackageManager();
-            PackageInfo info = packageManager.getPackageArchiveInfo(package_path, 0);
-            return info.packageName;
+        PackageManager packageManager = ctx.getPackageManager();
+        PackageInfo info = packageManager.getPackageArchiveInfo(package_path, 0);
+        return info.packageName;
     }
 
     private InputStream createInputStream(String path_name)

@@ -101,26 +101,6 @@ public class KioskManager
         return false;
     }
 
-
-    public static void staticBecomeHomeActivity(Context c)
-    {
-        ComponentName       deviceAdmin = new ComponentName(c, AdminReceiver.class);
-        DevicePolicyManager dpm         = (DevicePolicyManager) c.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (dpm == null)
-        {
-            return;
-        }
-        if (!dpm.isAdminActive(deviceAdmin) && !dpm.isDeviceOwnerApp(c.getPackageName()))
-        {
-            return;
-        }
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MAIN);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        intentFilter.addCategory(Intent.CATEGORY_HOME);
-        ComponentName activity = new ComponentName(c, MainActivity.class);
-        dpm.addPersistentPreferredActivity(deviceAdmin, intentFilter, activity);
-    }
-
     private boolean canEnterKioskMode()
     {
         if (!checkforDeviceRights())

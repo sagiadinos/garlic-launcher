@@ -47,11 +47,9 @@ public class DeviceOwner
     private ComponentName       deviceAdmin;
     private Context             ctx               = null;
 
+    public static final String GARLIC_LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String GARLIC_PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
-    public static final String GARLIC_PLAYER_PACKAGE_NAME_ALT = "com.sagiadinos.smilcontrol";
     public static final String QT_TEST_PACKAGE_NAME = "com.sagiadinos.garlic.qttest";
-    public static final String SECOND_APP_PACKAGE_NAME = "com.sagiadinos.garlic.secondapp";
-    public static final String TEST_APP_PACKAGE_NAME = "com.sagiadinos.garlic.nativetest";
 
     public DeviceOwner(Context c)
     {
@@ -90,6 +88,18 @@ public class DeviceOwner
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
     }
 
+    public void deactivateRestrictions()
+    {
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
+
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_ADD_USER);
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
+
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
+    }
+
     public boolean isLockTaskPermitted()
     {
         return dpm.isLockTaskPermitted(ctx.getPackageName());
@@ -106,6 +116,17 @@ public class DeviceOwner
         return dpm.isDeviceOwnerApp(s);
     }
 
+    public static boolean isDeviceOwner(Context ctx)
+    {
+        DevicePolicyManager dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName       deviceAdmin = new ComponentName(ctx, AdminReceiver.class);
+        if (dpm == null)
+        {
+            return false;
+        }
+        return dpm.isDeviceOwnerApp(ctx.getPackageName());
+    }
+
     public void reboot()
     {
         if (isAdminActive())
@@ -117,6 +138,16 @@ public class DeviceOwner
             showToast("This app is not a device owner!");
         }
     }
+
+    public static void reboot(Context ctx)
+    {
+        DevicePolicyManager dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (dpm != null && dpm.isDeviceOwnerApp(ctx.getPackageName()))
+        {
+            dpm.reboot(new ComponentName(ctx, AdminReceiver.class));
+        }
+    }
+
 
     public void addPersistentPreferredActivity(IntentFilter intentFilter)
     {

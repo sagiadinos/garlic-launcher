@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.helper.Installer;
 
 /**
  * This Receiver will be called from the player background service (Watchdog)
@@ -57,7 +59,7 @@ public class InForegroundReceiver extends BroadcastReceiver
         }
 
         // When we found here it means a Launcher activity is in the foreground
-        // This can happen consciously or  due ti a crahs app crash so we had to examine
+        // This can happen consciously or  due to a crahs app crash so we had to examine
         //
         // Opportunities
         // 1. player started or second app started booleans are true
@@ -70,8 +72,9 @@ public class InForegroundReceiver extends BroadcastReceiver
         // => in this case do nothing!
         if (MyActivity.hasPlayerStarted() || MyActivity.hasSecondAppStarted())
         {
-       //     MyActivity.startGarlicPlayer(null);
+            MyActivity.startGarlicPlayer(null);
         }
+
     }
 
  }

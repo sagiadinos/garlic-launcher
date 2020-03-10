@@ -23,6 +23,7 @@ import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 
 
@@ -31,13 +32,10 @@ public class AdminReceiver extends DeviceAdminReceiver
     @Override
     public void onEnabled(Context ctx, Intent intent)
     {
-        KioskManager.staticBecomeHomeActivity(ctx);
-   }
-
-    @Override
-    public CharSequence onDisableRequested(Context ctx, Intent intent)
-    {
-        return "Warning: Device Admin is going to be disabled.";
+        // restart MainActivity
+        Intent a = new Intent(ctx, MainActivity.class);
+        a.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ctx.startActivity(a);
     }
 
 }
