@@ -15,13 +15,7 @@ repositories {
     jcenter()
 }
 
-// For signating keystore.properties includes the credentials
-// but is not uploaded in git
-if (project.rootProject.file('keystore.properties').exists()) {
-    def keystorePropertiesFile = rootProject.file("keystore.properties")
-    def keystoreProperties = new Properties()
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
+
 
 android {
     compileSdkVersion 29
@@ -29,14 +23,20 @@ android {
     defaultConfig {
         minSdkVersion 25
     }
-    signingConfigs {
-        if (project.rootProject.file('keystore.properties').exists()) {
-            release {
-                // only release versions should be signed
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
+        signingConfigs {
+            // For signating keystore.properties includes the credentials
+            // but is not uploaded in git
+            if (project.rootProject.file('keystore.properties').exists()) {
+                release {
+                    def keystorePropertiesFile = rootProject.file("keystore.properties")
+                    def keystoreProperties = new Properties()
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+                    // only release versions should be signed
+                    keyAlias keystoreProperties['keyAlias']
+                    keyPassword keystoreProperties['keyPassword']
+                    storeFile file(keystoreProperties['storeFile'])
+                    storePassword keystoreProperties['storePassword']
             }
         }
     }
