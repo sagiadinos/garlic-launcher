@@ -33,7 +33,7 @@ import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
  *  DeviceOwner handles the methods to check for device owner
  *  and encapsulates some simple functions like reboot.
  *
- *  set device admin with
+ *  set device owner with
  *  adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
  *
  *  for removing

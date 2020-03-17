@@ -3,7 +3,6 @@ package com.sagiadinos.garlic.launcher.helper.configxml;
 import android.os.Environment;
 import android.util.Log;
 
-import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -20,12 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Objects;
 
 public class ConfigXMLModel
 {
     private String smil_index_url   = "http://indexes.smil-control.com";
-    private NetworkData MyNetworkData = null;
-    private SharedConfiguration MySharedConfiguration = null;
+    private NetworkData MyNetworkData;
+    private SharedConfiguration MySharedConfiguration;
 
     public ConfigXMLModel(NetworkData myNetworkData, SharedConfiguration mySharedConfiguration)
     {
@@ -33,92 +33,46 @@ public class ConfigXMLModel
         this.MySharedConfiguration = mySharedConfiguration;
     }
 
-    public void setSmilIndexUrl(String smil_index_url)
+    public boolean storeSmilIndexUrl(String smil_index_url)
     {
-        MySharedConfiguration.writeSmilIndex(smil_index_url);
         this.smil_index_url = smil_index_url;
+        return MySharedConfiguration.writeSmilIndex(smil_index_url);
     }
 
-    public String readConfigXml(File config_xml)
+    public String readConfigXml(File config_xml) throws IOException
     {
-        try
+        BufferedReader reader        = new BufferedReader(new FileReader(config_xml));
+        StringBuilder  stringBuilder = new StringBuilder();
+        char[]         buffer        = new char[10];
+        while (reader.read(buffer) != -1)
         {
-            BufferedReader reader = new BufferedReader(new FileReader(config_xml));
-            StringBuilder stringBuilder = new StringBuilder();
-            char[] buffer = new char[10];
-            while (reader.read(buffer) != -1)
-            {
-                stringBuilder.append(new String(buffer));
-                buffer = new char[10];
-            }
-            reader.close();
-            return stringBuilder.toString();
+            stringBuilder.append(new String(buffer));
+            buffer = new char[10];
         }
-        catch (IOException e)
-        {
-            Log.e("config_xml", e.getMessage());
-            return "";
-        }
+        reader.close();
+        return stringBuilder.toString();
     }
 
     public void parseConfigXml(String xml)
     {
         try
         {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-
+            XmlPullParser xpp = createXmlPullParser();
             xpp.setInput(new StringReader(xml));
+
             int eventType = xpp.getEventType();
-            String attribute_name = "";
             while (eventType != XmlPullParser.END_DOCUMENT)
             {
-                if (eventType == XmlPullParser.START_TAG)
+                if (eventType == XmlPullParser.START_TAG && xpp.getName().equals("prop"))
                 {
-                    if (xpp.getName().equals("prop"))
-                    {
-                        attribute_name = xpp.getAttributeValue(null, "name");
-
-                        if (attribute_name.equals("net.wifi.ssid"))
-                            MyNetworkData.setWifiSSID(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.wifi.authentication"))
-                            MyNetworkData.setWifiAuthentication(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.wifi.encryption"))
-                            MyNetworkData.setWifiEncryption(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.wifi.password"))
-                            MyNetworkData.setWifiPassword(xpp.getAttributeValue(null, "value"));
-
-                        else if (attribute_name.equals("net.ethernet.ip"))
-                            MyNetworkData.setEthernetIP(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.ethernet.dhcp.enabled"))
-                            MyNetworkData.setEthernetDHCP(Boolean.parseBoolean(xpp.getAttributeValue(null, "value")));
-                        else if (attribute_name.equals("net.ethernet.netmask"))
-                            MyNetworkData.setEthernetNetmask(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.ethernet.gateway"))
-                            MyNetworkData.setEthernetGateway(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.ethernet.domain"))
-                            MyNetworkData.setEthernetDomain(xpp.getAttributeValue(null, "value"));
-                        else if (attribute_name.equals("net.ethernet.dnsServers"))
-                            MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
-
-                        else if (attribute_name.equals("content.serverUrl"))
-                        {
-                            setSmilIndexUrl(xpp.getAttributeValue(null, "value"));
-                        }
-
-                    }
+                    parseProp(xpp);
                 }
                 eventType = xpp.next();
             }
         }
-        catch (XmlPullParserException e)
+        catch (XmlPullParserException | IOException e)
         {
-            Log.e("config_xml", e.getMessage());
-        }
-        catch (IOException e)
-        {
-            Log.e("config_xml", e.getMessage());
+            Log.e("config_xml", Objects.requireNonNull(e.getMessage()));
         }
 
     }
@@ -157,10 +111,56 @@ public class ConfigXMLModel
         }
         catch (IOException e)
         {
-            Log.e("config_xml", e.getMessage());
+            Log.e("config_xml", Objects.requireNonNull(e.getMessage()));
         }
     }
 
+    private void parseProp(XmlPullParser xpp)
+    {
+        switch (xpp.getAttributeValue(null, "name"))
+        {
+            case "net.wifi.ssid":
+                MyNetworkData.setWifiSSID(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.wifi.authentication":
+                MyNetworkData.setWifiAuthentication(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.wifi.encryption":
+                MyNetworkData.setWifiEncryption(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.wifi.password":
+                MyNetworkData.setWifiPassword(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.ethernet.ip":
+                MyNetworkData.setEthernetIP(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.ethernet.dhcp.enabled":
+                MyNetworkData.setEthernetDHCP(Boolean.parseBoolean(xpp.getAttributeValue(null, "value")));
+                break;
+            case "net.ethernet.netmask":
+                MyNetworkData.setEthernetNetmask(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.ethernet.gateway":
+                MyNetworkData.setEthernetGateway(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.ethernet.domain":
+                MyNetworkData.setEthernetDomain(xpp.getAttributeValue(null, "value"));
+                break;
+            case "net.ethernet.dnsServers":
+                MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
+                break;
+            case "content.serverUrl":
+                storeSmilIndexUrl(xpp.getAttributeValue(null, "value"));
+                break;
+        }
+    }
+
+    private XmlPullParser createXmlPullParser() throws XmlPullParserException
+    {
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        return factory.newPullParser();
+    }
 
     private String generateConfigXML()
     {

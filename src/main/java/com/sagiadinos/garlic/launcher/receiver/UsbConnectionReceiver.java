@@ -19,9 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -41,6 +39,7 @@ import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -114,37 +113,35 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
     private void sendBroadcastForConfigXml(File file)
     {
-        GarlicLauncherApplication MyApplication = (GarlicLauncherApplication) ctx.getApplicationContext();
-
-        // parse configFile first for Wifi content Url etc...
-        NetworkData MyNetWorkData = new NetworkData();
-        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new SharedConfiguration(ctx));
-        String xml = MyConfigXMLModel.readConfigXml(file);
-        MyConfigXMLModel.parseConfigXml(xml);
-        WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
-
-        MyWiFi.prepareConnection(MyNetWorkData);
-        MyWiFi.connectToNetwork();
-
-
-        // set time and time zone
-
-        if (!MyApplication.isOnForeground() && PlayerDownload.isGarlicPlayerInstalled(ctx))
+        try
         {
-            ctx.sendBroadcast(createIntentForConfigXml(file));
-        }
-        else
-        {
-            // move ConfigFile to DownloadDirectory when player starts it later
-            try
+            GarlicLauncherApplication MyApplication = (GarlicLauncherApplication) ctx.getApplicationContext();
+
+            // parse configFile first for Wifi content Url etc...
+            NetworkData MyNetWorkData = new NetworkData();
+            ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new SharedConfiguration(ctx));
+            String xml = MyConfigXMLModel.readConfigXml(file);
+            MyConfigXMLModel.parseConfigXml(xml);
+            WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
+
+            MyWiFi.prepareConnection(MyNetWorkData);
+            MyWiFi.connectToNetwork();
+
+            // Todo later: set time and time zone
+
+            if (!MyApplication.isOnForeground() && PlayerDownload.isGarlicPlayerInstalled(ctx))
             {
+                ctx.sendBroadcast(createIntentForConfigXml(file));
+            }
+            else
+            {
+                // move ConfigFile to DownloadDirectory when player starts it later
                 MyConfigXMLModel.copy(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config.xml"));
             }
-            catch (IOException e)
-            {
-                Log.e("Usb config_xml", e.getMessage());
-
-            }
+        }
+        catch (IOException e)
+        {
+            Log.e("cUsb config_xml", Objects.requireNonNull(e.getMessage()));
         }
     }
 

@@ -25,7 +25,7 @@ One solution is to root Android, but rooted devices are a potential security ris
 - Software updates via USB-Stick/SD-Card
 - Configuration via USB-Stick/SD-Card
 - A second app can be opened
-- Small and tiny. The apk is less than 30 KByte 
+- Small and tiny. The signed apk is less than 40 KByte
 
 ## Requirements
  - Android >= 7.1.1 

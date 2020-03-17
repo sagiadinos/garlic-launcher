@@ -32,11 +32,11 @@ public class SharedConfiguration
         pref  = ctx.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
     }
 
-    public void writeSmilIndex(String smil_index)
+    public boolean writeSmilIndex(String smil_index)
     {
         SharedPreferences.Editor ed = pref.edit();
         ed.putString(SMIL_INDEX_URI, smil_index);
-        ed.apply();
+        return ed.commit();
     }
 
     public String getSmilIndex(String default_value)

@@ -45,8 +45,10 @@ public class ContentUrlActivity extends Activity
     public void setContentUrl(View view)
     {
         ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(null, MySharedConfiguration);
-        MyConfigXMLModel.setSmilIndexUrl(ed_content_url.getText().toString().trim());
-        MyConfigXMLModel.storeConfigXmlForPlayer();
+        if (MyConfigXMLModel.storeSmilIndexUrl(ed_content_url.getText().toString().trim()))
+        {
+            MyConfigXMLModel.storeConfigXmlForPlayer();
+        }
     }
 
     public void closeActivity(View view)

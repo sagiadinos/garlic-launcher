@@ -1,0 +1,19 @@
+<configuration>
+	<security>
+		<user></user>
+		<password></password>
+	</security>
+	<userPref>
+		<prop name="info.playerName" value="Playername"/>
+		<prop name="content.bootFromServer" value="true"/>
+		<prop name="content.serverUrl" value="https://indexes.a-server.test/"/>
+
+		<prop name="net.wifi.ssid" value="THESSID"/>
+		<prop name="net.wifi.authentication" value="WPA2PSK"/>
+		<prop name="net.wifi.encryption" value="TKIP"/>
+		<prop name="net.wifi.password" value="secret_passwd"/>
+
+		<prop name="net.ethernet.dhcp.enabled" value="true"/>
+
+	</userPref>
+</configuration>
