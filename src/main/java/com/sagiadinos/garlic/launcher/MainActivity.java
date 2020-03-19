@@ -1,4 +1,4 @@
-/*************************************************************************************
+/*
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
@@ -15,9 +15,10 @@
 
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *************************************************************************************/
+ */
 
 package com.sagiadinos.garlic.launcher;
+
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.helper.Network;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
@@ -35,7 +37,7 @@ import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
-import com.sagiadinos.garlic.launcher.helper.Permissions;
+import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
 public class MainActivity extends Activity
@@ -45,7 +47,6 @@ public class MainActivity extends Activity
     private Button         button_toggle_lock     = null;
     private Button         button_toggle_launcher = null;
     private Button         button_player          = null;
-    private Button         button_content_uri     = null;
     private TextView       text_information       = null;
     private CountDownTimer PlayerCountDown        = null;
     private DeviceOwner    MyDeviceOwner          = null;
@@ -53,23 +54,24 @@ public class MainActivity extends Activity
     private KioskManager    MyKiosk               = null;
     private final static String TAG               = "MainActivity";
 
+
      @Override
     public void onCreate(Bundle savedInstanceState)
     {
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
-         text_information = (TextView) findViewById(R.id.textViewInformation);
+         text_information = findViewById(R.id.textViewInformation);
          MyDeviceOwner    = new DeviceOwner(this);
 
          if (MyDeviceOwner.isDeviceOwner())
          {
              mySharedConfiguration = new SharedConfiguration(this);
              text_information.setVisibility(View.INVISIBLE);
-             Permissions.verifyStoragePermissions(this);
+             AppPermissions.verifyStoragePermissions(this);
              initButtonViews();
              initHelperClasses();
-             startGarlicPlayerDelayed();
+             //startGarlicPlayerDelayed();
          }
          else
          {
@@ -77,6 +79,17 @@ public class MainActivity extends Activity
              text_information.setText(R.string.no_device_owner);
          }
     }
+
+    @Override
+    protected void onDestroy()
+    {
+        if (MyDeviceOwner.isDeviceOwner())
+        {
+            ReceiverManager.unregisterAllReceiver(this);
+        }
+        super.onDestroy();
+    }
+
 
     private void initHelperClasses()
     {
@@ -99,10 +112,10 @@ public class MainActivity extends Activity
 
     private void initButtonViews()
     {
-        button_toggle_lock     = (Button) findViewById(R.id.buttonToggleLockTask);
-        button_toggle_launcher = (Button) findViewById(R.id.buttonToggleLauncher);
-        button_player          = (Button) findViewById(R.id.buttonGarlicPlayer);
-        button_content_uri     = (Button) findViewById(R.id.buttonSetContentURI);
+        button_toggle_lock        = findViewById(R.id.buttonToggleLockTask);
+        button_toggle_launcher    = findViewById(R.id.buttonToggleLauncher);
+        button_player             = findViewById(R.id.buttonGarlicPlayer);
+        Button button_content_uri =  findViewById(R.id.buttonSetContentURI);
 
         if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
         {
@@ -132,18 +145,7 @@ public class MainActivity extends Activity
             button_toggle_lock.setVisibility(View.VISIBLE);
             button_toggle_launcher.setVisibility(View.VISIBLE);
         }
-
-        hideBars();
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        if (MyDeviceOwner.isDeviceOwner())
-        {
-            ReceiverManager.unregisterAllReceiver(this);
-        }
-        super.onDestroy();
+        NavigationBar.show(this);
     }
 
     public boolean hasSecondAppStarted()
@@ -257,6 +259,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = true;
+        NavigationBar.hide(this);
         startApp(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
     }
 
@@ -264,6 +267,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = true;
         has_player_started     = false;
+        NavigationBar.show(this);
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
     }
@@ -277,21 +281,6 @@ public class MainActivity extends Activity
             return;
         }
         startActivity(intent);
-    }
-
-
-    private void hideBars()
-    {
-        getWindow().getDecorView()
-                .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                | View.INVISIBLE);
-
     }
 
     private void showToast(String text)

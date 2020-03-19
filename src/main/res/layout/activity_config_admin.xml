@@ -21,33 +21,54 @@
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:drawable/screen_background_dark"
-    android:orientation="vertical">
-
+    android:background="@android:drawable/screen_background_dark_transparent"
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkServiceModus"
+        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Use for Kiosk" />
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/activate_service_mode_via_password"
+        android:textColor="#FFFFFF" />
 
-    <TextView
-        android:id="@+id/textView"
+    <CheckBox
+        android:id="@+id/checkBoxStrictKioskUse"
+        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Set Admin Password" />
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/strict_kiosk_use"
+        android:textColor="#FFFFFF" />
+
+    <CheckBox
+        android:id="@+id/checkBoxBackButton"
+        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/own_back_button"
+        android:textColor="#FFFFFF" />
 
     <EditText
         android:id="@+id/editAdminPassword"
-        android:layout_width="match_parent"
+        android:layout_width="311dp"
         android:layout_height="wrap_content"
+        android:accessibilityTraversalAfter="@id/checkServiceModus"
         android:ems="10"
+        android:hint="@string/password_for_service_mode"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save Settings" />
+        android:text="@string/save_settings" />
+
 
 </LinearLayout>

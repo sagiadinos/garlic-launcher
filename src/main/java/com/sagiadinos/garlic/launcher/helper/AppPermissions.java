@@ -1,4 +1,4 @@
-/*************************************************************************************
+/*
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
@@ -15,18 +15,21 @@
 
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *************************************************************************************/
+*/
 
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.Settings;
 
-import com.sagiadinos.garlic.launcher.MainActivity;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
-import java.security.Permission;
-
-public class Permissions
+public class AppPermissions
 {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -34,15 +37,8 @@ public class Permissions
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private static final int REQUEST_WIFI_STATES = 1;
-    private static String[] PERMISSIONS_WIFI = {
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE
-    };
 
-    public static void verifyStoragePermissions(MainActivity ma)
+    public static void verifyStoragePermissions(Activity ma)
     {
         int permission = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -51,14 +47,38 @@ public class Permissions
             ma.requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
 
-
-        int permission2 = ma.checkSelfPermission(Manifest.permission.CHANGE_WIFI_STATE);
-        if (permission2 != PackageManager.PERMISSION_GRANTED)
+        // Check for overlay permission. If not enabled, request for it.
+        if (isDeviceRooted() && !isOverlayAllowed(ma))
         {
-            ma.requestPermissions(PERMISSIONS_WIFI, REQUEST_WIFI_STATES);
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ma.getPackageName()));
+            ma.startActivityForResult(intent, 12);
         }
+    }
 
+    public static boolean isOverlayAllowed(Activity ma)
+    {
+        return Settings.canDrawOverlays(ma);
+    }
 
+    private static boolean isDeviceRooted()
+    {
+        Process process = null;
+        try
+        {
+            process = Runtime.getRuntime().exec(new String[] {"/system /xbin/which", "su"});
+            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = in.readLine();
+            process.destroy();
+            return line != null;
+        }
+        catch (Exception e)
+        {
+            if (process != null)
+            {
+                process.destroy();
+            }
+            return false;
+        }
     }
 
 }

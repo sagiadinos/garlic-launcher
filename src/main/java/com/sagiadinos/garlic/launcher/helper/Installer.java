@@ -1,4 +1,4 @@
-/*************************************************************************************
+/*
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
@@ -15,7 +15,7 @@
 
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *************************************************************************************/
+*/
 
 package com.sagiadinos.garlic.launcher.helper;
 
@@ -111,6 +111,8 @@ public class Installer
     {
         PackageManager packageManager = ctx.getPackageManager();
         PackageInfo info = packageManager.getPackageArchiveInfo(package_path, 0);
+
+        assert info != null;
         return info.packageName;
     }
 

@@ -21,8 +21,9 @@
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:drawable/screen_background_dark"
-    android:orientation="vertical">
+    android:background="@android:drawable/screen_background_dark_transparent"
+    android:orientation="vertical"
+    android:padding="20dp">
 
 
     <LinearLayout
@@ -52,6 +53,16 @@
             android:text="@string/restore_old_launcher"
             android:textSize="24sp"
             android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/buttonToggleAdminMode"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="toggleLauncher"
+            android:text="Toggle Service Mode"
+            android:textSize="24sp"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <TextView
@@ -60,9 +71,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:visibility="invisible"
         android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:visibility="invisible" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -77,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="configAdmin"
-            android:text="@string/config_admin"
+            android:text="@string/config_service_admin"
             android:textSize="24sp" />
 
         <Button
@@ -88,7 +99,6 @@
             android:onClick="configWiFi"
             android:text="@string/config_wifi"
             android:textSize="24sp" />
-
 
     </LinearLayout>
 

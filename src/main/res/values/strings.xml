@@ -28,8 +28,13 @@
     <string name="count_down">Cancel autoplay in %1$ss</string>
     <string name="no_garlic_info">Garlic-player is not installed</string>
     <string name="download_player_in_progress">Trying to download and install garlic-player - Please wait!</string>
-    <string name="config_admin">Config Admin</string>
+    <string name="config_service_admin">Config Service Administrator</string>
     <string name="config_wifi">Config WiFi</string>
     <string name="set_content_url">Set Content Url</string>
     <string name="no_device_owner">This app must be set as device owner to work</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="activate_service_mode_via_password">Activate Service Mode via Password</string>
+    <string name="own_back_button">Own Back Button</string>
+    <string name="strict_kiosk_use">Strict kiosk use</string>
+    <string name="password_for_service_mode">Password for Service Mode</string>
 </resources>

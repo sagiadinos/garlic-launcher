@@ -1,4 +1,4 @@
-/*************************************************************************************
+/*
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
@@ -15,7 +15,8 @@
 
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *************************************************************************************/
+*/
+
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.admin.DevicePolicyManager;
@@ -78,7 +79,7 @@ public class DeviceOwner
 
     public void activateRestrictions()
     {
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+ /*       dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
@@ -86,11 +87,11 @@ public class DeviceOwner
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
-    }
+   */ }
 
     public void deactivateRestrictions()
     {
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+/*        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
@@ -98,7 +99,7 @@ public class DeviceOwner
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
-    }
+ */   }
 
     public boolean isLockTaskPermitted()
     {
