@@ -21,12 +21,15 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 
 public class AppPermissions
@@ -36,6 +39,24 @@ public class AppPermissions
             Manifest.permission.DELETE_PACKAGES,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    private static String[] binaryPaths= {
+            "/data/local/",
+            "/data/local/bin/",
+            "/data/local/xbin/",
+            "/sbin/",
+            "/su/bin/",
+            "/system/bin/",
+            "/system/bin/.ext/",
+            "/system/bin/failsafe/",
+            "/system/sd/xbin/",
+            "/system/usr/we-need-root/",
+            "/system/xbin/",
+            "/system/app/Superuser.apk",
+            "/cache",
+            "/data",
+            "/dev"
     };
 
     public static void verifyStoragePermissions(Activity ma)
@@ -60,25 +81,33 @@ public class AppPermissions
         return Settings.canDrawOverlays(ma);
     }
 
+    /**
+     *  Look at https://medium.com/@deekshithmoolyakavoor/root-detection-in-android-device-9144b7c2ae07
+     *
+     * @return Boolean
+     */
     public static boolean isDeviceRooted()
     {
-        Process process = null;
-        try
-        {
-            process = Runtime.getRuntime().exec(new String[] {"/system /xbin/which", "su"});
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = in.readLine();
-            process.destroy();
-            return line != null;
-        }
-        catch (Exception e)
-        {
-            if (process != null)
-            {
-                process.destroy();
-            }
-            return false;
-        }
+        return (detectTestKeys() || checkForBinary("su") || checkForBinary("busybox"));
     }
 
+    private static boolean detectTestKeys()
+    {
+        String buildTags = android.os.Build.TAGS;
+        return buildTags != null && buildTags.contains("test-keys");
+    }
+
+    private static boolean checkForBinary(String filename)
+    {
+        for (String path : binaryPaths)
+        {
+            File f = new File(path, filename);
+            boolean fileExists = f.exists();
+            if (fileExists)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -101,14 +101,14 @@ public class ActivityConfigAdmin extends Activity
     {
         if (AppPermissions.isDeviceRooted())
         {
-            cbOwnBackButton.setEnabled(false);
-            cbOwnBackButton.setVisibility(View.GONE);
-        }
-        else
-        {
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);
             cbOwnBackButton.setChecked(MySharedConfiguration.hasOwnBackButton());
+        }
+        else
+        {
+            cbOwnBackButton.setEnabled(false);
+            cbOwnBackButton.setVisibility(View.GONE);
         }
     }
 
