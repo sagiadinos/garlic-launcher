@@ -60,7 +60,7 @@ public class AppPermissions
         return Settings.canDrawOverlays(ma);
     }
 
-    private static boolean isDeviceRooted()
+    public static boolean isDeviceRooted()
     {
         Process process = null;
         try

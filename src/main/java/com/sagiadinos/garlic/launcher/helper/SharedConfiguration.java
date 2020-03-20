@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 public class SharedConfiguration
 {
     private SharedPreferences pref;
-    final private String SMIL_INDEX_URI      = "smil_index_uri";
 
     public SharedConfiguration(Context ctx)
     {
@@ -36,13 +35,70 @@ public class SharedConfiguration
     public boolean writeSmilIndex(String smil_index)
     {
         SharedPreferences.Editor ed = pref.edit();
-        ed.putString(SMIL_INDEX_URI, smil_index);
+        ed.putString("smil_index_uri", smil_index);
         return ed.commit();
     }
 
     public String getSmilIndex(String default_value)
     {
-        return pref.getString(SMIL_INDEX_URI, default_value);
+        return pref.getString("smil_index_uri", default_value);
     }
 
+    public void setStrictKioskUse(boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("strict_kiosk_use", value);
+        commit(ed);
+    }
+
+    public boolean hasStrictKioskUse()
+    {
+        return pref.getBoolean("strict_kiosk_use", false);
+    }
+
+    public void setOwnBackButton(boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("own_back_button", value);
+        commit(ed);
+    }
+
+    public boolean hasOwnBackButton()
+    {
+        return pref.getBoolean("own_back_button", false);
+    }
+
+    public void setActiveServicePassword(boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("active_service_password", value);
+        commit(ed);
+    }
+
+    public boolean hasActiveServicePassword()
+    {
+        return pref.getBoolean("active_service_password", false);
+    }
+
+
+    public void setServicePassword(String service_mode_password) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putString("service_mode_password", service_mode_password);
+        commit(ed);
+    }
+
+    public String getServicePassword()
+    {
+        return pref.getString("service_mode_password", "");
+    }
+
+    private void commit(SharedPreferences.Editor ed) throws GarlicLauncherException
+    {
+        if (!ed.commit())
+        {
+            throw new GarlicLauncherException("commit SharedPreferences failed");
+        }
+
+    }
 }

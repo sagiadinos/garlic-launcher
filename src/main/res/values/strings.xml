@@ -32,9 +32,12 @@
     <string name="config_wifi">Config WiFi</string>
     <string name="set_content_url">Set Content Url</string>
     <string name="no_device_owner">This app must be set as device owner to work</string>
-    <string name="save_settings">Save Settings</string>
-    <string name="activate_service_mode_via_password">Activate Service Mode via Password</string>
+    <string name="save_and_close">Save &amp; Close</string>
     <string name="own_back_button">Own Back Button</string>
     <string name="strict_kiosk_use">Strict kiosk use</string>
-    <string name="password_for_service_mode">Password for Service Mode</string>
+    <string name="active_service_password">Service Password</string>
+    <string name="service_password">Password</string>
+    <string name="cancel">Cancel</string>
+    <string name="unknown_error">unknown error</string>
+    <string name="missing_password">There is no password set!</string>
 </resources>

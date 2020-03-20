@@ -25,19 +25,8 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <CheckBox
-        android:id="@+id/checkServiceModus"
-        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/activate_service_mode_via_password"
-        android:textColor="#FFFFFF" />
-
-    <CheckBox
-        android:id="@+id/checkBoxStrictKioskUse"
-        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
+  <CheckBox
+        android:id="@+id/cbStrictKioskUse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -46,8 +35,7 @@
         android:textColor="#FFFFFF" />
 
     <CheckBox
-        android:id="@+id/checkBoxBackButton"
-        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
+        android:id="@+id/cbOwnBackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -55,20 +43,63 @@
         android:text="@string/own_back_button"
         android:textColor="#FFFFFF" />
 
-    <EditText
-        android:id="@+id/editAdminPassword"
-        android:layout_width="311dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:accessibilityTraversalAfter="@id/checkServiceModus"
-        android:ems="10"
-        android:hint="@string/password_for_service_mode"
-        android:inputType="textPassword" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/button"
+        <CheckBox
+            android:id="@+id/cbActiveServicePassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onServicePassWordClicked"
+            android:text="@string/active_service_password"
+            android:textColor="#FFFFFF" />
+
+        <EditText
+            android:id="@+id/editServicePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:accessibilityTraversalAfter="@id/cbActiveServicePassword"
+            android:ems="10"
+            android:hint="@string/service_password"
+            android:inputType="textPassword"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewInformation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/save_settings" />
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="saveAndClose"
+            android:text="@string/save_and_close" />
+
+        <Button
+            android:id="@+id/btClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="closeActivity"
+            android:text="@string/cancel" />
+    </LinearLayout>
 
 
 </LinearLayout>
