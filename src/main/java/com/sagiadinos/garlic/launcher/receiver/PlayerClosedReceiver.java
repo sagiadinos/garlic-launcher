@@ -54,8 +54,7 @@ public class PlayerClosedReceiver extends BroadcastReceiver
         {
             return;
         }
-        if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.PlayerClosedReceiver") ||
-                !context.getPackageName().equals(MyActivity.getPackageName()))
+        if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.PlayerClosedReceiver"))
         {
             return;
         }

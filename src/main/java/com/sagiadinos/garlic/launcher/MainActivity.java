@@ -71,7 +71,7 @@ public class MainActivity extends Activity
              AppPermissions.verifyStoragePermissions(this);
              initButtonViews();
              initHelperClasses();
-             //startGarlicPlayerDelayed();
+             startGarlicPlayerDelayed();
          }
          else
          {
@@ -216,8 +216,7 @@ public class MainActivity extends Activity
         {
             if (PlayerCountDown != null)
             {
-                PlayerCountDown.cancel();
-                button_player.setText(R.string.play);
+                stopPlayerRestart();
             }
         }
         else
@@ -248,7 +247,6 @@ public class MainActivity extends Activity
         MyDeviceOwner.activateRestrictions();
         startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
     }
-
 
     public void rebootOS(View view)
     {

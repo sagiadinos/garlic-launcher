@@ -43,7 +43,7 @@ public class WatchDogService extends Service
         {
             public void run()
             {
-                handler.postDelayed(runnable, 3000);
+                handler.postDelayed(runnable, 4000);
 
                 // if the Launcher is in Foreground something could be wrong, so we need
                 // to examine in InForegroundReceiver
@@ -57,7 +57,7 @@ public class WatchDogService extends Service
 
         };
 
-        handler.postDelayed(runnable, 6000);
+        handler.postDelayed(runnable, 8000);
     }
 
     @Override
