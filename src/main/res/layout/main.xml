@@ -28,13 +28,13 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="116dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonToggleLockTask"
+            android:id="@+id/btToggleLockTask"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,27 +42,27 @@
             android:onClick="toggleLockTask"
             android:text="@string/pin_app"
             android:textSize="24sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <Button
-            android:id="@+id/buttonToggleLauncher"
+            android:id="@+id/btToggleLauncher"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="toggleLauncher"
             android:text="@string/restore_old_launcher"
             android:textSize="24sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <Button
-            android:id="@+id/buttonToggleAdminMode"
+            android:id="@+id/btToggleServiceMode"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="toggleLauncher"
-            android:text="Toggle Service Mode"
+            android:onClick="toggleServiceMode"
+            android:text="@string/enter_service_mode"
             android:textSize="24sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView
@@ -77,13 +77,13 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="155dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonAdminConfiguration"
+            android:id="@+id/btAdminConfiguration"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             android:textSize="24sp" />
 
         <Button
-            android:id="@+id/buttonConfigureWiFi"
+            android:id="@+id/btConfigureWiFi"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -106,28 +106,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonSetContentURI"
+            android:id="@+id/btSetContentURI"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="setContentUrl"
-            android:padding="20sp"
             android:text="@string/set_content_url"
             android:textSize="24sp"
             android:visibility="invisible" />
 
 
         <Button
-            android:id="@+id/buttonGarlicPlayer"
+            android:id="@+id/btStartPlayer"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="handleGarlicPlayerStartTimer"
-            android:padding="20sp"
             android:text="@string/play"
             android:textSize="24sp"
             android:visibility="invisible" />

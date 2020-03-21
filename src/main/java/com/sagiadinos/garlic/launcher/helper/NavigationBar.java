@@ -32,9 +32,9 @@ import java.security.Permission;
  */
 public class NavigationBar
 {
-    public static void hide(Activity a)
+    public static void hide(Activity a, SharedConfiguration sc)
     {
-        if (AppPermissions.isOverlayAllowed(a))
+        if (sc.hasOwnBackButton())
         {
             a.stopService(new Intent(a, HUD.class));
         }
@@ -51,9 +51,9 @@ public class NavigationBar
 
     }
 
-    public static void show(Activity a)
+    public static void show(Activity a, SharedConfiguration sc)
     {
-        if (AppPermissions.isOverlayAllowed(a))
+        if (sc.hasOwnBackButton())
         {
             a.startService(new Intent(a, HUD.class));
         }

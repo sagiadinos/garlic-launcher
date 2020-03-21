@@ -35,7 +35,6 @@ import java.util.Objects;
 public class ActivityConfigAdmin extends Activity
 {
     TextView tvInformation;
-    CheckBox cbStrictKioskUse;
     CheckBox cbOwnBackButton;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
@@ -46,7 +45,6 @@ public class ActivityConfigAdmin extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_admin);
-        cbStrictKioskUse         = findViewById(R.id.cbStrictKioskUse);
         cbOwnBackButton          = findViewById(R.id.cbOwnBackButton);
         cbActiveServicePassword  = findViewById(R.id.cbActiveServicePassword);
         editServicePassword      = findViewById(R.id.editServicePassword);
@@ -63,12 +61,11 @@ public class ActivityConfigAdmin extends Activity
         try
         {
             checkServicePassword();
-            MySharedConfiguration.setActiveServicePassword(cbActiveServicePassword.isChecked());
+            MySharedConfiguration.toggleActiveServicePassword(cbActiveServicePassword.isChecked());
             MySharedConfiguration.setServicePassword(editServicePassword.getText().toString());
 
-            MySharedConfiguration.setStrictKioskUse(cbStrictKioskUse.isChecked());
-            MySharedConfiguration.setOwnBackButton(cbOwnBackButton.isChecked());
-            closeActivity(view);
+            MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
+            finish();
         }
         catch (GarlicLauncherException e)
         {
@@ -90,8 +87,6 @@ public class ActivityConfigAdmin extends Activity
 
     private void prepareOptionsVisibility()
     {
-        cbStrictKioskUse.setChecked(MySharedConfiguration.hasStrictKioskUse());
-
         prepareVisibilityOfBackButtonOption();
         prepareVisibilityOfServicePasswordOption();
 

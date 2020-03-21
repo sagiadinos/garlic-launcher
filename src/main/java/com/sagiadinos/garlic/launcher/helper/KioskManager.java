@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.MainActivity;
 
+import java.nio.channels.ScatteringByteChannel;
+
 /**
  * This class is responsible for methods which needed to create a Kiosk Mode
  * Kiosk Mode means:
@@ -39,16 +41,16 @@ public class KioskManager
     private HomeLauncherManager  MyLauncher;
     private LockTaskManager      MyLockTasks;
     private MainActivity         MyActivity;
+    private SharedConfiguration  MySharedConfiguration;
 
-
-    public KioskManager(DeviceOwner deviceOwner, HomeLauncherManager hlm,  LockTaskManager ltm, MainActivity ma)
+    public KioskManager(DeviceOwner deviceOwner, HomeLauncherManager hlm,  LockTaskManager ltm, SharedConfiguration sc, MainActivity ma)
     {
         MyDeviceOwner = deviceOwner;
         MyLauncher    = hlm;
         MyLockTasks   = ltm;
         MyActivity    = ma;
+        MySharedConfiguration = sc;
     }
-
 
     public boolean startKioskMode()
     {
@@ -60,7 +62,32 @@ public class KioskManager
             ret = true;
         }
         return ret;
-  }
+    }
+
+    public void toggleServiceMode(boolean value)
+    {
+        try
+        {
+            if (value)
+            {
+                MySharedConfiguration.setStrictKioskMode(false);
+            }
+            else
+            {
+                MySharedConfiguration.setStrictKioskMode(true);
+            }
+        }
+        catch (GarlicLauncherException e)
+        {
+            e.getStackTrace();
+        }
+
+    }
+
+    public boolean isStrictKioskModeActive()
+    {
+        return MySharedConfiguration.isStrictKioskModeActive();
+    }
 
     /**
      * @return boolean returns the status of locktask

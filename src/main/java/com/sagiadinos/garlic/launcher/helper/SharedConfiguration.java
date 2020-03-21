@@ -44,19 +44,7 @@ public class SharedConfiguration
         return pref.getString("smil_index_uri", default_value);
     }
 
-    public void setStrictKioskUse(boolean value) throws GarlicLauncherException
-    {
-        SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("strict_kiosk_use", value);
-        commit(ed);
-    }
-
-    public boolean hasStrictKioskUse()
-    {
-        return pref.getBoolean("strict_kiosk_use", false);
-    }
-
-    public void setOwnBackButton(boolean value) throws GarlicLauncherException
+    public void toggleOwnBackButton(boolean value) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();
         ed.putBoolean("own_back_button", value);
@@ -68,7 +56,7 @@ public class SharedConfiguration
         return pref.getBoolean("own_back_button", false);
     }
 
-    public void setActiveServicePassword(boolean value) throws GarlicLauncherException
+    public void toggleActiveServicePassword(boolean value) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();
         ed.putBoolean("active_service_password", value);
@@ -78,6 +66,11 @@ public class SharedConfiguration
     public boolean hasActiveServicePassword()
     {
         return pref.getBoolean("active_service_password", false);
+    }
+
+    public boolean isStrictKioskModeActive()
+    {
+        return pref.getBoolean("is_strict_kiosk_mode", false);
     }
 
 
@@ -92,6 +85,14 @@ public class SharedConfiguration
     {
         return pref.getString("service_mode_password", "");
     }
+
+    public void setStrictKioskMode(boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("is_strict_kiosk_mode", value);
+        commit(ed);
+    }
+
 
     private void commit(SharedPreferences.Editor ed) throws GarlicLauncherException
     {

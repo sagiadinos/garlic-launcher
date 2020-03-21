@@ -27,7 +27,6 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.helper.Network;
@@ -44,16 +43,20 @@ public class MainActivity extends Activity
 {
     private boolean        has_second_app_started = false;
     private boolean        has_player_started     = false;
-    private Button         button_toggle_lock     = null;
-    private Button         button_toggle_launcher = null;
-    private Button         button_player          = null;
-    private TextView       text_information       = null;
-    private CountDownTimer PlayerCountDown        = null;
-    private DeviceOwner    MyDeviceOwner          = null;
-    private SharedConfiguration mySharedConfiguration = null;
-    private KioskManager    MyKiosk               = null;
-    private final static String TAG               = "MainActivity";
+    private boolean        is_countdown_running   = false;
 
+    private Button         btToggleLock = null;
+    private Button         btToggleLauncher = null;
+    private Button         btToggleServiceMode = null;
+    private Button         btStartPlayer = null;
+    private Button         btAdminConfiguration = null;
+    private Button         btConfigureWiFi      = null;
+    private TextView       tvInformation   = null;
+
+    private CountDownTimer      PlayerCountDown        = null;
+    private DeviceOwner         MyDeviceOwner          = null;
+    private SharedConfiguration MySharedConfiguration = null;
+    private KioskManager        MyKiosk               = null;
 
      @Override
     public void onCreate(Bundle savedInstanceState)
@@ -61,23 +64,36 @@ public class MainActivity extends Activity
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
-         text_information = findViewById(R.id.textViewInformation);
-         MyDeviceOwner    = new DeviceOwner(this);
+         tvInformation = findViewById(R.id.textViewInformation);
+         MyDeviceOwner = new DeviceOwner(this);
+         AppPermissions.verifyStoragePermissions(this);
+         MySharedConfiguration = new SharedConfiguration(this);
+         MyKiosk              = new KioskManager(MyDeviceOwner,
+                                                new HomeLauncherManager(MyDeviceOwner, this),
+                                                new LockTaskManager(this),
+                                                MySharedConfiguration,
+                                                this
+        );
 
-         if (MyDeviceOwner.isDeviceOwner())
-         {
-             mySharedConfiguration = new SharedConfiguration(this);
-             text_information.setVisibility(View.INVISIBLE);
-             AppPermissions.verifyStoragePermissions(this);
-             initButtonViews();
-             initHelperClasses();
-             startGarlicPlayerDelayed();
-         }
-         else
-         {
-             text_information.setVisibility(View.VISIBLE);
-             text_information.setText(R.string.no_device_owner);
-         }
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        if (MyDeviceOwner.isDeviceOwner())
+        {
+            hideInformationText();
+            initButtonViews();
+            initHelperClasses();
+            startGarlicPlayerDelayed();
+        }
+        else
+        {
+            displayInformationText(getString(R.string.no_device_owner));
+        }
+
+
     }
 
     @Override
@@ -93,35 +109,23 @@ public class MainActivity extends Activity
 
     private void initHelperClasses()
     {
-        MyKiosk       = new KioskManager(MyDeviceOwner,
-                                            new HomeLauncherManager(MyDeviceOwner, this),
-                                            new LockTaskManager(this),
-                                            this
-        );
-
         ReceiverManager.registerAllReceiver(this);
         startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
-
-        if (MyKiosk.startKioskMode()) // Pin this app and set it as Launcher
-        {
-            button_toggle_lock.setText(R.string.unpin_app);
-            button_toggle_launcher.setText(R.string.restore_old_launcher);
-        }
-
     }
 
     private void initButtonViews()
     {
-        button_toggle_lock        = findViewById(R.id.buttonToggleLockTask);
-        button_toggle_launcher    = findViewById(R.id.buttonToggleLauncher);
-        button_player             = findViewById(R.id.buttonGarlicPlayer);
-        Button button_content_uri =  findViewById(R.id.buttonSetContentURI);
+        btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
+        btStartPlayer        = findViewById(R.id.btStartPlayer);
+        btAdminConfiguration = findViewById(R.id.btAdminConfiguration);
+        btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
+        Button btContentUri  = findViewById(R.id.btSetContentURI);
 
         if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
         {
-            button_content_uri.setVisibility(View.VISIBLE);
-            button_player.setVisibility(View.VISIBLE);
-            text_information.setVisibility(View.INVISIBLE);
+            btContentUri.setVisibility(View.VISIBLE);
+            btStartPlayer.setVisibility(View.VISIBLE);
+            hideInformationText();
         }
         else
         {
@@ -129,23 +133,57 @@ public class MainActivity extends Activity
             {
                 PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this);
                 MyPlayerDownload.startDownload();
-                text_information.setText(R.string.download_player_in_progress);
+                displayInformationText(getString(R.string.download_player_in_progress));
             }
             else
             {
-                text_information.setText(R.string.no_garlic_info);
+                displayInformationText(getString(R.string.no_garlic_info));
             }
-            button_content_uri.setVisibility(View.INVISIBLE);
-            button_player.setVisibility(View.INVISIBLE);
-            text_information.setVisibility(View.VISIBLE);
+            btContentUri.setVisibility(View.INVISIBLE);
+            btStartPlayer.setVisibility(View.INVISIBLE);
         }
+
+        if (MySharedConfiguration.hasActiveServicePassword())
+        {
+            btToggleServiceMode.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            btToggleServiceMode.setVisibility(View.GONE);
+        }
+
+        if (MyKiosk.isStrictKioskModeActive())
+        {
+            btStartPlayer.setEnabled(false);
+            btToggleServiceMode.setText(R.string.enter_service_mode);
+            btAdminConfiguration.setVisibility(View.GONE);
+            btConfigureWiFi.setVisibility(View.GONE);
+            btContentUri.setVisibility(View.GONE);
+        }
+        else
+        {
+            btAdminConfiguration.setVisibility(View.VISIBLE);
+            btStartPlayer.setEnabled(true);
+            btToggleServiceMode.setText(R.string.exit_service_mode);
+            btConfigureWiFi.setVisibility(View.VISIBLE);
+            btContentUri.setVisibility(View.VISIBLE);
+        }
+
 
         if (BuildConfig.DEBUG)
         {
-            button_toggle_lock.setVisibility(View.VISIBLE);
-            button_toggle_launcher.setVisibility(View.VISIBLE);
+            btToggleLock        = findViewById(R.id.btToggleLockTask);
+            btToggleLauncher    = findViewById(R.id.btToggleLauncher);
+
+            btToggleLock.setVisibility(View.VISIBLE);
+            btToggleLauncher.setVisibility(View.VISIBLE);
         }
-        NavigationBar.show(this);
+        if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
+        {
+            btToggleLock.setText(R.string.unpin_app);
+            btToggleLauncher.setText(R.string.restore_old_launcher);
+        }
+        NavigationBar.show(this, MySharedConfiguration);
     }
 
     public boolean hasSecondAppStarted()
@@ -162,11 +200,11 @@ public class MainActivity extends Activity
     {
         if (MyKiosk.toggleKioskMode())
         {
-            button_toggle_lock.setText(R.string.unpin_app);
+            btToggleLock.setText(R.string.unpin_app);
         }
         else
         {
-            button_toggle_lock.setText(R.string.pin_app);
+            btToggleLock.setText(R.string.pin_app);
        }
     }
 
@@ -174,12 +212,30 @@ public class MainActivity extends Activity
     {
         if (MyKiosk.toggleHomeActivity())
         {
-            button_toggle_launcher.setText(R.string.restore_old_launcher);
+            btToggleLauncher.setText(R.string.restore_old_launcher);
         }
         else
         {
-            button_toggle_launcher.setText(R.string.become_launcher);
+            btToggleLauncher.setText(R.string.become_launcher);
         }
+    }
+
+    public void toggleServiceMode(View view)
+    {
+        stopPlayerRestart(); // otherwise we start the countdown multiple times when recreate
+        if (MyKiosk.isStrictKioskModeActive())
+        {
+            MyKiosk.toggleServiceMode(true);
+            btToggleServiceMode.setText(R.string.exit_service_mode);
+            MyDeviceOwner.activateRestrictions();
+        }
+        else
+        {
+            MyKiosk.toggleServiceMode(false);
+            btToggleServiceMode.setText(R.string.enter_service_mode);
+            MyDeviceOwner.deactivateRestrictions();
+        }
+        recreate();
     }
 
     public void startGarlicPlayerDelayed()
@@ -187,22 +243,28 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (mySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !PlayerDownload.isGarlicPlayerInstalled(this))
+        if (MySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !PlayerDownload.isGarlicPlayerInstalled(this))
         {
-            button_player.setText(R.string.play);
+            btStartPlayer.setText(R.string.play);
             return;
         }
-
+        if (is_countdown_running) // prevent running countdown multiple times
+        {
+            return;
+        }
         PlayerCountDown      = new CountDownTimer(15000, 1000)
         {
             public void onTick(long millisUntilFinished)
             {
-                button_player.setText(getString(R.string.count_down, String.valueOf(millisUntilFinished / 1000)));
+                btStartPlayer.setText(getString(R.string.count_down, String.valueOf(millisUntilFinished / 1000)));
+                is_countdown_running = true;
             }
 
             public void onFinish()
             {
-                button_player.setText(R.string.play);
+                btStartPlayer.setText(R.string.play);
+                is_countdown_running = false;
+
                 startGarlicPlayer(null);
             }
 
@@ -211,8 +273,7 @@ public class MainActivity extends Activity
 
     public void handleGarlicPlayerStartTimer(View view)
     {
-        String button_text = (String) button_player.getText();
-        if (!button_text.equals(getResources().getString(R.string.play)))
+        if (!btStartPlayer.getText().equals(getResources().getString(R.string.play)))
         {
             if (PlayerCountDown != null)
             {
@@ -228,23 +289,18 @@ public class MainActivity extends Activity
     public void setContentUrl(View view)
     {
         stopPlayerRestart();
-
-        Intent intent = new Intent(this, ContentUrlActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, ContentUrlActivity.class));
     }
 
     public void configAdmin(View view)
     {
-        MyDeviceOwner.deactivateRestrictions();
         stopPlayerRestart();
-        Intent intent = new Intent(this, ActivityConfigAdmin.class);
-        startActivity(intent);
+        startActivity(new Intent(this, ActivityConfigAdmin.class));
     }
 
     public void configWiFi(View view)
     {
         stopPlayerRestart();
-        MyDeviceOwner.activateRestrictions();
         startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
     }
 
@@ -257,7 +313,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = true;
-        NavigationBar.hide(this);
+        NavigationBar.hide(this, MySharedConfiguration);
         startApp(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
     }
 
@@ -265,7 +321,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = true;
         has_player_started     = false;
-        NavigationBar.show(this);
+        NavigationBar.show(this, MySharedConfiguration);
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
     }
@@ -273,30 +329,29 @@ public class MainActivity extends Activity
     private void startApp(String package_name)
     {
         Intent intent = getPackageManager().getLaunchIntentForPackage(package_name);
-        if (intent == null)
-        {
-            showToast("The app package \"" + package_name + "\" not exist");
-            return;
-        }
         startActivity(intent);
-    }
-
-    private void showToast(String text)
-    {
-        if (BuildConfig.DEBUG)
-        {
-            Toast.makeText(this, TAG + ": " + text, Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void stopPlayerRestart()
     {
         has_second_app_started = false;
         has_player_started     = false;
+        is_countdown_running   = false;
         if (PlayerCountDown != null)
         {
             PlayerCountDown.cancel();
         }
-        button_player.setText(R.string.play);
+        btStartPlayer.setText(R.string.play);
     }
-}
+
+    private void displayInformationText(String error_text)
+    {
+        tvInformation.setText(error_text);
+        tvInformation.setVisibility(View.VISIBLE);
+    }
+
+    private void hideInformationText()
+    {
+        tvInformation.setText("");
+        tvInformation.setVisibility(View.INVISIBLE);
+    }}

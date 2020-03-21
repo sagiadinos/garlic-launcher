@@ -25,15 +25,6 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-  <CheckBox
-        android:id="@+id/cbStrictKioskUse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/strict_kiosk_use"
-        android:textColor="#FFFFFF" />
-
     <CheckBox
         android:id="@+id/cbOwnBackButton"
         android:layout_width="match_parent"

@@ -69,16 +69,11 @@ public class AppPermissions
         }
 
         // Check for overlay permission. If not enabled, request for it.
-        if (isDeviceRooted() && !isOverlayAllowed(ma))
+        if (isDeviceRooted() && !Settings.canDrawOverlays(ma))
         {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ma.getPackageName()));
             ma.startActivityForResult(intent, 12);
         }
-    }
-
-    public static boolean isOverlayAllowed(Activity ma)
-    {
-        return Settings.canDrawOverlays(ma);
     }
 
     /**
