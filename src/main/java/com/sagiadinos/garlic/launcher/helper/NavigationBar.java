@@ -51,12 +51,19 @@ public class NavigationBar
 
     }
 
+    public static void hideBackButton(Activity a)
+    {
+        a.stopService(new Intent(a, HUD.class));
+    }
+
+
     public static void show(Activity a, SharedConfiguration sc)
     {
         if (sc.hasOwnBackButton())
         {
             a.startService(new Intent(a, HUD.class));
         }
+
         a.getWindow().getDecorView()
             .setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE

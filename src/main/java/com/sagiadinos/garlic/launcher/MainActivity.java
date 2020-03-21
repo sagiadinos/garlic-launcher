@@ -39,6 +39,8 @@ import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
+import java.security.Permissions;
+
 public class MainActivity extends Activity
 {
     private boolean        has_second_app_started = false;
@@ -141,6 +143,12 @@ public class MainActivity extends Activity
             }
             btContentUri.setVisibility(View.INVISIBLE);
             btStartPlayer.setVisibility(View.INVISIBLE);
+        }
+
+        // otherwise the back button will not disappear after deactivating it in Admin config
+        if (AppPermissions.isDeviceRooted() && !MySharedConfiguration.hasOwnBackButton())
+        {
+            NavigationBar.hideBackButton(this);
         }
 
         if (MySharedConfiguration.hasActiveServicePassword())

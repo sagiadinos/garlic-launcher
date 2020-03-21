@@ -20,6 +20,7 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -65,6 +66,7 @@ public class ActivityConfigAdmin extends Activity
             MySharedConfiguration.setServicePassword(editServicePassword.getText().toString());
 
             MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
+
             finish();
         }
         catch (GarlicLauncherException e)
