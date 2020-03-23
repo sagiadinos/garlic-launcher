@@ -74,6 +74,8 @@ public class ReceiverManager
 
     public static void unregisterAllReceiver(MainActivity MainActivity)
     {
+        if (MyPlayerNotInForegroundReceiver == null)
+            return;
 
         MainActivity.unregisterReceiver(MyPlayerNotInForegroundReceiver);
         MainActivity.unregisterReceiver(MyPlayerClosedReceiver);

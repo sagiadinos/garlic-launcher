@@ -21,24 +21,24 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 
+/**
+ *  capsulate the permissions
+ */
 public class AppPermissions
 {
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
+    private static final int REQUEST_PERMISSIONS = 1;
+    private static String[] PERMISSIONS_LIST = {
             Manifest.permission.DELETE_PACKAGES,
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
 
     private static String[] binaryPaths= {
@@ -59,21 +59,52 @@ public class AppPermissions
             "/dev"
     };
 
-    public static void verifyStoragePermissions(Activity ma)
+
+    public static void onRequestPermissionsResult(Activity ma, int request_code, @NonNull String permissions[], @NonNull int[] grant_results)
     {
-        int permission = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED)
+        switch (request_code)
         {
-            ma.requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            case REQUEST_PERMISSIONS:
+                if (grant_results.length > 0)
+                {
+                    // Validate the permissions result
+                    if (hasStandardPermissions(ma))
+                    {
+                        ma.recreate();
+                    }
+                    else
+                    {
+                        ma.finish();
+                    }
+                }
+                break;
         }
+    }
 
+    public static void verifyStandardPermissions(Activity ma)
+    {
+        if (!hasStandardPermissions(ma))
+        {
+            ma.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
+        }
+    }
+
+    public static boolean hasStandardPermissions(Activity ma)
+    {
+        int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return (permissions == PackageManager.PERMISSION_GRANTED);
+    }
+
+
+    public static boolean verifyOverlayPermissions(Activity ma)
+    {
         // Check for overlay permission. If not enabled, request for it.
         if (isDeviceRooted() && !Settings.canDrawOverlays(ma))
         {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ma.getPackageName()));
             ma.startActivityForResult(intent, 12);
         }
+        return Settings.canDrawOverlays(ma);
     }
 
     /**

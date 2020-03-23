@@ -96,7 +96,7 @@ public class ActivityConfigAdmin extends Activity
 
     private void prepareVisibilityOfBackButtonOption()
     {
-        if (AppPermissions.isDeviceRooted())
+        if (AppPermissions.isDeviceRooted() && AppPermissions.verifyOverlayPermissions(this))
         {
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);

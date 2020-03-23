@@ -20,12 +20,17 @@
 package com.sagiadinos.garlic.launcher;
 
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
@@ -39,7 +44,6 @@ import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 
-import java.security.Permissions;
 
 public class MainActivity extends Activity
 {
@@ -60,15 +64,23 @@ public class MainActivity extends Activity
     private SharedConfiguration MySharedConfiguration = null;
     private KioskManager        MyKiosk               = null;
 
-     @Override
+
+    @Override
+    public void onRequestPermissionsResult(int request_code, @NonNull String permissions[], @NonNull int[] grant_results)
+    {
+        AppPermissions.onRequestPermissionsResult(this, request_code, permissions, grant_results);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
          tvInformation = findViewById(R.id.textViewInformation);
+         initDebugButtons();
          MyDeviceOwner = new DeviceOwner(this);
-         AppPermissions.verifyStoragePermissions(this);
+         AppPermissions.verifyStandardPermissions(this);
          MySharedConfiguration = new SharedConfiguration(this);
          MyKiosk              = new KioskManager(MyDeviceOwner,
                                                 new HomeLauncherManager(MyDeviceOwner, this),
@@ -83,6 +95,11 @@ public class MainActivity extends Activity
     protected void onStart()
     {
         super.onStart();
+        if (!AppPermissions.hasStandardPermissions(this))
+        {
+            displayInformationText("Launcher needs read/write permissions for storage");
+            return;
+        }
         if (MyDeviceOwner.isDeviceOwner())
         {
             hideInformationText();
@@ -177,7 +194,16 @@ public class MainActivity extends Activity
             btContentUri.setVisibility(View.VISIBLE);
         }
 
+       if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
+        {
+            btToggleLock.setText(R.string.unpin_app);
+            btToggleLauncher.setText(R.string.restore_old_launcher);
+        }
+        NavigationBar.show(this, MySharedConfiguration);
+    }
 
+    public void initDebugButtons()
+    {
         if (BuildConfig.DEBUG)
         {
             btToggleLock        = findViewById(R.id.btToggleLockTask);
@@ -186,12 +212,6 @@ public class MainActivity extends Activity
             btToggleLock.setVisibility(View.VISIBLE);
             btToggleLauncher.setVisibility(View.VISIBLE);
         }
-        if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
-        {
-            btToggleLock.setText(R.string.unpin_app);
-            btToggleLauncher.setText(R.string.restore_old_launcher);
-        }
-        NavigationBar.show(this, MySharedConfiguration);
     }
 
     public boolean hasSecondAppStarted()
@@ -231,19 +251,47 @@ public class MainActivity extends Activity
     public void toggleServiceMode(View view)
     {
         stopPlayerRestart(); // otherwise we start the countdown multiple times when recreate
-        if (MyKiosk.isStrictKioskModeActive())
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Service Login");
+        alert.setMessage("Enter your password");
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener()
         {
-            MyKiosk.toggleServiceMode(true);
-            btToggleServiceMode.setText(R.string.exit_service_mode);
-            MyDeviceOwner.activateRestrictions();
-        }
-        else
-        {
-            MyKiosk.toggleServiceMode(false);
-            btToggleServiceMode.setText(R.string.enter_service_mode);
-            MyDeviceOwner.deactivateRestrictions();
-        }
-        recreate();
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                String value = input.getText().toString();
+
+                // we need an alternative for those one who forget passwords
+                // so we get the device UUID via
+                // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                // or set something own
+                String alt_password = "heidewitzka";
+                if (value.equals(MySharedConfiguration.getServicePassword()) || value.equals(alt_password))
+                {
+                    if (MyKiosk.isStrictKioskModeActive())
+                    {
+                        MyKiosk.toggleServiceMode(true);
+                        btToggleServiceMode.setText(R.string.exit_service_mode);
+                        MyDeviceOwner.activateRestrictions();
+                    }
+                    else
+                    {
+                        MyKiosk.toggleServiceMode(false);
+                        btToggleServiceMode.setText(R.string.enter_service_mode);
+                        MyDeviceOwner.deactivateRestrictions();
+                    }
+                    recreate();
+                }
+                else
+                {
+                    startGarlicPlayerDelayed();
+                }
+            }
+        });
+        alert.show();
     }
 
     public void startGarlicPlayerDelayed()

@@ -89,7 +89,8 @@
             android:layout_height="wrap_content"
             android:onClick="configAdmin"
             android:text="@string/config_service_admin"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btConfigureWiFi"
@@ -98,7 +99,8 @@
             android:layout_height="wrap_content"
             android:onClick="configWiFi"
             android:text="@string/config_wifi"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -117,7 +119,7 @@
             android:onClick="setContentUrl"
             android:text="@string/set_content_url"
             android:textSize="24sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
 
         <Button
@@ -128,7 +130,7 @@
             android:onClick="handleGarlicPlayerStartTimer"
             android:text="@string/play"
             android:textSize="24sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
