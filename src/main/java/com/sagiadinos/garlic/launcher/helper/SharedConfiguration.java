@@ -73,13 +73,25 @@ public class SharedConfiguration
         return pref.getBoolean("is_strict_kiosk_mode", false);
     }
 
-
     public void setServicePassword(String service_mode_password) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();
         ed.putString("service_mode_password", service_mode_password);
         commit(ed);
     }
+
+    public boolean isDeviceRooted()
+    {
+        return pref.getBoolean("is_device_rooted", false);
+    }
+
+    public void setIsDeviceRooted(Boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("is_device_rooted", value);
+        commit(ed);
+    }
+
 
     public String getServicePassword()
     {

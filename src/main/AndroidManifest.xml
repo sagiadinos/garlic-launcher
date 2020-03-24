@@ -50,13 +50,11 @@
             android:name=".WatchDogService"
             android:enabled="true"
             android:exported="false" />
-
         <service android:name=".HUD">
             <intent-filter>
                 <action android:name="com.sagiadinos.garlic.launcher.HUD" />
             </intent-filter>
         </service>
-
 
         <receiver
             android:name=".receiver.AdminReceiver"
@@ -74,17 +72,28 @@
             android:name=".receiver.InForegroundReceiver"
             android:enabled="true" />
         <receiver
+            android:name=".receiver.PlayerClosedReceiver"
+            android:enabled="true" />
+        <receiver
             android:name=".receiver.SecondAppReceiver"
             android:enabled="true" />
         <receiver
             android:name=".receiver.RebootReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".receiver.PlayerClosedReceiver"
-            android:enabled="true" />
-        <receiver
             android:name=".receiver.InstallAppReceiver"
             android:enabled="true" />
+        <receiver
+            android:name=".receiver.InstalledAppReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".receiver.UsbConnectionReceiver"
             android:enabled="true">

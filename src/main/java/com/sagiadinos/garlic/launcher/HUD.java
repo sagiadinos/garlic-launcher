@@ -60,7 +60,6 @@ public class HUD extends Service
     {
         super.onCreate();
 
-
         // Starts the button overlay.
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         overlayPowerBtn = new ImageView(this);

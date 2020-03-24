@@ -26,8 +26,9 @@
     <string name="unpin_app">UnPin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_info">Garlic-player is not installed</string>
+    <string name="no_garlic_info">Garlic-player is not installed - Install via USB or activate network to download!</string>
     <string name="download_player_in_progress">Trying to download and install garlic-player - Please wait!</string>
+    <string name="install_player_in_progress">Trying install garlic-player - Please wait!</string>
     <string name="config_service_admin">Config Service Administrator</string>
     <string name="config_wifi">Config WiFi</string>
     <string name="set_content_url">Set Content Url</string>

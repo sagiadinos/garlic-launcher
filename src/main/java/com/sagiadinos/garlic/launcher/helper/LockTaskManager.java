@@ -52,7 +52,7 @@ public class LockTaskManager
 
     public void startLockTask()
     {
-        MyMainActivity.startLockTask();
+       MyMainActivity.startLockTask();
     }
 
     private boolean isLockTaskActive()

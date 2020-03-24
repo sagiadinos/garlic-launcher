@@ -62,7 +62,7 @@ public class KioskManager
             ret = true;
         }
         return ret;
-    }
+  }
 
     public void toggleServiceMode(boolean value)
     {

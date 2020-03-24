@@ -34,7 +34,7 @@ public class ReceiverManager
     public static void registerAllReceiver(MainActivity MainActivity)
     {
 
-//      AdminReceiver has default constructor and is initialized in AndroidManifest
+//      AdminReceiver for Device Owner is initialized in AndroidManifest
 
         MyPlayerNotInForegroundReceiver =  new InForegroundReceiver();
         MainActivity.registerReceiver(
@@ -62,14 +62,14 @@ public class ReceiverManager
                 MyRebootReceiver,
                 createIntentFilter("RebootReceiver")
         );
-        MyRebootReceiver.setMyActivity(MainActivity);
 
         MyInstallAppReceiver =  new InstallAppReceiver();
         MainActivity.registerReceiver(
                 MyInstallAppReceiver,
                 createIntentFilter("InstallAppReceiver")
         );
-        //   USBConnectionReceiver has default constructor and is initialized in AndroidManifest
+
+        //   USBConnectionReceiver is initialized in AndroidManifest
     }
 
     public static void unregisterAllReceiver(MainActivity MainActivity)

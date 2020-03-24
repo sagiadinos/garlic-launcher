@@ -34,11 +34,21 @@ public class PlayerDownload
     private DownloadManager         MyDownloadManager;
     private long                    download_id;
     private final String            DOWNLOAD_URL        = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
-    private final String            DOWNLOADED_FILENAME = "garlic-player.apk";
+    private static final String     DOWNLOADED_FILENAME = "garlic-player.apk";
+    private String apk_path = "";
+    private File   apk_file;
 
     public PlayerDownload(Context c)
     {
         this.ctx = c;
+        apk_path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME;
+        apk_file = new File( apk_path);
+
+    }
+
+    public String getApkPath()
+    {
+        return apk_path;
     }
 
     public static Boolean isGarlicPlayerInstalled(Context c)
@@ -46,27 +56,59 @@ public class PlayerDownload
        return Installer.isPackageInstalled(c, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
     }
 
+    public Boolean wasGarlicPlayerDownloaded()
+    {
+        if (!apk_file.exists())
+        {
+            return false;
+        }
+        return Installer.getAppNameFromPkgName(ctx, apk_file.getAbsolutePath()).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
+    }
+
+
     public void startDownload()
     {
-        removePreviousDownload();
+        removeOldApk();
         ctx.registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         MyDownloadManager = (DownloadManager) ctx.getSystemService(Context.DOWNLOAD_SERVICE);
         download_id       = MyDownloadManager.enqueue(prepareRequest());
 
     }
 
+    public void installDownloadedApp()
+    {
+        if (!apk_file.exists())
+        {
+            return;
+        }
+        // call InstallApp Broadcast
+        Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
+        intent.putExtra("apk_path", apk_path);
+        ctx.sendBroadcast(intent);
+    }
+
+    public int checkDownloadProgress()
+    {
+        return 0;
+    }
+
     private void endDownload()
     {
         ctx.unregisterReceiver(onDownloadComplete);
-        String s = Installer.getAppNameFromPkgName(ctx, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME);
-        if (s.equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
+        String s = Installer.getAppNameFromPkgName(ctx, apk_path);
+        if (wasGarlicPlayerDownloaded())
         {
-            // calll InstallApp Broadcast
-            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
-            intent.putExtra("apk_path", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME);
-            ctx.sendBroadcast(intent);
+            installDownloadedApp();
         }
 
+    }
+
+    private void removeOldApk()
+    {
+        if (apk_file.exists())
+        {
+            apk_file.delete();
+        }
     }
 
 
@@ -99,12 +141,4 @@ public class PlayerDownload
         }
     };
 
-    private void removePreviousDownload()
-    {
-        File file = new File(  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME);
-        if (file.exists())
-        {
-            file.delete();
-        }
-    }
 }

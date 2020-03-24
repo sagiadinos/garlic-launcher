@@ -42,47 +42,58 @@ import com.sagiadinos.garlic.launcher.MainActivity;
 public class Installer
 {
     private Context ctx;
-    private PackageInstaller packageInstaller;
+    private PackageInstaller MyPackageInstaller;
+
+    public static final String ACTION_INSTALL_COMPLETE
+            = "com.sagiadinos.garlic.launcher.INSTALL_COMPLETE";
 
     public Installer(Context c)
     {
         ctx = c;
-        packageInstaller  = ctx.getPackageManager().getPackageInstaller();
+        MyPackageInstaller = ctx.getPackageManager().getPackageInstaller();
     }
 
     public void installPackage(String package_path)
             throws IOException
     {
-        InputStream fileInputStream           = createInputStream(package_path);
+
+        InputStream fileInputStream            = createInputStream(package_path);
         PackageInstaller.SessionParams params  = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         String package_name                    = getAppNameFromPkgName(ctx, package_path);
-        if (package_name.equals(""))
+        if (package_name.isEmpty())
         {
             return;
         }
         params.setAppPackageName(package_name);
 
         // set params
-        int                      session_id = packageInstaller.createSession(params);
-        PackageInstaller.Session session    = packageInstaller.openSession(session_id);
+        int                      session_id = MyPackageInstaller.createSession(params);
+        PackageInstaller.Session session    = MyPackageInstaller.openSession(session_id);
         OutputStream              out       = session.openWrite(package_name, 0, -1);
 
+        int total = 0;
         byte[] buffer = new byte[65536];
         int c;
         while ((c = fileInputStream.read(buffer)) != -1)
         {
+            total += c;
             out.write(buffer, 0, c);
         }
         session.fsync(out);
         fileInputStream.close();
         out.close();
 
+
         Intent intent = new Intent(ctx, MainActivity.class);
 
         Random generator = new Random();
 
-        PendingIntent i = PendingIntent.getActivity(ctx, generator.nextInt(), intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent i = PendingIntent.getActivity(ctx, generator.nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
         session.commit(i.getIntentSender());
+
+        session.close();
+
+        return;
     }
 
     public static boolean isPackageInstalled(Context c, String targetPackage)
@@ -103,16 +114,19 @@ public class Installer
     {
         Intent intent = new Intent(ctx, ctx.getClass());
         PendingIntent sender = PendingIntent.getActivity(ctx, 0, intent, 0);
-        packageInstaller.uninstall(package_name, sender.getIntentSender());
+        MyPackageInstaller.uninstall(package_name, sender.getIntentSender());
         return true;
     }
 
     public static String getAppNameFromPkgName(Context ctx, String package_path)
     {
         PackageManager packageManager = ctx.getPackageManager();
-        PackageInfo info = packageManager.getPackageArchiveInfo(package_path, 0);
+        PackageInfo info              = packageManager.getPackageArchiveInfo(package_path, 0);
+        if (info == null)
+        {
+            return "";
+        }
 
-        assert info != null;
         return info.packageName;
     }
 

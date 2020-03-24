@@ -23,21 +23,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 
 public class RebootReceiver extends BroadcastReceiver
 {
-    MainActivity MyActivity;
-
-    public RebootReceiver()
-    {
-    }
-
-    public void setMyActivity(MainActivity act)
-    {
-        MyActivity = act;
-    }
-
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -47,11 +36,11 @@ public class RebootReceiver extends BroadcastReceiver
             return;
         }
         if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.RebootReceiver") ||
-                !context.getPackageName().equals(MyActivity.getPackageName()))
+                !context.getPackageName().equals(context.getPackageName()))
         {
             return;
         }
-        MyActivity.rebootOS(null);
+     //   DeviceOwner.reboot(context);
     }
 
 }

@@ -22,9 +22,7 @@ package com.sagiadinos.garlic.launcher.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
@@ -36,15 +34,11 @@ import com.sagiadinos.garlic.launcher.helper.Installer;
  * a software.
  *
  * ToDo: We need to implement some security here
- * so that only registered software pakages could be installed.
+ * so that only registered software packages could be installed.
  *
  */
 public class InstallAppReceiver extends BroadcastReceiver
 {
-
-    public InstallAppReceiver()
-    {
-    }
 
     @Override
     public void onReceive(Context ctx, Intent intent)
@@ -63,21 +57,10 @@ public class InstallAppReceiver extends BroadcastReceiver
             Installer MyInstaller = new Installer(ctx);
             String file_path = intent.getStringExtra("apk_path");
             MyInstaller.installPackage(file_path);
-
-            // delete downloaded files which are in player cache but not on usb
-            if (file_path != null && (file_path.contains("cache") || file_path.contains("Download")))
-            {
-                File file = new File(file_path);
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-
-         //   DeviceOwner.reboot(ctx);
         }
         catch (IOException e)
         {
-            Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
-
+            e.getStackTrace();
         }
     }
 }

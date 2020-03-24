@@ -20,7 +20,6 @@
 package com.sagiadinos.garlic.launcher;
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -33,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.helper.Network;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
@@ -43,6 +43,8 @@ import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
+
+import java.io.IOException;
 
 
 public class MainActivity extends Activity
@@ -64,7 +66,6 @@ public class MainActivity extends Activity
     private SharedConfiguration MySharedConfiguration = null;
     private KioskManager        MyKiosk               = null;
 
-
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
     {
@@ -82,19 +83,14 @@ public class MainActivity extends Activity
          MyDeviceOwner = new DeviceOwner(this);
          AppPermissions.verifyStandardPermissions(this);
          MySharedConfiguration = new SharedConfiguration(this);
-         MyKiosk              = new KioskManager(MyDeviceOwner,
+         MyKiosk               = new KioskManager(MyDeviceOwner,
                                                 new HomeLauncherManager(MyDeviceOwner, this),
                                                 new LockTaskManager(this),
                                                 MySharedConfiguration,
                                                 this
         );
 
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
+        MyDeviceOwner.deactivateRestrictions();
         if (!AppPermissions.hasStandardPermissions(this))
         {
             displayInformationText("Launcher needs read/write permissions for storage");
@@ -103,16 +99,17 @@ public class MainActivity extends Activity
         if (MyDeviceOwner.isDeviceOwner())
         {
             hideInformationText();
+            ReceiverManager.registerAllReceiver(this);
             initButtonViews();
-            initHelperClasses();
+            startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
+
+            checkForInstalledPlayer();
             startGarlicPlayerDelayed();
         }
         else
         {
             displayInformationText(getString(R.string.no_device_owner));
         }
-
-
     }
 
     @Override
@@ -125,11 +122,39 @@ public class MainActivity extends Activity
         super.onDestroy();
     }
 
-
-    private void initHelperClasses()
+    private void checkForInstalledPlayer()
     {
-        ReceiverManager.registerAllReceiver(this);
-        startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
+        if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
+        {
+            return;
+        }
+        if (Network.isConnected(MainActivity.this))
+        {
+            PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this);
+            if (MyPlayerDownload.wasGarlicPlayerDownloaded())
+            {
+                try
+                {
+//                MyPlayerDownload.installDownloadedApp();
+                    displayInformationText(getString(R.string.install_player_in_progress));
+                    Installer MyInstaller = new Installer(MainActivity.this);
+                    MyInstaller.installPackage(MyPlayerDownload.getApkPath());
+                }
+                catch (IOException e)
+                {
+                    displayInformationText(e.getMessage());
+                }
+            }
+            else
+            {
+                MyPlayerDownload.startDownload();
+                displayInformationText(getString(R.string.download_player_in_progress));
+            }
+        }
+        else
+        {
+            displayInformationText(getString(R.string.no_garlic_info));
+        }
     }
 
     private void initButtonViews()
@@ -148,22 +173,12 @@ public class MainActivity extends Activity
         }
         else
         {
-            if (Network.isConnected(MainActivity.this))
-            {
-                PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this);
-                MyPlayerDownload.startDownload();
-                displayInformationText(getString(R.string.download_player_in_progress));
-            }
-            else
-            {
-                displayInformationText(getString(R.string.no_garlic_info));
-            }
             btContentUri.setVisibility(View.INVISIBLE);
             btStartPlayer.setVisibility(View.INVISIBLE);
         }
 
         // otherwise the back button will not disappear after deactivating it in Admin config
-        if (AppPermissions.isDeviceRooted() && !MySharedConfiguration.hasOwnBackButton())
+        if (MySharedConfiguration.isDeviceRooted() && !MySharedConfiguration.hasOwnBackButton())
         {
             NavigationBar.hideBackButton(this);
         }
@@ -194,13 +209,15 @@ public class MainActivity extends Activity
             btContentUri.setVisibility(View.VISIBLE);
         }
 
-       if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
+        if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
         {
             btToggleLock.setText(R.string.unpin_app);
             btToggleLauncher.setText(R.string.restore_old_launcher);
         }
         NavigationBar.show(this, MySharedConfiguration);
     }
+
+
 
     public void initDebugButtons()
     {
@@ -358,11 +375,6 @@ public class MainActivity extends Activity
     {
         stopPlayerRestart();
         startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
-    }
-
-    public void rebootOS(View view)
-    {
-        MyDeviceOwner.reboot();
     }
 
     public void startGarlicPlayer(View view)

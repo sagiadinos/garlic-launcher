@@ -46,8 +46,8 @@ import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
  */
 public class DeviceOwner
 {
-    private DevicePolicyManager dpm;
-    private ComponentName       deviceAdmin;
+    private DevicePolicyManager MyDevicePolicyManager;
+    private ComponentName       MyDeviceAdmin;
     private Context             ctx;
 
     public static final String GARLIC_LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
@@ -55,10 +55,10 @@ public class DeviceOwner
 
     public DeviceOwner(Context c)
     {
-        ctx         = c;
-        deviceAdmin = new ComponentName(ctx, AdminReceiver.class);
-        dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (deviceAdmin == null || dpm == null)
+        ctx                   = c;
+        MyDeviceAdmin         = new ComponentName(ctx, AdminReceiver.class);
+        MyDevicePolicyManager = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (MyDeviceAdmin == null || MyDevicePolicyManager == null)
         {
             showToast("handle device owner is null");
             return;
@@ -80,42 +80,42 @@ public class DeviceOwner
 
     public void activateRestrictions()
     {
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_ADD_USER);
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_REMOVE_USER);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_ADD_USER);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
-        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
+        MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_FUN);
    }
 
     public void deactivateRestrictions()
     {
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_ADD_USER);
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_REMOVE_USER);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_ADD_USER);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
-        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
+        MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_FUN);
     }
 
     public boolean isLockTaskPermitted()
     {
-        return dpm.isLockTaskPermitted(ctx.getPackageName());
+        return MyDevicePolicyManager.isLockTaskPermitted(ctx.getPackageName());
     }
 
     public boolean isAdminActive()
     {
-        return dpm.isAdminActive(deviceAdmin);
+        return MyDevicePolicyManager.isAdminActive(MyDeviceAdmin);
     }
 
     public boolean isDeviceOwner()
     {
         String s = ctx.getPackageName();
-        return dpm.isDeviceOwnerApp(s);
+        return MyDevicePolicyManager.isDeviceOwnerApp(s);
     }
 
     public static boolean isDeviceOwner(Context ctx)
@@ -132,7 +132,7 @@ public class DeviceOwner
     {
         if (isAdminActive())
         {
-            dpm.reboot(deviceAdmin);
+            MyDevicePolicyManager.reboot(MyDeviceAdmin);
         }
         else
         {
@@ -152,7 +152,7 @@ public class DeviceOwner
     public void addPersistentPreferredActivity(IntentFilter intentFilter)
     {
         ComponentName activity = new ComponentName(ctx, MainActivity.class);
-        dpm.addPersistentPreferredActivity(deviceAdmin, intentFilter, activity);
+        MyDevicePolicyManager.addPersistentPreferredActivity(MyDeviceAdmin, intentFilter, activity);
 
     }
 
@@ -160,7 +160,7 @@ public class DeviceOwner
     {
         if (isAdminActive())
         {
-            dpm.clearPackagePersistentPreferredActivities(deviceAdmin, ctx.getPackageName());
+            MyDevicePolicyManager.clearPackagePersistentPreferredActivities(MyDeviceAdmin, ctx.getPackageName());
         }
         else
         {
@@ -176,13 +176,12 @@ public class DeviceOwner
     {
         if (second_app_name.equals(""))
         {
-            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME});
-
+            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), ctx.getPackageName()+".ActivityConfigAdmin", GARLIC_PLAYER_PACKAGE_NAME});
         }
         else
         {
             // Todo Clear or add
-            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, second_app_name});
+            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, second_app_name});
         }
     }
 
