@@ -97,8 +97,8 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
 
         File player_apk = new File(path + "/garlic-player.apk");
-        String s = Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath());
-        if (checkAccessibility(player_apk)  && s.equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
+        if (checkAccessibility(player_apk) &&
+                Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
         {
             ctx.sendBroadcast(createIntentForPlayerApk(player_apk));
         }
