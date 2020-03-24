@@ -32,7 +32,6 @@ public class PlayerDownload
 {
     private Context                 ctx;
     private DownloadManager         MyDownloadManager;
-    private DownloadManager.Request MyRequest;
     private long                    download_id;
     private final String            DOWNLOAD_URL        = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
     private final String            DOWNLOADED_FILENAME = "garlic-player.apk";

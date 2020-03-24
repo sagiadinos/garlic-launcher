@@ -19,13 +19,10 @@
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
 import com.sagiadinos.garlic.launcher.HUD;
-
-import java.security.Permission;
 
 /**
  * class to handle the show/hide of the Navigation bar

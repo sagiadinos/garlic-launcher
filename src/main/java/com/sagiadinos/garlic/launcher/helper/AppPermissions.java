@@ -60,7 +60,7 @@ public class AppPermissions
     };
 
 
-    public static void onRequestPermissionsResult(Activity ma, int request_code, @NonNull String permissions[], @NonNull int[] grant_results)
+    public static void onRequestPermissionsResult(Activity ma, int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
     {
         switch (request_code)
         {
