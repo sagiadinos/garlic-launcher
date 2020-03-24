@@ -26,7 +26,10 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 /**
  *  Unfortunately subclassing Application class with ActivityLifecycleCallbacks implemented
@@ -53,37 +56,37 @@ public class GarlicLauncherApplication extends Application implements Applicatio
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle bundle)
+    public void onActivityCreated(@NotNull Activity activity, Bundle bundle)
     {
         // had to be declared
     }
 
     @Override
-    public void onActivityStarted(Activity activity)
+    public void onActivityStarted(@NotNull Activity activity)
     {
         // had to be declared
     }
 
     @Override
-    public void onActivityStopped(Activity activity)
+    public void onActivityStopped(@NotNull Activity activity)
     {
         // had to be declared
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle bundle)
+    public void onActivitySaveInstanceState(@NotNull Activity activity, @NotNull Bundle bundle)
     {
         // had to be declared
     }
 
     @Override
-    public void onActivityDestroyed(Activity activity)
+    public void onActivityDestroyed(@NotNull Activity activity)
     {
         // had to be declared
     }
 
     @Override
-    public void onActivityResumed(Activity activity)
+    public void onActivityResumed(@NotNull Activity activity)
     {
         foreground_activity = new WeakReference<Context>(activity);
         if (BuildConfig.DEBUG)
@@ -95,7 +98,7 @@ public class GarlicLauncherApplication extends Application implements Applicatio
     {
         String class_name_activity = activity.getClass().getCanonicalName();
         if (foreground_activity != null &&
-                foreground_activity.get().getClass().getCanonicalName().equals(class_name_activity))
+                Objects.equals(foreground_activity.get().getClass().getCanonicalName(), class_name_activity))
         {
             foreground_activity = null;
         }

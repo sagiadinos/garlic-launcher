@@ -66,7 +66,7 @@ public class MainActivity extends Activity
 
 
     @Override
-    public void onRequestPermissionsResult(int request_code, @NonNull String permissions[], @NonNull int[] grant_results)
+    public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
     {
         AppPermissions.onRequestPermissionsResult(this, request_code, permissions, grant_results);
     }
