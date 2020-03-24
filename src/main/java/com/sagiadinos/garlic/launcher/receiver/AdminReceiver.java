@@ -1,4 +1,4 @@
-/*************************************************************************************
+/*
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
@@ -15,7 +15,7 @@
 
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *************************************************************************************/
+ */
 
 package com.sagiadinos.garlic.launcher.receiver;
 
@@ -24,13 +24,14 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
-import com.sagiadinos.garlic.launcher.helper.KioskManager;
+
+import org.jetbrains.annotations.NotNull;
 
 
 public class AdminReceiver extends DeviceAdminReceiver
 {
     @Override
-    public void onEnabled(Context ctx, Intent intent)
+    public void onEnabled(@NotNull Context ctx, @NotNull Intent intent)
     {
         // restart MainActivity
         Intent a = new Intent(ctx, MainActivity.class);
