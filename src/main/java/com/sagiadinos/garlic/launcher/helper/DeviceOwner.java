@@ -40,17 +40,18 @@ import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
  *  for removing
  *  adb shell dpm remove-active-admin com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
  *
+ * or if root deviced
+ * adb shell  "su -c 'am broadcast -a android.intent.action.MASTER_CLEAR'"
  *
  */
 public class DeviceOwner
 {
     private DevicePolicyManager dpm;
     private ComponentName       deviceAdmin;
-    private Context             ctx               = null;
+    private Context             ctx;
 
     public static final String GARLIC_LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String GARLIC_PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
-    public static final String QT_TEST_PACKAGE_NAME = "com.sagiadinos.garlic.qttest";
 
     public DeviceOwner(Context c)
     {
@@ -79,7 +80,7 @@ public class DeviceOwner
 
     public void activateRestrictions()
     {
- /*       dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
@@ -87,11 +88,11 @@ public class DeviceOwner
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
         dpm.addUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
-   */ }
+   }
 
     public void deactivateRestrictions()
     {
-/*        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
+        dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_CONFIG_CREDENTIALS);
 
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_REMOVE_USER);
@@ -99,7 +100,7 @@ public class DeviceOwner
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
         dpm.clearUserRestriction(deviceAdmin, UserManager.DISALLOW_FUN);
- */   }
+    }
 
     public boolean isLockTaskPermitted()
     {
@@ -119,8 +120,7 @@ public class DeviceOwner
 
     public static boolean isDeviceOwner(Context ctx)
     {
-        DevicePolicyManager dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName       deviceAdmin = new ComponentName(ctx, AdminReceiver.class);
+        DevicePolicyManager dpm = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if (dpm == null)
         {
             return false;
@@ -149,7 +149,6 @@ public class DeviceOwner
         }
     }
 
-
     public void addPersistentPreferredActivity(IntentFilter intentFilter)
     {
         ComponentName activity = new ComponentName(ctx, MainActivity.class);
@@ -177,13 +176,13 @@ public class DeviceOwner
     {
         if (second_app_name.equals(""))
         {
-            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, QT_TEST_PACKAGE_NAME});
+            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME});
 
         }
         else
         {
             // Todo Clear or add
-            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, QT_TEST_PACKAGE_NAME, second_app_name});
+            dpm.setLockTaskPackages(deviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, second_app_name});
         }
     }
 
