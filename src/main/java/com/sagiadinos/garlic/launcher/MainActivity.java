@@ -177,12 +177,6 @@ public class MainActivity extends Activity
             btStartPlayer.setVisibility(View.INVISIBLE);
         }
 
-        // otherwise the back button will not disappear after deactivating it in Admin config
-        if (MySharedConfiguration.isDeviceRooted() && !MySharedConfiguration.hasOwnBackButton())
-        {
-            NavigationBar.hideBackButton(this);
-        }
-
         if (MySharedConfiguration.hasActiveServicePassword())
         {
             btToggleServiceMode.setVisibility(View.VISIBLE);

@@ -20,6 +20,7 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -71,9 +72,8 @@ public class ActivityConfigAdmin extends Activity
             checkServicePassword();
             MySharedConfiguration.toggleActiveServicePassword(cbActiveServicePassword.isChecked());
             MySharedConfiguration.setServicePassword(editServicePassword.getText().toString());
-
             MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
-
+            toggleOwnBackButton(cbOwnBackButton.isChecked()); // activate BackButton
             finish();
         }
         catch (GarlicLauncherException e)
@@ -86,6 +86,19 @@ public class ActivityConfigAdmin extends Activity
     public void closeActivity(View view)
     {
         finish();
+    }
+
+    private void toggleOwnBackButton(Boolean checked)
+    {
+        if (cbOwnBackButton.isChecked())
+        {
+            startService(new Intent(this, HUD.class));
+        }
+        else
+        {
+            stopService(new Intent(this, HUD.class));
+        }
+
     }
 
     public void onServicePassWordClicked(View view)
@@ -108,6 +121,7 @@ public class ActivityConfigAdmin extends Activity
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);
             cbOwnBackButton.setChecked(MySharedConfiguration.hasOwnBackButton());
+
         }
         else
         {
