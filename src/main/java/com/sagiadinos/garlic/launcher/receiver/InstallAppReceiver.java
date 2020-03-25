@@ -55,8 +55,7 @@ public class InstallAppReceiver extends BroadcastReceiver
         try
         {
             Installer MyInstaller = new Installer(ctx);
-            String file_path = intent.getStringExtra("apk_path");
-            MyInstaller.installPackage(file_path);
+            MyInstaller.installPackage(intent.getStringExtra("apk_path"));
         }
         catch (IOException e)
         {

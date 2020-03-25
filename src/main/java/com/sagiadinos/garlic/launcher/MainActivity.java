@@ -22,14 +22,18 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.helper.Installer;
@@ -65,6 +69,8 @@ public class MainActivity extends Activity
     private DeviceOwner         MyDeviceOwner          = null;
     private SharedConfiguration MySharedConfiguration = null;
     private KioskManager        MyKiosk               = null;
+
+    private final String            PLAYER_DOWNLOAD_URL        = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -124,32 +130,25 @@ public class MainActivity extends Activity
 
     private void checkForInstalledPlayer()
     {
-        if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
+        if (Installer.isGarlicPlayerInstalled(MainActivity.this))
         {
             return;
         }
         if (Network.isConnected(MainActivity.this))
         {
-            PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this);
+            PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this, (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE));
+
             if (MyPlayerDownload.wasGarlicPlayerDownloaded())
             {
-                try
-                {
-//                MyPlayerDownload.installDownloadedApp();
-                    displayInformationText(getString(R.string.install_player_in_progress));
-                    Installer MyInstaller = new Installer(MainActivity.this);
-                    MyInstaller.installPackage(MyPlayerDownload.getApkPath());
-                }
-                catch (IOException e)
-                {
-                    displayInformationText(e.getMessage());
-                }
+                MyPlayerDownload.installDownloadedApp();
+                displayInformationText(getString(R.string.install_player_in_progress));
             }
             else
             {
-                MyPlayerDownload.startDownload();
+                MyPlayerDownload.addDownloadToQueue(new DownloadManager.Request(Uri.parse(PLAYER_DOWNLOAD_URL)));
+                MyPlayerDownload.startDownload((ProgressBar) findViewById(R.id.progressDownload));
                 displayInformationText(getString(R.string.download_player_in_progress));
-            }
+           }
         }
         else
         {
@@ -165,7 +164,7 @@ public class MainActivity extends Activity
         btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
         Button btContentUri  = findViewById(R.id.btSetContentURI);
 
-        if (PlayerDownload.isGarlicPlayerInstalled(MainActivity.this))
+        if (Installer.isGarlicPlayerInstalled(MainActivity.this))
         {
             btContentUri.setVisibility(View.VISIBLE);
             btStartPlayer.setVisibility(View.VISIBLE);
@@ -310,7 +309,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (MySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !PlayerDownload.isGarlicPlayerInstalled(this))
+        if (MySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !Installer.isGarlicPlayerInstalled(this))
         {
             btStartPlayer.setText(R.string.play);
             return;

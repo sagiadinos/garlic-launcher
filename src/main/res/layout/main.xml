@@ -75,6 +75,15 @@
         android:textSize="24sp"
         android:visibility="invisible" />
 
+    <ProgressBar
+        android:id="@+id/progressDownload"
+        style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="1"
+        android:visibility="invisible" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

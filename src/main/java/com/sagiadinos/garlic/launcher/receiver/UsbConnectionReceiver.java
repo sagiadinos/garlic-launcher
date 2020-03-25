@@ -31,7 +31,6 @@ import android.util.Log;
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.Installer;
-import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
 import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
@@ -100,7 +99,15 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         if (checkAccessibility(player_apk) &&
                 Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
         {
-            ctx.sendBroadcast(createIntentForPlayerApk(player_apk));
+            Installer MyInstaller = new Installer(ctx);
+            try
+            {
+                MyInstaller.installPackage(player_apk.getAbsolutePath());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -129,7 +136,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
             // Todo later: set time and time zone
 
-            if (!MyApplication.isOnForeground() && PlayerDownload.isGarlicPlayerInstalled(ctx))
+            if (!MyApplication.isOnForeground() && Installer.isGarlicPlayerInstalled(ctx))
             {
                 ctx.sendBroadcast(createIntentForConfigXml(file));
             }
@@ -149,13 +156,6 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         Intent intent = new Intent("com.sagiadinos.garlic.player.java.ConfigReceiver");
         intent.putExtra("config_path", file.getAbsolutePath());
-        return intent;
-    }
-
-    private Intent createIntentForPlayerApk(File file)
-    {
-        Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
-        intent.putExtra("apk_path", file.getAbsolutePath());
         return intent;
     }
 

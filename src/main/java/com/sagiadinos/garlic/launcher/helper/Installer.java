@@ -53,6 +53,11 @@ public class Installer
         MyPackageInstaller = ctx.getPackageManager().getPackageInstaller();
     }
 
+    public static Boolean isGarlicPlayerInstalled(Context c)
+    {
+        return isPackageInstalled(c, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
+    }
+
     public void installPackage(String package_path)
             throws IOException
     {

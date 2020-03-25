@@ -18,11 +18,12 @@ public class InstalledAppReceiver extends BroadcastReceiver
         {
             return;
         }
-        if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.InstalledAppReceiver") ||
-                !context.getPackageName().equals(DeviceOwner.GARLIC_LAUNCHER_PACKAGE_NAME))
+        if (intent.getAction() == Intent.ACTION_PACKAGE_ADDED ||
+                intent.getAction() == Intent.ACTION_PACKAGE_REMOVED ||
+                intent.getAction() == Intent.ACTION_PACKAGE_CHANGED
+            )
         {
-            return;
+            DeviceOwner.reboot(context);
         }
-        DeviceOwner.reboot(context);
     }
 }
