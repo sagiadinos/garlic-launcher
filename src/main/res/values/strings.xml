@@ -26,7 +26,7 @@
     <string name="unpin_app">UnPin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_info">Garlic-player is not installed - Install via USB or activate network to download!</string>
+    <string name="no_garlic_no_network">Player is not installed and there is no network- Install via USB or activate network for an automatic download!</string>
     <string name="download_player_in_progress">Trying to download and install garlic-player - Please wait!</string>
     <string name="install_player_in_progress">Trying install garlic-player - Please wait!</string>
     <string name="config_service_admin">Config Service Administrator</string>
@@ -43,4 +43,8 @@
     <string name="cancel">Cancel</string>
     <string name="unknown_error">unknown error</string>
     <string name="missing_password">There is no password set!</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

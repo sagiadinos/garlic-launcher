@@ -32,7 +32,7 @@
         android:layout_marginTop="20dp"
         android:text="Content Url of the Smil-Index"
         android:textAlignment="center"
-        android:textColor="#FFFFFF"
+        android:textColor="#333333"
         android:textSize="14sp" />
 
     <EditText
@@ -42,7 +42,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="http://"
-        android:textColor="#FFFFFF" />
+        android:textColor="#333333" />
 
     <Button
         android:id="@+id/buttonSetContentUrl"

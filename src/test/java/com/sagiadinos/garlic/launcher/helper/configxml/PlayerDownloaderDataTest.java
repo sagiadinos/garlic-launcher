@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Normaly testing getter setter classes is ridiculous, but this was the
  * easiest introduction to Android testing. ;-)
  */
-class NetworkDataTest
+class PlayerDownloaderDataTest
 {
 
     @Test

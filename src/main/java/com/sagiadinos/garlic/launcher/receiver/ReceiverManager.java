@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import com.sagiadinos.garlic.launcher.MainActivity;
 
@@ -68,6 +69,8 @@ public class ReceiverManager
                 MyInstallAppReceiver,
                 createIntentFilter("InstallAppReceiver")
         );
+
+
 
         //   USBConnectionReceiver is initialized in AndroidManifest
     }

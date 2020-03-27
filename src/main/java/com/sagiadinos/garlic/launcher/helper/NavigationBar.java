@@ -22,7 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
-import com.sagiadinos.garlic.launcher.HUD;
+import com.sagiadinos.garlic.launcher.services.HUD;
 
 /**
  * class to handle the show/hide of the Navigation bar

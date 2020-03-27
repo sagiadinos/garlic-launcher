@@ -23,6 +23,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
@@ -55,7 +56,17 @@ public class InstallAppReceiver extends BroadcastReceiver
         try
         {
             Installer MyInstaller = new Installer(ctx);
-            MyInstaller.installPackage(intent.getStringExtra("apk_path"));
+            String file_path      = intent.getStringExtra("apk_path");
+            MyInstaller.installPackage(file_path);
+
+            // delete downloaded files which are in player cache but not on usb or Download dir
+            if (file_path != null && file_path.contains("cache"))
+            {
+                File file = new File(file_path);
+
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
         }
         catch (IOException e)
         {

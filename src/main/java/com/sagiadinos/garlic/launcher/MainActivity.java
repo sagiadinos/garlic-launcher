@@ -22,13 +22,14 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+
+
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
@@ -36,10 +37,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
-import com.sagiadinos.garlic.launcher.helper.Network;
-import com.sagiadinos.garlic.launcher.helper.PlayerDownload;
+import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
@@ -47,9 +46,7 @@ import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
-
-import java.io.IOException;
-
+import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 public class MainActivity extends Activity
 {
@@ -70,7 +67,6 @@ public class MainActivity extends Activity
     private SharedConfiguration MySharedConfiguration = null;
     private KioskManager        MyKiosk               = null;
 
-    private final String            PLAYER_DOWNLOAD_URL        = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -110,7 +106,6 @@ public class MainActivity extends Activity
             startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
 
             checkForInstalledPlayer();
-            startGarlicPlayerDelayed();
         }
         else
         {
@@ -128,33 +123,27 @@ public class MainActivity extends Activity
         super.onDestroy();
     }
 
+    private void checkForNetwork()
+    {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ProgressBar DownloadProgressBar = (ProgressBar) findViewById(R.id.progressDownload);
+        DownloadProgressBar.setVisibility(View.VISIBLE);
+        DownloadProgressBar.setProgress(0);
+
+        assert connectivityManager != null;
+        connectivityManager.registerDefaultNetworkCallback(new PlayerDownloader(this, DownloadProgressBar, tvInformation));
+    }
+
     private void checkForInstalledPlayer()
     {
-        if (Installer.isGarlicPlayerInstalled(MainActivity.this))
+        if (MySharedConfiguration.isPlayerInstalled())
         {
+            startGarlicPlayerDelayed();
             return;
         }
-        if (Network.isConnected(MainActivity.this))
-        {
-            PlayerDownload MyPlayerDownload = new PlayerDownload(MainActivity.this, (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE));
-
-            if (MyPlayerDownload.wasGarlicPlayerDownloaded())
-            {
-                MyPlayerDownload.installDownloadedApp();
-                displayInformationText(getString(R.string.install_player_in_progress));
-            }
-            else
-            {
-                MyPlayerDownload.addDownloadToQueue(new DownloadManager.Request(Uri.parse(PLAYER_DOWNLOAD_URL)));
-                MyPlayerDownload.startDownload((ProgressBar) findViewById(R.id.progressDownload));
-                displayInformationText(getString(R.string.download_player_in_progress));
-           }
-        }
-        else
-        {
-            displayInformationText(getString(R.string.no_garlic_info));
-        }
-    }
+        checkForNetwork();
+        displayInformationText(getString(R.string.no_garlic_no_network));
+   }
 
     private void initButtonViews()
     {
@@ -164,7 +153,7 @@ public class MainActivity extends Activity
         btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
         Button btContentUri  = findViewById(R.id.btSetContentURI);
 
-        if (Installer.isGarlicPlayerInstalled(MainActivity.this))
+        if (MySharedConfiguration.isPlayerInstalled())
         {
             btContentUri.setVisibility(View.VISIBLE);
             btStartPlayer.setVisibility(View.VISIBLE);
@@ -209,7 +198,6 @@ public class MainActivity extends Activity
         }
         NavigationBar.show(this, MySharedConfiguration);
     }
-
 
 
     public void initDebugButtons()
@@ -309,7 +297,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (MySharedConfiguration.getSmilIndex("").isEmpty() || !Network.isConnected(this) || !Installer.isGarlicPlayerInstalled(this))
+        if (MySharedConfiguration.getSmilIndex("").isEmpty() )
         {
             btStartPlayer.setText(R.string.play);
             return;
@@ -361,7 +349,8 @@ public class MainActivity extends Activity
     public void configAdmin(View view)
     {
         stopPlayerRestart();
-        startActivity(new Intent(this, ActivityConfigAdmin.class));
+        startActivity(new Intent(
+this, ActivityConfigAdmin.class));
     }
 
     public void configWiFi(View view)
@@ -390,6 +379,11 @@ public class MainActivity extends Activity
     private void startApp(String package_name)
     {
         Intent intent = getPackageManager().getLaunchIntentForPackage(package_name);
+        if (intent == null)
+        {
+            displayInformationText(package_name + " do not exist");
+            return;
+        }
         startActivity(intent);
     }
 

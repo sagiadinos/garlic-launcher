@@ -23,8 +23,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.widget.Toast;
-
 
 import org.jetbrains.annotations.NotNull;
 
@@ -89,8 +87,6 @@ public class GarlicLauncherApplication extends Application implements Applicatio
     public void onActivityResumed(@NotNull Activity activity)
     {
         foreground_activity = new WeakReference<Context>(activity);
-        if (BuildConfig.DEBUG)
-            showToast("Launcher onActivityResumed");
     }
 
     @Override
@@ -102,17 +98,10 @@ public class GarlicLauncherApplication extends Application implements Applicatio
         {
             foreground_activity = null;
         }
-        if (BuildConfig.DEBUG)
-            showToast("Launcher onActivityPaused");
     }
 
     public boolean isOnForeground()
     {
         return (foreground_activity != null);
-    }
-
-    private void showToast(String text)
-    {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

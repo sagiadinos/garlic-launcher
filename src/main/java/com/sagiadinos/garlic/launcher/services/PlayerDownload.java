@@ -16,17 +16,23 @@
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.sagiadinos.garlic.launcher.helper;
+package com.sagiadinos.garlic.launcher.services;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.helper.Installer;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,35 +45,46 @@ public class PlayerDownload
     private ProgressBar             MyProgressbar = null;
     private long                    download_id;
     private static final String     DOWNLOADED_FILENAME = "garlic-player.apk";
-    private String apk_path = "";
-    private File   apk_file;
-    private Handler MyHandler = new Handler();
-    private boolean isProgressCheckerRunning = false;
+    private static final String     DOWNLOAD_PREFIX     = "tmp_";
+    private String                  apk_path;
+    private File                    apk_file = null;
+    private Handler                 MyHandler        = new Handler();
+    private boolean                 isDownloadActive = false;
 
     public PlayerDownload(Context c, DownloadManager dlm)
     {
-        this.ctx = c;
-        apk_path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME;
-        apk_file = new File( apk_path);
+        this.ctx           = c;
+        apk_path          = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME;
         MyDownloadManager = dlm;
     }
 
-    public Boolean wasGarlicPlayerDownloaded()
+    public String getApkPath()
     {
-        if (!apk_file.exists())
+        return apk_path;
+    }
+
+    public Boolean isGarlicPlayerAlreadyDownloaded()
+    {
+        if (!Installer.getAppNameFromPkgName(ctx, apk_path).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
         {
+            // this means we could have an corrupt apk, so delete it
+            removeOldApk();
             return false;
         }
-        return Installer.getAppNameFromPkgName(ctx, apk_file.getAbsolutePath()).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
+        return true;
     }
 
     public void addDownloadToQueue(DownloadManager.Request dmr)
     {
+        if (isDownloadActive)
+        {
+            return;
+        }
         MyRequest = dmr;
         MyRequest.setTitle("garlic-player")
-                .setDescription("Downloading")
+                .setDescription("Downloading Media Player")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, DOWNLOADED_FILENAME)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, DOWNLOAD_PREFIX + DOWNLOADED_FILENAME)
                 .setRequiresCharging(false)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true);
@@ -81,11 +98,27 @@ public class PlayerDownload
             return;
         }
         MyProgressbar = pb;
-        removeOldApk();
-    //    ctx.registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    //    download_id       = MyDownloadManager.enqueue(MyRequest);
-   //-    startProgressChecker();
+        ctx.registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        download_id       = MyDownloadManager.enqueue(MyRequest);
+        startProgressChecker();
     }
+
+    public boolean isPendingDownload()
+    {
+        DownloadManager.Query query = new DownloadManager.Query();
+        Cursor cursor = MyDownloadManager.query(query);
+        if (cursor.moveToFirst())
+        {
+            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            if (status == DownloadManager.STATUS_PENDING || status == DownloadManager.STATUS_RUNNING)
+            {
+                return true;
+            }
+        }
+        cursor.close();
+        return false;
+    }
+
 
     private Runnable progressChecker = new Runnable()
     {
@@ -94,11 +127,12 @@ public class PlayerDownload
         {
             try
             {
+                isDownloadActive  = true;
                 checkProgress();
             }
             finally
             {
-                MyHandler.postDelayed(progressChecker, 1000);
+                MyHandler.postDelayed(progressChecker, 5000);
             }
         }
     };
@@ -109,18 +143,26 @@ public class PlayerDownload
         try
         {
             MyInstaller.installPackage(apk_path);
+            removeOldApk();
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-    }
+
+        // call InstallApp Broadcast
+/*        Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
+        intent.putExtra("apk_path", apk_path);
+        ctx.sendBroadcast(intent);
+ */   }
 
     private void endDownload()
     {
         ctx.unregisterReceiver(onDownloadComplete);
         stopProgressChecker();
-        if (wasGarlicPlayerDownloaded())
+        renameDownloadedFile();
+
+        if (isGarlicPlayerAlreadyDownloaded())
         {
             installDownloadedApp();
         }
@@ -129,21 +171,29 @@ public class PlayerDownload
 
     private void removeOldApk()
     {
-        if (apk_file.exists())
+        if (apk_file != null && !apk_file.exists())
         {
+            //noinspection ResultOfMethodCallIgnored
             apk_file.delete();
         }
+    }
+
+    private void renameDownloadedFile()
+    {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOAD_PREFIX + DOWNLOADED_FILENAME);
+        //noinspection ResultOfMethodCallIgnored
+        file.renameTo(new File(apk_path));
+        apk_file = new File(apk_path);
     }
 
 
     private void startProgressChecker()
     {
-        if (!isProgressCheckerRunning)
+        if (!isDownloadActive)
         {
             progressChecker.run();
             MyProgressbar.setProgress(0);
             MyProgressbar.setVisibility(View.VISIBLE);
-            isProgressCheckerRunning = true;
         }
     }
 
@@ -151,8 +201,10 @@ public class PlayerDownload
     {
         MyHandler.removeCallbacks(progressChecker);
         MyProgressbar.setVisibility(View.INVISIBLE);
-        isProgressCheckerRunning = false;
+        isDownloadActive = false;
     }
+
+
 
     private void checkProgress()
     {
@@ -166,11 +218,11 @@ public class PlayerDownload
         }
         do
         {
-            double total       = cursor.getDouble(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-            double downloaded  = cursor.getDouble(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            long total       = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+            long downloaded  = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
             if (total > 0)
             {
-                double per_cent =  100 / total * downloaded;
+                long per_cent = 100L * downloaded / total; // 100L for long otherwise we risk an overflow an negative values
                 MyProgressbar.setProgress((int) per_cent);
             }
         } while (cursor.moveToNext());
@@ -188,5 +240,36 @@ public class PlayerDownload
             }
         }
     };
+
+
+    public String getFileNameFromUri(Uri uri)
+    {
+        String result = null;
+        if (uri.getScheme().equals("content"))
+        {
+            Cursor cursor = ctx.getContentResolver().query(uri, null, null, null, null);
+            try
+            {
+                if (cursor != null && cursor.moveToFirst())
+                {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            }
+            finally
+            {
+                cursor.close();
+            }
+        }
+        if (result == null)
+        {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1)
+            {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
 
 }

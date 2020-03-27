@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.services.HUD;
 
 import java.util.Objects;
 

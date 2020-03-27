@@ -43,7 +43,7 @@ public class Installer
 {
     private Context ctx;
     private PackageInstaller MyPackageInstaller;
-
+    private PackageInstaller.Session session;
     public static final String ACTION_INSTALL_COMPLETE
             = "com.sagiadinos.garlic.launcher.INSTALL_COMPLETE";
 
@@ -52,6 +52,7 @@ public class Installer
         ctx = c;
         MyPackageInstaller = ctx.getPackageManager().getPackageInstaller();
     }
+
 
     public static Boolean isGarlicPlayerInstalled(Context c)
     {
@@ -73,7 +74,7 @@ public class Installer
 
         // set params
         int                      session_id = MyPackageInstaller.createSession(params);
-        PackageInstaller.Session session    = MyPackageInstaller.openSession(session_id);
+        session                             = MyPackageInstaller.openSession(session_id);
         OutputStream              out       = session.openWrite(package_name, 0, -1);
 
         int total = 0;
@@ -88,16 +89,21 @@ public class Installer
         fileInputStream.close();
         out.close();
 
-
-        Intent intent = new Intent(ctx, MainActivity.class);
-
-        Random generator = new Random();
-
-        PendingIntent i = PendingIntent.getActivity(ctx, generator.nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        session.commit(i.getIntentSender());
-
+        // to commit without re-creating MainActivity
+        // we need to reboot
+        session.commit(PendingIntent.getBroadcast(ctx, session_id, new Intent(ACTION_INSTALL_COMPLETE), 0).getIntentSender());
         session.close();
+    }
 
+    public void uninstall(String package_name)
+    {
+        if (!isPackageInstalled(ctx, package_name))
+        {
+            return;
+        }
+        Intent intent = new Intent(ctx, ctx.getClass());
+        PendingIntent sender = PendingIntent.getActivity(ctx, 0, intent, 0);
+        MyPackageInstaller.uninstall(package_name, sender.getIntentSender());
         return;
     }
 
@@ -112,14 +118,6 @@ public class Installer
         {
             return false;
         }
-        return true;
-    }
-
-    public boolean uninstall(String package_name)
-    {
-        Intent intent = new Intent(ctx, ctx.getClass());
-        PendingIntent sender = PendingIntent.getActivity(ctx, 0, intent, 0);
-        MyPackageInstaller.uninstall(package_name, sender.getIntentSender());
         return true;
     }
 

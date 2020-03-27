@@ -73,6 +73,19 @@ public class SharedConfiguration
         return pref.getBoolean("is_strict_kiosk_mode", false);
     }
 
+    public boolean isPlayerInstalled()
+    {
+        return pref.getBoolean("is_player_installed", false);
+    }
+
+    public void togglePlayerInstalled(boolean value) throws GarlicLauncherException
+    {
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("is_player_installed", value);
+        commit(ed);
+    }
+
+
     public void setServicePassword(String service_mode_password) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();

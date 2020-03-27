@@ -17,12 +17,14 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sagiadinos.garlic.launcher;
+package com.sagiadinos.garlic.launcher.services;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+
+import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
 
 /**
  * This service will called every 3s to check if launcher is in background

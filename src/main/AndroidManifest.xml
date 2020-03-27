@@ -8,23 +8,25 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".GarlicLauncherApplication"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
+        <service
+            android:name=".services.DownloadPlayerService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".MainActivity"
@@ -47,10 +49,10 @@
         <activity android:name=".ContentUrlActivity" />
 
         <service
-            android:name=".WatchDogService"
+            android:name=".services.WatchDogService"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".HUD">
+        <service android:name=".services.HUD">
             <intent-filter>
                 <action android:name="com.sagiadinos.garlic.launcher.HUD" />
             </intent-filter>
@@ -85,13 +87,14 @@
             android:enabled="true" />
         <receiver
             android:name=".receiver.InstalledAppReceiver"
-            android:enabled="true">
-            <intent-filter>
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <data android:scheme="package"/>
+
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
         <receiver

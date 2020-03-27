@@ -17,7 +17,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sagiadinos.garlic.launcher;
+package com.sagiadinos.garlic.launcher.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -28,6 +28,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+
+import com.sagiadinos.garlic.launcher.R;
 
 import java.io.IOException;
 

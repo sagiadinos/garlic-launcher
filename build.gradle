@@ -23,20 +23,20 @@ android {
         minSdkVersion 25
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-        signingConfigs {
-            // For signating keystore.properties includes the credentials
-            // but is not uploaded in git
-            if (project.rootProject.file('keystore.properties').exists()) {
-                release {
-                    def keystorePropertiesFile = rootProject.file("keystore.properties")
-                    def keystoreProperties = new Properties()
-                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    signingConfigs {
+        // For signating keystore.properties includes the credentials
+        // but is not uploaded in git
+        if (project.rootProject.file('keystore.properties').exists()) {
+            release {
+                def keystorePropertiesFile = rootProject.file("keystore.properties")
+                def keystoreProperties = new Properties()
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
-                    // only release versions should be signed
-                    keyAlias keystoreProperties['keyAlias']
-                    keyPassword keystoreProperties['keyPassword']
-                    storeFile file(keystoreProperties['storeFile'])
-                    storePassword keystoreProperties['storePassword']
+                // only release versions should be signed
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
             }
         }
     }
