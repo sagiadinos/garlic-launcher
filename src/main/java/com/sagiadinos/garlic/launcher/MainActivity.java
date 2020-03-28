@@ -32,6 +32,7 @@ import android.os.CountDownTimer;
 
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -80,6 +81,7 @@ public class MainActivity extends Activity
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
+         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
          MyDeviceOwner = new DeviceOwner(this);

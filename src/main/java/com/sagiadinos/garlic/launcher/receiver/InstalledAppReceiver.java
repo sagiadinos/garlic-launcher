@@ -31,6 +31,8 @@ import java.util.Objects;
 public class InstalledAppReceiver extends BroadcastReceiver
 {
 
+    SharedConfiguration MySharedConfiguration;
+
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -44,10 +46,28 @@ public class InstalledAppReceiver extends BroadcastReceiver
         {
             return;
         }
+        MySharedConfiguration = new SharedConfiguration(context);
+
+        // On an Update all Actions (REMOVE, ADD and REPLACE)  are triggered.
+        // So we must do some preventations, cause it reboot after REMOVE
+        // And the player disappear and must be download again
+
+        // Solution:
+        // Check the extras for for Replacing key and in this case ignore REMOVE and ADDED
+        if (intent.getExtras().containsKey(Intent.EXTRA_REPLACING) &&
+                (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
+                        intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)
+                )
+        )
+        {
+            return;
+        }
+
         if (s.equals("package:"+ DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
         {
-            tooglePlayerInstalled(context, isPlayerInstalled(intent));
+            tooglePlayerInstalled(isPlayerInstalled(intent));
         }
+
         if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
                 intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED) ||
                 intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)
@@ -62,11 +82,10 @@ public class InstalledAppReceiver extends BroadcastReceiver
         return !Objects.requireNonNull(intent.getAction()).equals(Intent.ACTION_PACKAGE_REMOVED);
     }
 
-    void tooglePlayerInstalled(Context context, Boolean installed)
+    void tooglePlayerInstalled(Boolean installed)
     {
         try
         {
-            SharedConfiguration MySharedConfiguration = new SharedConfiguration(context);
             MySharedConfiguration.togglePlayerInstalled(installed);
         }
         catch (GarlicLauncherException e)
