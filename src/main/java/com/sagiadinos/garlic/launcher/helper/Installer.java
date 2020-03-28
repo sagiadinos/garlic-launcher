@@ -2,7 +2,7 @@
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
- This file is part of the garlic-player source code
+ This file is part of the garlic-launcher source code
 
  This program is free software: you can redistribute it and/or  modify
  it under the terms of the GNU Affero General Public License, version 3,
@@ -22,7 +22,6 @@ package com.sagiadinos.garlic.launcher.helper;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -32,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Random;
-import com.sagiadinos.garlic.launcher.MainActivity;
 
 /**
  *  This class install and uninstall (later) software
@@ -104,7 +101,6 @@ public class Installer
         Intent intent = new Intent(ctx, ctx.getClass());
         PendingIntent sender = PendingIntent.getActivity(ctx, 0, intent, 0);
         MyPackageInstaller.uninstall(package_name, sender.getIntentSender());
-        return;
     }
 
     public static boolean isPackageInstalled(Context c, String targetPackage)

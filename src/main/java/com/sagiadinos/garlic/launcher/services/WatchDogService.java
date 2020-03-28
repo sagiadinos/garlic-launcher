@@ -2,7 +2,7 @@
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
- This file is part of the garlic-player source code
+ This file is part of the garlic-launcher source code
 
  This program is free software: you can redistribute it and/or  modify
  it under the terms of the GNU Affero General Public License, version 3,
@@ -27,7 +27,7 @@ import android.os.IBinder;
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
 
 /**
- * This service will called every 3s to check if launcher is in background
+ * This service will called every 4s to check if launcher is in background
  */
 public class WatchDogService extends Service
 {

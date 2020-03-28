@@ -2,7 +2,7 @@
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
- This file is part of the garlic-player source code
+ This file is part of the garlic-launcher source code
 
  This program is free software: you can redistribute it and/or  modify
  it under the terms of the GNU Affero General Public License, version 3,
@@ -20,7 +20,6 @@ package com.sagiadinos.garlic.launcher.helper;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -29,6 +28,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,7 +42,7 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
 {
     private final String            PLAYER_DOWNLOAD_URL = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
     private static final String     DOWNLOADED_FILENAME = "garlic-player.apk";
-    private static ProgressBar             DownloadProgressBar;
+    private ProgressBar             DownloadProgressBar;
     private String                  apk_path;
     private TextView                tvInformation;
     private Activity                MyActivity;
@@ -55,14 +56,14 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
     }
 
     @Override
-    public void onAvailable(Network network)
+    public void onAvailable(@NotNull Network network)
     {
         setInformationText(tvInformation, MyActivity.getString(R.string.download_player_in_progress));
         startPlayerDownload();
     }
 
     @Override
-    public void onLost(Network network)
+    public void onLost(@NotNull Network network)
     {
         setInformationText(tvInformation, MyActivity.getString(R.string.no_garlic_no_network));
     }

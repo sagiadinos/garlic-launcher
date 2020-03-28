@@ -2,7 +2,7 @@
  garlic-launcher: Android Launcher for the Digital Signage Software garlic-player
 
  Copyright (C) 2020 Nikolaos Sagiadinos <ns@smil-control.com>
- This file is part of the garlic-player source code
+ This file is part of the garlic-launcher source code
 
  This program is free software: you can redistribute it and/or  modify
  it under the terms of the GNU Affero General Public License, version 3,
@@ -74,7 +74,7 @@ public class ActivityConfigAdmin extends Activity
             MySharedConfiguration.toggleActiveServicePassword(cbActiveServicePassword.isChecked());
             MySharedConfiguration.setServicePassword(editServicePassword.getText().toString());
             MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
-            toggleOwnBackButton(cbOwnBackButton.isChecked()); // activate BackButton
+            toggleOwnBackButton(); // activate BackButton
             finish();
         }
         catch (GarlicLauncherException e)
@@ -89,7 +89,7 @@ public class ActivityConfigAdmin extends Activity
         finish();
     }
 
-    private void toggleOwnBackButton(Boolean checked)
+    private void toggleOwnBackButton()
     {
         if (cbOwnBackButton.isChecked())
         {

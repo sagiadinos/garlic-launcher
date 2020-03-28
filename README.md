@@ -2,7 +2,8 @@
 
 The Garlic-Launcher is useful to create digital signage media player on Android-hardware in combination with the [garlic-player](https://garlic-player.com).
 
-**It is not neccessary to have a rooted Android!**
+**A rooted Android is not necesary! **
+** You can transfer nearly every consumer hardware to a robust Digital Signage system! **
 
 If you want to build a digital signage mediaplayer hardware or an interactive kiosk system which should run 24/7, it is necessary to take some precautions.
 
@@ -14,7 +15,7 @@ For example:
 - Manual configuration must be as easy as possible
 - Security
 
-One solution is to root Android, but rooted devices are a potential security riscs. So I decide to use the [Device Owner Mode](https://developer.android.com/reference/android/app/admin/DevicePolicyManager)
+One solution is to root Android, but rooted devices are a potential security riscs. So garlic-launcher use the [Device Owner Mode](https://developer.android.com/reference/android/app/admin/DevicePolicyManager)
 
 ## Features
 - Works as device owner, so no root is needed
@@ -25,6 +26,11 @@ One solution is to root Android, but rooted devices are a potential security ris
 - Software updates via USB-Stick/SD-Card
 - Configuration via USB-Stick/SD-Card
 - A second app can be opened
+- Tiny and resource efficient signed apk is < 50KB
+- automatic player download when network is active
+- Custom back button, for some rooted AOSP images which deactivate navigation bar totally via settings
+- Strict Kiosk
+- Password secured Service/Maintance mode to administrate strict systems manually
 
 ## Requirements
  - Android >= 7.1.1 
