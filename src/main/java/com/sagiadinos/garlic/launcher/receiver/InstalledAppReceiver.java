@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
@@ -73,7 +74,10 @@ public class InstalledAppReceiver extends BroadcastReceiver
                 intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)
             )
         {
-            DeviceOwner.reboot(context);
+            if (!BuildConfig.DEBUG)
+            {
+                DeviceOwner.reboot(context);
+            }
         }
     }
 

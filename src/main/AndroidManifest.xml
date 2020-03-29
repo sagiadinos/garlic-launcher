@@ -23,12 +23,7 @@
         android:name=".GarlicLauncherApplication"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
-        <service
-            android:name=".services.DownloadPlayerService"
-            android:enabled="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <activity
+            <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

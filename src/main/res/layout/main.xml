@@ -42,7 +42,7 @@
             android:onClick="toggleLockTask"
             android:text="@string/pin_app"
             android:textSize="24sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btToggleLauncher"
@@ -52,7 +52,7 @@
             android:onClick="toggleLauncher"
             android:text="@string/restore_old_launcher"
             android:textSize="24sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btToggleServiceMode"

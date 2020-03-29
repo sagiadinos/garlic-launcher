@@ -25,11 +25,12 @@ import android.content.SharedPreferences;
 public class SharedConfiguration
 {
     private SharedPreferences pref;
-
-    public SharedConfiguration(Context ctx)
+    private Context ctx;
+    public SharedConfiguration(Context c)
     {
         final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPITAEN";
-        pref  = ctx.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
+        pref  = c.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
+        ctx   = c;
     }
 
     public boolean writeSmilIndex(String smil_index)

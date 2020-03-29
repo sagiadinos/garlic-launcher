@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
@@ -143,8 +144,15 @@ public class MainActivity extends Activity
             startGarlicPlayerDelayed();
             return;
         }
-        checkForNetwork();
-        displayInformationText(getString(R.string.no_garlic_no_network));
+        if (!BuildConfig.DEBUG)
+        {
+            checkForNetwork();
+            displayInformationText(getString(R.string.no_garlic_no_network));
+        }
+        else
+        {
+            displayInformationText("debug mode: no player");
+        }
    }
 
     private void initButtonViews()

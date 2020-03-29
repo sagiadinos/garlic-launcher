@@ -183,10 +183,11 @@ public class ConfigXMLModel
 
     private String generateConfigXML()
     {
+        smil_index_url =  smil_index_url.replace("&amp;", "&"); // make sure that there are no ampersands setted
         return "<configuration>\n" +
                 "\t<userPref>\n" +
                 "\t\t<prop name=\"content.bootFromServer\" value=\"true\"/>\n" +
-                "\t\t<prop name=\"content.serverUrl\" value=\""+  smil_index_url +"\"/>\n" +
+                "\t\t<prop name=\"content.serverUrl\" value=\""+  smil_index_url.replaceAll("&", "&amp;") +"\"/>\n" +
                 "\t</userPref>\n" +
                 "</configuration>";
     }
