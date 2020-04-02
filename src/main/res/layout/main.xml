@@ -111,6 +111,17 @@
             android:textSize="24sp"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/btAndroidSettings"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openAndroidSettings"
+            android:text="@string/android_settings"
+            android:textSize="24sp"
+            android:visibility="gone" />
+
+
     </LinearLayout>
 
     <LinearLayout

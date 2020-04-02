@@ -23,7 +23,13 @@
         android:name=".GarlicLauncherApplication"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
-            <activity
+        <provider
+            android:name=".SettingsProvider"
+            android:authorities="com.sagiadinos.garlic.launcher.SettingsProvider"
+            android:enabled="true"
+            android:exported="true"></provider>
+
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

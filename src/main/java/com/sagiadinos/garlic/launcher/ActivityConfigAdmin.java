@@ -22,6 +22,8 @@ package com.sagiadinos.garlic.launcher;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
+import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
@@ -40,6 +43,7 @@ public class ActivityConfigAdmin extends Activity
     CheckBox cbOwnBackButton;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
+    Boolean  is_password_changed = false;
     SharedConfiguration MySharedConfiguration;
 
     @Override
@@ -71,11 +75,10 @@ public class ActivityConfigAdmin extends Activity
         try
         {
             checkServicePassword();
-            MySharedConfiguration.toggleActiveServicePassword(cbActiveServicePassword.isChecked());
-            MySharedConfiguration.setServicePassword(editServicePassword.getText().toString());
-            MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
-            toggleOwnBackButton(); // activate BackButton
+            toggleOwnBackButton();
+       //     startActivity(new Intent(this, MainActivity.class));
             finish();
+
         }
         catch (GarlicLauncherException e)
         {
@@ -89,8 +92,9 @@ public class ActivityConfigAdmin extends Activity
         finish();
     }
 
-    private void toggleOwnBackButton()
+    private void toggleOwnBackButton() throws GarlicLauncherException
     {
+        MySharedConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
         if (cbOwnBackButton.isChecked())
         {
             startService(new Intent(this, HUD.class));
@@ -136,10 +140,7 @@ public class ActivityConfigAdmin extends Activity
         cbActiveServicePassword.setChecked(MySharedConfiguration.hasActiveServicePassword());
 
         prepareVisibilityOfEditServicePassword(MySharedConfiguration.hasActiveServicePassword());
-        if (MySharedConfiguration.hasActiveServicePassword())
-        {
-            editServicePassword.setText(MySharedConfiguration.getServicePassword());
-        }
+
     }
 
     public void prepareVisibilityOfEditServicePassword(Boolean is_checked)
@@ -147,6 +148,20 @@ public class ActivityConfigAdmin extends Activity
         if (is_checked)
         {
             editServicePassword.setVisibility(View.VISIBLE);
+            editServicePassword.addTextChangedListener(new TextWatcher()
+            {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void afterTextChanged(Editable s){}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count)
+                {
+                    is_password_changed = true;
+                }
+            });
         }
         else
         {
@@ -157,9 +172,17 @@ public class ActivityConfigAdmin extends Activity
 
     private void checkServicePassword() throws GarlicLauncherException
     {
-        if (cbActiveServicePassword.isChecked() && editServicePassword.getText().toString().isEmpty())
+        String password = editServicePassword.getText().toString();
+
+        if (cbActiveServicePassword.isChecked() && is_password_changed && password.isEmpty())
         {
             throw new GarlicLauncherException(getString(R.string.missing_password));
+        }
+
+        MySharedConfiguration.toggleActiveServicePassword(cbActiveServicePassword.isChecked());
+        if (is_password_changed)
+        {
+            MySharedConfiguration.setServicePassword(password, new PasswordHasher());
         }
     }
 

@@ -86,13 +86,26 @@ public class SharedConfiguration
         commit(ed);
     }
 
-
-    public void setServicePassword(String service_mode_password) throws GarlicLauncherException
+    public void setServicePassword(String cleartext__password, PasswordHasher MyPasswordHasher) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();
-        ed.putString("service_mode_password", service_mode_password);
+        String salt                = MyPasswordHasher.generateSalt();
+        ed.putString("service_password_salt", salt);
+
+        String hashed              = MyPasswordHasher.hashClearTextWithSalt(cleartext__password, salt);
+        ed.putString("service_password_hash", hashed);
+
         commit(ed);
     }
+
+    public boolean compareServicePassword(String cleartext__password, PasswordHasher MyPasswordHasher)
+    {
+        String salt                = pref.getString("service_password_salt", "");
+        String hashed              = MyPasswordHasher.hashClearTextWithSalt(cleartext__password, salt);
+
+        return (hashed.equals(pref.getString("service_password_hash", "")));
+    }
+
 
     public boolean isDeviceRooted()
     {
@@ -106,11 +119,6 @@ public class SharedConfiguration
         commit(ed);
     }
 
-
-    public String getServicePassword()
-    {
-        return pref.getString("service_mode_password", "");
-    }
 
     public void setStrictKioskMode(boolean value) throws GarlicLauncherException
     {

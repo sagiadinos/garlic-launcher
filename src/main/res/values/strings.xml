@@ -30,7 +30,8 @@
     <string name="download_player_in_progress">Trying to download and install garlic-player - Please wait!</string>
     <string name="install_player_in_progress">Trying install garlic-player - Please wait!</string>
     <string name="config_service_admin">Config Service Administrator</string>
-    <string name="config_wifi">Config WiFi</string>
+    <string name="config_wifi">WiFi-Settings</string>
+    <string name="android_settings">Android Settings</string>
     <string name="set_content_url">Set Content Url</string>
     <string name="no_device_owner">This app must be set as device owner to work</string>
     <string name="save_and_close">Save &amp; Close</string>

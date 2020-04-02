@@ -40,6 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
+import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
@@ -60,8 +61,6 @@ public class MainActivity extends Activity
     private Button         btToggleLauncher = null;
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
-    private Button         btAdminConfiguration = null;
-    private Button         btConfigureWiFi      = null;
     private TextView       tvInformation   = null;
 
     private CountDownTimer      PlayerCountDown        = null;
@@ -117,6 +116,21 @@ public class MainActivity extends Activity
     }
 
     @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
+        if (MySharedConfiguration.hasActiveServicePassword())
+        {
+            btToggleServiceMode.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            btToggleServiceMode.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     protected void onDestroy()
     {
         if (MyDeviceOwner.isDeviceOwner())
@@ -141,7 +155,7 @@ public class MainActivity extends Activity
     {
         if (MySharedConfiguration.isPlayerInstalled())
         {
-            startGarlicPlayerDelayed();
+           // startGarlicPlayerDelayed();
             return;
         }
         if (!BuildConfig.DEBUG)
@@ -159,8 +173,9 @@ public class MainActivity extends Activity
     {
         btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
         btStartPlayer        = findViewById(R.id.btStartPlayer);
-        btAdminConfiguration = findViewById(R.id.btAdminConfiguration);
-        btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
+        Button btAdminConfiguration = findViewById(R.id.btAdminConfiguration);
+        Button btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
+        Button btAndroidSettings    = findViewById(R.id.btAndroidSettings);
         Button btContentUri  = findViewById(R.id.btSetContentURI);
 
         if (MySharedConfiguration.isPlayerInstalled())
@@ -190,6 +205,7 @@ public class MainActivity extends Activity
             btToggleServiceMode.setText(R.string.enter_service_mode);
             btAdminConfiguration.setVisibility(View.GONE);
             btConfigureWiFi.setVisibility(View.GONE);
+            btAndroidSettings.setVisibility(View.GONE);
             btContentUri.setVisibility(View.GONE);
         }
         else
@@ -198,6 +214,7 @@ public class MainActivity extends Activity
             btStartPlayer.setEnabled(true);
             btToggleServiceMode.setText(R.string.exit_service_mode);
             btConfigureWiFi.setVisibility(View.VISIBLE);
+            btAndroidSettings.setVisibility(View.VISIBLE);
             btContentUri.setVisibility(View.VISIBLE);
         }
 
@@ -272,12 +289,13 @@ public class MainActivity extends Activity
             {
                 String value = input.getText().toString();
 
-                // we need an alternative for those one who forget passwords
-                // so we get the device UUID via
+                // we need temporary for testing an alternative for those one who forget passwords
+                // so we get maybe the device UUID via
                 // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 // or set something own
                 String alt_password = "heidewitzka";
-                if (value.equals(MySharedConfiguration.getServicePassword()) || value.equals(alt_password))
+
+                if (MySharedConfiguration.compareServicePassword(value, new PasswordHasher()) || value.equals(alt_password))
                 {
                     if (MyKiosk.isStrictKioskModeActive())
                     {
@@ -359,14 +377,19 @@ public class MainActivity extends Activity
     public void configAdmin(View view)
     {
         stopPlayerRestart();
-        startActivity(new Intent(
-this, ActivityConfigAdmin.class));
+        startActivity(new Intent(this, ActivityConfigAdmin.class));
     }
 
     public void configWiFi(View view)
     {
         stopPlayerRestart();
         startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
+    }
+
+    public void openAndroidSettings(View view)
+    {
+        stopPlayerRestart();
+        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
     }
 
     public void startGarlicPlayer(View view)
