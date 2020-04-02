@@ -22,6 +22,7 @@ package com.sagiadinos.garlic.launcher.helper.configxml;
 import android.os.Environment;
 import android.util.Log;
 
+import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -52,10 +53,17 @@ public class ConfigXMLModel
         this.MySharedConfiguration = mySharedConfiguration;
     }
 
-    public boolean storeSmilIndexUrl(String smil_index_url)
+    public void storeSmilIndexUrl(String smil_index_url)
     {
         this.smil_index_url = smil_index_url;
-        return MySharedConfiguration.writeSmilIndex(smil_index_url);
+        try
+        {
+            MySharedConfiguration.writeSmilIndex(smil_index_url);
+        }
+        catch (GarlicLauncherException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public String readConfigXml(File config_xml) throws IOException

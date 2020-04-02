@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.EditText;
 
 
+import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
 
@@ -44,10 +45,13 @@ public class ContentUrlActivity extends Activity
 
     public void setContentUrl(View view)
     {
-        ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(null, MySharedConfiguration);
-        if (MyConfigXMLModel.storeSmilIndexUrl(ed_content_url.getText().toString().trim()))
+        try
         {
-            MyConfigXMLModel.storeConfigXmlForPlayer();
+            MySharedConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
+        }
+        catch (GarlicLauncherException e)
+        {
+            e.printStackTrace();
         }
     }
 

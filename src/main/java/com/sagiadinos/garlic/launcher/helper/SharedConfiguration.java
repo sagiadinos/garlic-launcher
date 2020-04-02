@@ -33,11 +33,11 @@ public class SharedConfiguration
         ctx   = c;
     }
 
-    public boolean writeSmilIndex(String smil_index)
+    public void writeSmilIndex(String smil_index) throws GarlicLauncherException
     {
         SharedPreferences.Editor ed = pref.edit();
         ed.putString("smil_index_uri", smil_index);
-        return ed.commit();
+        commit(ed);
     }
 
     public String getSmilIndex(String default_value)
