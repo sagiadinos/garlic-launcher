@@ -56,7 +56,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
 
         // Solution:
         // Check the extras for for Replacing key and in this case ignore REMOVE and ADDED
-        if (intent.getExtras().containsKey(Intent.EXTRA_REPLACING) &&
+        if (Objects.requireNonNull(intent.getExtras()).containsKey(Intent.EXTRA_REPLACING) &&
                 (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
                         intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)
                 )

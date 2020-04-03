@@ -58,7 +58,7 @@ public class MainConfiguration
         return Model.getString("uuid");
     }
 
-    public void toggleOwnBackButton(boolean value) throws GarlicLauncherException
+    public void toggleOwnBackButton(boolean value)
     {
         Model.storeBoolean("own_back_button", value);
     }
@@ -68,7 +68,7 @@ public class MainConfiguration
         return Model.getBoolean("own_back_button");
     }
 
-    public void toggleActiveServicePassword(boolean value) throws GarlicLauncherException
+    public void toggleActiveServicePassword(boolean value)
     {
         Model.storeBoolean("active_service_password", value);
     }
@@ -88,7 +88,7 @@ public class MainConfiguration
         return Model.getBoolean("is_player_installed");
     }
 
-    public void togglePlayerInstalled(boolean value) throws GarlicLauncherException
+    public void togglePlayerInstalled(boolean value)
     {
         Model.storeBoolean("is_player_installed", value);
     }
@@ -116,13 +116,13 @@ public class MainConfiguration
         return Model.getBoolean("is_device_rooted");
     }
 
-    public void setIsDeviceRooted(Boolean value) throws GarlicLauncherException
+    public void setIsDeviceRooted(Boolean value)
     {
         Model.storeBoolean("is_device_rooted", value);
     }
 
 
-    public void setStrictKioskMode(boolean value) throws GarlicLauncherException
+    public void setStrictKioskMode(boolean value)
     {
         Model.storeBoolean("is_strict_kiosk_mode", value);
     }
