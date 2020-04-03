@@ -17,13 +17,10 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sagiadinos.garlic.launcher.helper.configxml;
+package com.sagiadinos.garlic.launcher.configuration;
 
 import android.os.Environment;
 import android.util.Log;
-
-import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -45,25 +42,18 @@ public class ConfigXMLModel
 {
     private String smil_index_url   = "http://indexes.smil-control.com";
     private NetworkData MyNetworkData;
-    private SharedConfiguration MySharedConfiguration;
+    private MainConfiguration MyMainConfiguration;
 
-    public ConfigXMLModel(NetworkData myNetworkData, SharedConfiguration mySharedConfiguration)
+    public ConfigXMLModel(NetworkData myNetworkData, MainConfiguration myMainConfiguration)
     {
         this.MyNetworkData        = myNetworkData;
-        this.MySharedConfiguration = mySharedConfiguration;
+        this.MyMainConfiguration = myMainConfiguration;
     }
 
     public void storeSmilIndexUrl(String smil_index_url)
     {
         this.smil_index_url = smil_index_url;
-        try
-        {
-            MySharedConfiguration.writeSmilIndex(smil_index_url);
-        }
-        catch (GarlicLauncherException e)
-        {
-            e.printStackTrace();
-        }
+        MyMainConfiguration.writeSmilIndex(smil_index_url);
     }
 
     public String readConfigXml(File config_xml) throws IOException

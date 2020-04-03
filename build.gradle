@@ -55,3 +55,13 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.3.3'
     implementation 'com.android.support:support-annotations:28.0.0'
 }
+
+// activate warnings when deprecated API commands are used
+/*
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
+
+ */

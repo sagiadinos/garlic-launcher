@@ -22,7 +22,7 @@ package com.sagiadinos.garlic.launcher.helper;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
-import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
+import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 import java.util.List;
 
 public class WiFi

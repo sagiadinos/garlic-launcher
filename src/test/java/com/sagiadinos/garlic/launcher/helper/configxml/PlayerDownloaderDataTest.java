@@ -1,5 +1,7 @@
 package com.sagiadinos.garlic.launcher.helper.configxml;
 
+import com.sagiadinos.garlic.launcher.configuration.NetworkData;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

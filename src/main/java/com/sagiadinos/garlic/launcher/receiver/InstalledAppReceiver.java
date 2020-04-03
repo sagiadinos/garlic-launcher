@@ -23,16 +23,17 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import java.util.Objects;
 
 public class InstalledAppReceiver extends BroadcastReceiver
 {
 
-    SharedConfiguration MySharedConfiguration;
+    MainConfiguration MyMainConfiguration;
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -47,7 +48,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
         {
             return;
         }
-        MySharedConfiguration = new SharedConfiguration(context);
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
 
         // On an Update all Actions (REMOVE, ADD and REPLACE)  are triggered.
         // So we must do some preventations, cause it reboot after REMOVE
@@ -90,7 +91,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
     {
         try
         {
-            MySharedConfiguration.togglePlayerInstalled(installed);
+            MyMainConfiguration.togglePlayerInstalled(installed);
         }
         catch (GarlicLauncherException e)
         {

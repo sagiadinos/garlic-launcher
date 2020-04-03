@@ -17,7 +17,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sagiadinos.garlic.launcher.helper.configxml;
+package com.sagiadinos.garlic.launcher.configuration;
 
 public class NetworkData
 {

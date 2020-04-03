@@ -29,12 +29,13 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.Installer;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
-import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
-import com.sagiadinos.garlic.launcher.helper.configxml.NetworkData;
+import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
+import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,7 +127,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
             // parse configFile first for Wifi content Url etc...
             NetworkData MyNetWorkData = new NetworkData();
-            ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new SharedConfiguration(ctx));
+            ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new MainConfiguration(new SharedPreferencesModel(ctx)));
             String xml = MyConfigXMLModel.readConfigXml(file);
             MyConfigXMLModel.parseConfigXml(xml);
             WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());

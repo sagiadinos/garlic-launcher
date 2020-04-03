@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
 /**
@@ -29,7 +30,7 @@ import com.sagiadinos.garlic.launcher.services.HUD;
  */
 public class NavigationBar
 {
-    public static void hide(Activity a, SharedConfiguration sc)
+    public static void hide(Activity a, MainConfiguration sc)
     {
         if (sc.hasOwnBackButton())
         {
@@ -48,7 +49,7 @@ public class NavigationBar
 
     }
 
-    public static void show(Activity a, SharedConfiguration sc)
+    public static void show(Activity a, MainConfiguration sc)
     {
         if (sc.hasOwnBackButton())
         {

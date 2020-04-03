@@ -25,8 +25,9 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -34,22 +35,17 @@ public class SettingsProvider extends ContentProvider
 {
     private static final String PROVIDER_NAME = "com.sagiadinos.garlic.launcher.SettingsProvider";
 
-    private static final int SMIL_CONTENT_URL = 7;
+    private static final int SMIL_CONTENT_URL = 1;
     private static final int SERVICE_PASSWORD = 2;
+    private static final int LAUNCHER_UUID    = 3;
     private static final UriMatcher uriMatcher = getUriMatcher();
-    private static UriMatcher getUriMatcher()
-    {
-        UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(PROVIDER_NAME, "smil_content_url", SMIL_CONTENT_URL);
-        uriMatcher.addURI(PROVIDER_NAME, "service_password", SERVICE_PASSWORD);
-        return uriMatcher;
-    }
-    private SharedConfiguration MySharedConfiguration = null;
+
+    private MainConfiguration MyMainConfiguration = null;
 
     @Override
     public boolean onCreate()
     {
-        MySharedConfiguration = new SharedConfiguration(Objects.requireNonNull(getContext()));
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(Objects.requireNonNull(getContext())));
         return true;
     }
 
@@ -74,19 +70,18 @@ public class SettingsProvider extends ContentProvider
     @Override
     public Cursor query(@NotNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
     {
-        MatrixCursor cursor;
-        MatrixCursor.RowBuilder rowBuilder;
+        MatrixCursor cursor                = new MatrixCursor(new String[] {uri.getPathSegments().get(0)});
+        MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
         switch (uriMatcher.match(uri))
         {
             case SMIL_CONTENT_URL:
-                cursor        = new MatrixCursor(new String[] {uri.getPathSegments().get(0)});
-                rowBuilder    = cursor.newRow();
-                rowBuilder.add(MySharedConfiguration.getSmilIndex(""));
+                rowBuilder.add(MyMainConfiguration.getSmilIndex());
                 break;
             case SERVICE_PASSWORD:
-                cursor = new MatrixCursor(new String[] { uri.getPathSegments().get(0) });
-                rowBuilder = cursor.newRow();
                 rowBuilder.add(validatePassword(selection));
+                break;
+            case LAUNCHER_UUID:
+                rowBuilder.add(MyMainConfiguration.getUUID());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported uri " + uri);
@@ -101,9 +96,18 @@ public class SettingsProvider extends ContentProvider
         throw new UnsupportedOperationException("Not supported!");
     }
 
+    private static UriMatcher getUriMatcher()
+    {
+        UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(PROVIDER_NAME, "smil_content_url", SMIL_CONTENT_URL);
+        uriMatcher.addURI(PROVIDER_NAME, "service_password", SERVICE_PASSWORD);
+        uriMatcher.addURI(PROVIDER_NAME, "uuid", LAUNCHER_UUID);
+        return uriMatcher;
+    }
+
     private String validatePassword(String cleartext)
     {
-        if (MySharedConfiguration.compareServicePassword(cleartext, new PasswordHasher()))
+        if (MyMainConfiguration.compareServicePassword(cleartext, new PasswordHasher()))
         {
             return "valid";
         }

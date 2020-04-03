@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 /**
  * This class is responsible for methods which needed to create a Kiosk Mode
@@ -39,15 +40,15 @@ public class KioskManager
     private HomeLauncherManager  MyLauncher;
     private LockTaskManager      MyLockTasks;
     private MainActivity         MyActivity;
-    private SharedConfiguration  MySharedConfiguration;
+    private MainConfiguration myMainConfiguration;
 
-    public KioskManager(DeviceOwner deviceOwner, HomeLauncherManager hlm,  LockTaskManager ltm, SharedConfiguration sc, MainActivity ma)
+    public KioskManager(DeviceOwner deviceOwner, HomeLauncherManager hlm, LockTaskManager ltm, MainConfiguration sc, MainActivity ma)
     {
         MyDeviceOwner = deviceOwner;
         MyLauncher    = hlm;
         MyLockTasks   = ltm;
         MyActivity    = ma;
-        MySharedConfiguration = sc;
+        myMainConfiguration = sc;
     }
 
     public boolean startKioskMode()
@@ -68,11 +69,11 @@ public class KioskManager
         {
             if (value)
             {
-                MySharedConfiguration.setStrictKioskMode(false);
+                myMainConfiguration.setStrictKioskMode(false);
             }
             else
             {
-                MySharedConfiguration.setStrictKioskMode(true);
+                myMainConfiguration.setStrictKioskMode(true);
             }
         }
         catch (GarlicLauncherException e)
@@ -84,7 +85,7 @@ public class KioskManager
 
     public boolean isStrictKioskModeActive()
     {
-        return MySharedConfiguration.isStrictKioskModeActive();
+        return myMainConfiguration.isStrictKioskModeActive();
     }
 
     /**

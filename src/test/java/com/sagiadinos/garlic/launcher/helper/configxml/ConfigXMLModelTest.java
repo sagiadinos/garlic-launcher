@@ -1,11 +1,12 @@
 package com.sagiadinos.garlic.launcher.helper.configxml;
 
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
+import com.sagiadinos.garlic.launcher.configuration.NetworkData;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Locale;
+import java.util.Objects;
 
 import static org.mockito.Mockito.*;
 
@@ -23,13 +25,13 @@ class ConfigXMLModelTest
     @Mock
     NetworkData NetworkDataMocked;
     @Mock
-    SharedConfiguration SharedConfigurationMocked;
+    MainConfiguration mainConfigurationMocked;
 
     @AfterEach
     void tearDown()
     {
         NetworkDataMocked = null;
-        SharedConfigurationMocked = null;
+        mainConfigurationMocked = null;
     }
 
     @Test
@@ -38,21 +40,21 @@ class ConfigXMLModelTest
         String smil_index_uri = "https://path.to/index.smil";
         ConfigXMLModel MyModel = createModel();
 
-        when(SharedConfigurationMocked.writeSmilIndex(smil_index_uri)).thenReturn(true);
+        when(mainConfigurationMocked.writeSmilIndex(smil_index_uri)).thenReturn(true);
         assertTrue(MyModel.storeSmilIndexUrl(smil_index_uri));
 
-        Field field = null;
+        Field field;
         try
         {
             field = ConfigXMLModel.class.getDeclaredField("smil_index_url");
             field.setAccessible(true);
-            assertEquals(smil_index_uri, (String) field.get(MyModel));
+            assertEquals(smil_index_uri, field.get(MyModel));
         }
         catch (NoSuchFieldException | IllegalAccessException e)
         {
             fail();
         }
-        verify(SharedConfigurationMocked, times(1)).writeSmilIndex(smil_index_uri);
+        verify(mainConfigurationMocked, times(1)).writeSmilIndex(smil_index_uri);
     }
 
     @Test
@@ -72,7 +74,7 @@ class ConfigXMLModelTest
     }
 
     @Test
-    void readConfigXmlWithMissingConfig() throws IOException
+    void readConfigXmlWithMissingConfig()
     {
         final ConfigXMLModel MyModel = createModel();
         Locale.setDefault(new Locale("pt", "BR"));
@@ -88,7 +90,7 @@ class ConfigXMLModelTest
 
        // assertEquals("no/existing/filepath (Datei oder Verzeichnis nicht gefunden)", exception.getMessage());
         // Todo Try to find out who we get this idiotic system to throw error messages in english for testing
-        assertTrue(exception.getMessage().contains("no/existing/filepath"));
+        assertTrue(Objects.requireNonNull(exception.getMessage()).contains("no/existing/filepath"));
     }
 
 
@@ -110,8 +112,8 @@ class ConfigXMLModelTest
     ConfigXMLModel createModel()
     {
         NetworkDataMocked         = mock(NetworkData.class);
-        SharedConfigurationMocked = mock(SharedConfiguration.class);
-        return new ConfigXMLModel(NetworkDataMocked, SharedConfigurationMocked);
+        mainConfigurationMocked = mock(MainConfiguration.class);
+        return new ConfigXMLModel(NetworkDataMocked, mainConfigurationMocked);
     }
 
 }

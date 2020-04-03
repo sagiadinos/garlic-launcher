@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
@@ -39,10 +38,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
@@ -65,7 +65,7 @@ public class MainActivity extends Activity
 
     private CountDownTimer      PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
-    private SharedConfiguration MySharedConfiguration = null;
+    private MainConfiguration   MyMainConfiguration = null;
     private KioskManager        MyKiosk               = null;
 
 
@@ -86,11 +86,14 @@ public class MainActivity extends Activity
          initDebugButtons();
          MyDeviceOwner = new DeviceOwner(this);
          AppPermissions.verifyStandardPermissions(this);
-         MySharedConfiguration = new SharedConfiguration(this);
+
+         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
+         MyMainConfiguration.checkForUUID();
+
          MyKiosk               = new KioskManager(MyDeviceOwner,
                                                 new HomeLauncherManager(MyDeviceOwner, this),
                                                 new LockTaskManager(this),
-                                                MySharedConfiguration,
+                                                MyMainConfiguration,
                                                 this
         );
 
@@ -120,7 +123,7 @@ public class MainActivity extends Activity
     {
         super.onRestart();
         btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
-        if (MySharedConfiguration.hasActiveServicePassword())
+        if (MyMainConfiguration.hasActiveServicePassword())
         {
             btToggleServiceMode.setVisibility(View.VISIBLE);
         }
@@ -153,7 +156,7 @@ public class MainActivity extends Activity
 
     private void checkForInstalledPlayer()
     {
-        if (MySharedConfiguration.isPlayerInstalled())
+        if (MyMainConfiguration.isPlayerInstalled())
         {
            // startGarlicPlayerDelayed();
             return;
@@ -178,7 +181,7 @@ public class MainActivity extends Activity
         Button btAndroidSettings    = findViewById(R.id.btAndroidSettings);
         Button btContentUri  = findViewById(R.id.btSetContentURI);
 
-        if (MySharedConfiguration.isPlayerInstalled())
+        if (MyMainConfiguration.isPlayerInstalled())
         {
             btContentUri.setVisibility(View.VISIBLE);
             btStartPlayer.setVisibility(View.VISIBLE);
@@ -190,7 +193,7 @@ public class MainActivity extends Activity
             btStartPlayer.setVisibility(View.INVISIBLE);
         }
 
-        if (MySharedConfiguration.hasActiveServicePassword())
+        if (MyMainConfiguration.hasActiveServicePassword())
         {
             btToggleServiceMode.setVisibility(View.VISIBLE);
         }
@@ -223,7 +226,7 @@ public class MainActivity extends Activity
             btToggleLock.setText(R.string.unpin_app);
             btToggleLauncher.setText(R.string.restore_old_launcher);
         }
-        NavigationBar.show(this, MySharedConfiguration);
+        NavigationBar.show(this, MyMainConfiguration);
     }
 
 
@@ -295,7 +298,7 @@ public class MainActivity extends Activity
                 // or set something own
                 String alt_password = "heidewitzka";
 
-                if (MySharedConfiguration.compareServicePassword(value, new PasswordHasher()) || value.equals(alt_password))
+                if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher()) || value.equals(alt_password))
                 {
                     if (MyKiosk.isStrictKioskModeActive())
                     {
@@ -325,7 +328,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = false;
 
-        if (MySharedConfiguration.getSmilIndex("").isEmpty() )
+        if (MyMainConfiguration.getSmilIndex() == null)
         {
             btStartPlayer.setText(R.string.play);
             return;
@@ -396,7 +399,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = true;
-        NavigationBar.hide(this, MySharedConfiguration);
+        NavigationBar.hide(this, MyMainConfiguration);
         startApp(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
     }
 
@@ -404,7 +407,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = true;
         has_player_started     = false;
-        NavigationBar.show(this, MySharedConfiguration);
+        NavigationBar.show(this, MyMainConfiguration);
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
     }

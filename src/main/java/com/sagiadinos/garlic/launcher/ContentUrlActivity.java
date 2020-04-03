@@ -25,34 +25,27 @@ import android.view.View;
 import android.widget.EditText;
 
 
-import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
-import com.sagiadinos.garlic.launcher.helper.SharedConfiguration;
-import com.sagiadinos.garlic.launcher.helper.configxml.ConfigXMLModel;
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 public class ContentUrlActivity extends Activity
 {
     private EditText ed_content_url;
-    SharedConfiguration MySharedConfiguration;
+    MainConfiguration MyMainConfiguration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        MySharedConfiguration = new SharedConfiguration(this);
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
         setContentView(R.layout.activity_content_url);
         ed_content_url = findViewById(R.id.editContentUrl);
-        ed_content_url.setText(MySharedConfiguration.getSmilIndex(""));
+        ed_content_url.setText(MyMainConfiguration.getSmilIndex());
     }
 
     public void setContentUrl(View view)
     {
-        try
-        {
-            MySharedConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
-        }
-        catch (GarlicLauncherException e)
-        {
-            e.printStackTrace();
-        }
+        MyMainConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
     }
 
     public void closeActivity(View view)
