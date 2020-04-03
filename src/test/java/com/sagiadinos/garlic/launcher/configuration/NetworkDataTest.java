@@ -1,4 +1,4 @@
-package com.sagiadinos.garlic.launcher.helper.configxml;
+package com.sagiadinos.garlic.launcher.configuration;
 
 import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 

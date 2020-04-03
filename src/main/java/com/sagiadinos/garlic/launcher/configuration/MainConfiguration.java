@@ -21,9 +21,6 @@ package com.sagiadinos.garlic.launcher.configuration;
 
 import android.annotation.SuppressLint;
 
-import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
-import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
-
 import java.util.UUID;
 
 public class MainConfiguration

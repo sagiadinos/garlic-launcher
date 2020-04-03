@@ -1,4 +1,4 @@
-package com.sagiadinos.garlic.launcher.helper.configxml;
+package com.sagiadinos.garlic.launcher.configuration;
 
 import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
 import com.sagiadinos.garlic.launcher.configuration.NetworkData;
@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.Objects;
 

@@ -26,7 +26,7 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
-import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
+import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;

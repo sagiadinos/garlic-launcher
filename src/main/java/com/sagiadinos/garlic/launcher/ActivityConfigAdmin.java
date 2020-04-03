@@ -32,7 +32,7 @@ import android.widget.TextView;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
-import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
+import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
@@ -70,7 +70,6 @@ public class ActivityConfigAdmin extends Activity
         {
             checkServicePassword();
             toggleOwnBackButton();
-       //     startActivity(new Intent(this, MainActivity.class));
             finish();
 
         }
@@ -86,7 +85,7 @@ public class ActivityConfigAdmin extends Activity
         finish();
     }
 
-    private void toggleOwnBackButton() throws GarlicLauncherException
+    private void toggleOwnBackButton()
     {
         MyMainConfiguration.toggleOwnBackButton(cbOwnBackButton.isChecked());
         if (cbOwnBackButton.isChecked())

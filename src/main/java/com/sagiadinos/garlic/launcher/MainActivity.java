@@ -40,7 +40,7 @@ import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
-import com.sagiadinos.garlic.launcher.helper.PasswordHasher;
+import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
