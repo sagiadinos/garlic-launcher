@@ -58,14 +58,7 @@ public class ActivityConfigAdmin extends Activity
         tvInformation            = findViewById(R.id.textViewInformation);
 
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
-        try
-        {
-            MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
-        }
-        catch (GarlicLauncherException e)
-        {
-            e.getStackTrace();
-        }
+        MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
         prepareOptionsVisibility();
     }
 

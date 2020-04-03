@@ -40,7 +40,6 @@ import java.util.Objects;
 
 public class ConfigXMLModel
 {
-    private String smil_index_url   = "http://indexes.smil-control.com";
     private NetworkData MyNetworkData;
     private MainConfiguration MyMainConfiguration;
 
@@ -48,12 +47,6 @@ public class ConfigXMLModel
     {
         this.MyNetworkData        = myNetworkData;
         this.MyMainConfiguration = myMainConfiguration;
-    }
-
-    public void storeSmilIndexUrl(String smil_index_url)
-    {
-        this.smil_index_url = smil_index_url;
-        MyMainConfiguration.writeSmilIndex(smil_index_url);
     }
 
     public String readConfigXml(File config_xml) throws IOException
@@ -167,7 +160,7 @@ public class ConfigXMLModel
                 MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
                 break;
             case "content.serverUrl":
-                storeSmilIndexUrl(xpp.getAttributeValue(null, "value"));
+                MyMainConfiguration.writeSmilIndex(xpp.getAttributeValue(null, "value"));
                 break;
         }
     }
@@ -181,7 +174,7 @@ public class ConfigXMLModel
 
     private String generateConfigXML()
     {
-        smil_index_url =  smil_index_url.replace("&amp;", "&"); // make sure that there are no ampersands setted
+        String smil_index_url =  MyMainConfiguration.getSmilIndex().replace("&amp;", "&"); // make sure that there are no ampersands setted
         return "<configuration>\n" +
                 "\t<userPref>\n" +
                 "\t\t<prop name=\"content.bootFromServer\" value=\"true\"/>\n" +

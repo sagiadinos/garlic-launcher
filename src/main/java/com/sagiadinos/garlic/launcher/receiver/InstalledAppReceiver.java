@@ -89,14 +89,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
 
     void tooglePlayerInstalled(Boolean installed)
     {
-        try
-        {
-            MyMainConfiguration.togglePlayerInstalled(installed);
-        }
-        catch (GarlicLauncherException e)
-        {
-            e.printStackTrace();
-        }
+        MyMainConfiguration.togglePlayerInstalled(installed);
     }
 
 }

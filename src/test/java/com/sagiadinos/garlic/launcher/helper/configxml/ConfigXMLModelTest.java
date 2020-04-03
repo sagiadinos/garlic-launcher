@@ -35,29 +35,6 @@ class ConfigXMLModelTest
     }
 
     @Test
-    void storeSmilIndexUrl()
-    {
-        String smil_index_uri = "https://path.to/index.smil";
-        ConfigXMLModel MyModel = createModel();
-
-        when(mainConfigurationMocked.writeSmilIndex(smil_index_uri)).thenReturn(true);
-        assertTrue(MyModel.storeSmilIndexUrl(smil_index_uri));
-
-        Field field;
-        try
-        {
-            field = ConfigXMLModel.class.getDeclaredField("smil_index_url");
-            field.setAccessible(true);
-            assertEquals(smil_index_uri, field.get(MyModel));
-        }
-        catch (NoSuchFieldException | IllegalAccessException e)
-        {
-            fail();
-        }
-        verify(mainConfigurationMocked, times(1)).writeSmilIndex(smil_index_uri);
-    }
-
-    @Test
     void readConfigXmlWithExistingConfig() throws IOException
     {
         ConfigXMLModel MyModel = createModel();

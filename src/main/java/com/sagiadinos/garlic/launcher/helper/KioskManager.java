@@ -65,22 +65,14 @@ public class KioskManager
 
     public void toggleServiceMode(boolean value)
     {
-        try
+        if (value)
         {
-            if (value)
-            {
-                myMainConfiguration.setStrictKioskMode(false);
-            }
-            else
-            {
-                myMainConfiguration.setStrictKioskMode(true);
-            }
+            myMainConfiguration.setStrictKioskMode(false);
         }
-        catch (GarlicLauncherException e)
+        else
         {
-            e.getStackTrace();
+            myMainConfiguration.setStrictKioskMode(true);
         }
-
     }
 
     public boolean isStrictKioskModeActive()
