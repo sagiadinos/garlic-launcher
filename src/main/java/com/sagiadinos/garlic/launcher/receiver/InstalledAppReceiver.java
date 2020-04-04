@@ -25,7 +25,6 @@ import android.content.Intent;
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
-import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import java.util.Objects;
@@ -65,7 +64,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
             return;
         }
 
-        if (s.equals("package:"+ DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
+        if (s.equals("package:"+ DeviceOwner.PLAYER_PACKAGE_NAME))
         {
             tooglePlayerInstalled(isPlayerInstalled(intent));
         }

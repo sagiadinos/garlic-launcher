@@ -11,8 +11,8 @@ public class SharedPreferencesModel
 
     public SharedPreferencesModel(Context c)
     {
-            final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPITAEN";
-            pref  = c.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
+        final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPITAEN";
+        pref  = c.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
     }
 
     public void storeString(String param, String value)

@@ -85,19 +85,20 @@ public class MainActivity extends Activity
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
          MyDeviceOwner = new DeviceOwner(this);
+
          AppPermissions.verifyStandardPermissions(this);
 
          MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
+         MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
+
 
          MyKiosk               = new KioskManager(MyDeviceOwner,
                                                 new HomeLauncherManager(MyDeviceOwner, this),
                                                 new LockTaskManager(this),
-                                                MyMainConfiguration,
-                                                this
+                                                MyMainConfiguration
         );
 
-        MyDeviceOwner.deactivateRestrictions();
         if (!AppPermissions.hasStandardPermissions(this))
         {
             displayInformationText("Launcher needs read/write permissions for storage");
@@ -114,7 +115,15 @@ public class MainActivity extends Activity
         }
         else
         {
-            displayInformationText(getString(R.string.no_device_owner));
+            if (MyMainConfiguration.isDeviceRooted())
+            {
+                displayInformationText(getString(R.string.root_found_set_device_owner));
+                MyDeviceOwner.makeDeviceOwner();
+            }
+            else
+            {
+                displayInformationText(getString(R.string.no_device_owner));
+            }
         }
     }
 
@@ -122,15 +131,7 @@ public class MainActivity extends Activity
     public void onRestart()
     {
         super.onRestart();
-        btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
-        if (MyMainConfiguration.hasActiveServicePassword())
-        {
-            btToggleServiceMode.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            btToggleServiceMode.setVisibility(View.GONE);
-        }
+        toogleServiceModeVisibility();
     }
 
     @Override
@@ -193,14 +194,7 @@ public class MainActivity extends Activity
             btStartPlayer.setVisibility(View.INVISIBLE);
         }
 
-        if (MyMainConfiguration.hasActiveServicePassword())
-        {
-            btToggleServiceMode.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            btToggleServiceMode.setVisibility(View.GONE);
-        }
+        toogleServiceModeVisibility();
 
         if (MyKiosk.isStrictKioskModeActive())
         {
@@ -400,7 +394,7 @@ public class MainActivity extends Activity
         has_second_app_started = false;
         has_player_started     = true;
         NavigationBar.hide(this, MyMainConfiguration);
-        startApp(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
+        startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
     public void startSecondApp(String package_name)
@@ -435,6 +429,18 @@ public class MainActivity extends Activity
         btStartPlayer.setText(R.string.play);
     }
 
+    private void toogleServiceModeVisibility()
+    {
+        if (MyMainConfiguration.hasActiveServicePassword())
+        {
+            btToggleServiceMode.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            btToggleServiceMode.setVisibility(View.GONE);
+        }
+    }
+
     private void displayInformationText(String error_text)
     {
         tvInformation.setText(error_text);
@@ -445,4 +451,5 @@ public class MainActivity extends Activity
     {
         tvInformation.setText("");
         tvInformation.setVisibility(View.INVISIBLE);
-    }}
+    }
+}

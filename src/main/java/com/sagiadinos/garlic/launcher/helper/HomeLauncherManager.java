@@ -23,9 +23,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.widget.Toast;
-
-import com.sagiadinos.garlic.launcher.BuildConfig;
 
 public class HomeLauncherManager
 {
@@ -56,7 +53,6 @@ public class HomeLauncherManager
             becomeHomeActivity();
             ret = true;
         }
-        showToast("Current Launcher is: " + getHomeActivity());
         return ret;
     }
 
@@ -86,14 +82,6 @@ public class HomeLauncherManager
         else
         {
             return "none";
-        }
-    }
-
-    private void showToast(String text)
-    {
-        if (BuildConfig.DEBUG)
-        {
-            Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
         }
     }
 

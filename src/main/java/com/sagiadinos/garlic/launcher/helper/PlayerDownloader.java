@@ -92,7 +92,7 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
                 DownloadProgressBar.setProgress(percent, true);
                 outputStream.write(buffer, 0, buffer_size);
             }
-            if (Installer.getAppNameFromPkgName(MyActivity, apk_path).equals(DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME))
+            if (Installer.getAppNameFromPkgName(MyActivity, apk_path).equals(DeviceOwner.PLAYER_PACKAGE_NAME))
             {
                 installPlayer();
             }

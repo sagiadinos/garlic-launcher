@@ -58,7 +58,6 @@ public class ActivityConfigAdmin extends Activity
         tvInformation            = findViewById(R.id.textViewInformation);
 
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
-        MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
         prepareOptionsVisibility();
     }
 
@@ -114,7 +113,7 @@ public class ActivityConfigAdmin extends Activity
 
     private void prepareVisibilityOfBackButtonOption()
     {
-        if (AppPermissions.isDeviceRooted() && AppPermissions.verifyOverlayPermissions(this))
+        if (MyMainConfiguration.isDeviceRooted() && AppPermissions.verifyOverlayPermissions(this))
         {
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);

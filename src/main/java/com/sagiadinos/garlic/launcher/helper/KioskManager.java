@@ -39,22 +39,20 @@ public class KioskManager
     private DeviceOwner MyDeviceOwner;
     private HomeLauncherManager  MyLauncher;
     private LockTaskManager      MyLockTasks;
-    private MainActivity         MyActivity;
-    private MainConfiguration myMainConfiguration;
+    private MainConfiguration MyMainConfiguration;
 
-    public KioskManager(DeviceOwner deviceOwner, HomeLauncherManager hlm, LockTaskManager ltm, MainConfiguration sc, MainActivity ma)
+    public KioskManager(DeviceOwner dvo, HomeLauncherManager hlm, LockTaskManager ltm, MainConfiguration mc)
     {
-        MyDeviceOwner = deviceOwner;
-        MyLauncher    = hlm;
-        MyLockTasks   = ltm;
-        MyActivity    = ma;
-        myMainConfiguration = sc;
+        MyDeviceOwner       = dvo;
+        MyLauncher          = hlm;
+        MyLockTasks         = ltm;
+        MyMainConfiguration = mc;
     }
 
     public boolean startKioskMode()
     {
         boolean ret = false;
-        if (canEnterKioskMode())
+        if (checkforDeviceRights())
         {
             MyLockTasks.startLockTask();
             MyLauncher.becomeHomeActivity();
@@ -67,17 +65,17 @@ public class KioskManager
     {
         if (value)
         {
-            myMainConfiguration.setStrictKioskMode(false);
+            MyMainConfiguration.setStrictKioskMode(false);
         }
         else
         {
-            myMainConfiguration.setStrictKioskMode(true);
+            MyMainConfiguration.setStrictKioskMode(true);
         }
     }
 
     public boolean isStrictKioskModeActive()
     {
-        return myMainConfiguration.isStrictKioskModeActive();
+        return MyMainConfiguration.isStrictKioskModeActive();
     }
 
     /**
@@ -85,7 +83,7 @@ public class KioskManager
      */
     public boolean toggleKioskMode()
     {
-        if (canEnterKioskMode())
+        if (checkforDeviceRights())
         {
             return MyLockTasks.toggleLockTask();
         }
@@ -99,7 +97,7 @@ public class KioskManager
 
     public void becomeHomeActivity()
     {
-        if (canEnterKioskMode())
+        if (checkforDeviceRights())
         {
             MyLauncher.becomeHomeActivity();
         }
@@ -107,48 +105,29 @@ public class KioskManager
 
     public boolean toggleHomeActivity()
     {
-        if (canEnterKioskMode())
+        if (checkforDeviceRights())
         {
            return MyLauncher.toggleHomeActivity();
         }
         return false;
     }
 
-    private boolean canEnterKioskMode()
-    {
-        if (!checkforDeviceRights())
-        {
-            Toast.makeText(MyActivity, "Kiosk Mode is not permitted", Toast.LENGTH_LONG).show();
-        }
-        return true;
-    }
-
     private boolean checkforDeviceRights()
     {
         if (!MyDeviceOwner.isAdminActive())
         {
-            showToast("This app is not a device admin!");
             return false;
         }
         if (!MyDeviceOwner.isDeviceOwner())
         {
-            showToast("This app is not a device admin!");
             return false;
         }
         if (!MyDeviceOwner.isLockTaskPermitted())
         {
-            showToast("Lock Task is not permitted");
             return false;
         }
         return true;
     }
 
-    private void showToast(String text)
-    {
-        if (BuildConfig.DEBUG)
-        {
-            Toast.makeText(MyActivity, text, Toast.LENGTH_SHORT).show();
-        }
-    }
 
 }

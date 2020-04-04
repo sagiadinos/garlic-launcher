@@ -62,7 +62,7 @@
             android:onClick="toggleServiceMode"
             android:text="@string/enter_service_mode"
             android:textSize="24sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView

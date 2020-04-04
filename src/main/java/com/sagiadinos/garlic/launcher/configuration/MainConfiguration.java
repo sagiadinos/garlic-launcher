@@ -107,7 +107,6 @@ public class MainConfiguration
         return (hashed.equals(Model.getString("service_password_hash")));
     }
 
-
     public boolean isDeviceRooted()
     {
         return Model.getBoolean("is_device_rooted");

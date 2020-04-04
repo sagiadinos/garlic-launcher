@@ -53,11 +53,10 @@ public class Installer
 
     public static Boolean isGarlicPlayerInstalled(Context c)
     {
-        return isPackageInstalled(c, DeviceOwner.GARLIC_PLAYER_PACKAGE_NAME);
+        return isPackageInstalled(c, DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
-    public void installPackage(String package_path)
-            throws IOException
+    public void installPackage(String package_path) throws IOException
     {
 
         InputStream fileInputStream            = createInputStream(package_path);
@@ -74,12 +73,10 @@ public class Installer
         session                             = MyPackageInstaller.openSession(session_id);
         OutputStream              out       = session.openWrite(package_name, 0, -1);
 
-        int total = 0;
         byte[] buffer = new byte[65536];
         int c;
         while ((c = fileInputStream.read(buffer)) != -1)
         {
-            total += c;
             out.write(buffer, 0, c);
         }
         session.fsync(out);
@@ -87,7 +84,6 @@ public class Installer
         out.close();
 
         // to commit without re-creating MainActivity
-        // we need to reboot
         session.commit(PendingIntent.getBroadcast(ctx, session_id, new Intent(ACTION_INSTALL_COMPLETE), 0).getIntentSender());
         session.close();
     }

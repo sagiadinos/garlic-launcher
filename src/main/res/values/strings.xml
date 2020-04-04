@@ -30,6 +30,7 @@
     <string name="download_player_in_progress">Trying to download and install garlic-player - Please wait!</string>
     <string name="install_player_in_progress">Trying install garlic-player - Please wait!</string>
     <string name="config_service_admin">Config Service Administrator</string>
+    <string name="root_found_set_device_owner">Device is rooted! Trying to config Launcher as Device Owner - please wait</string>
     <string name="config_wifi">WiFi-Settings</string>
     <string name="android_settings">Android Settings</string>
     <string name="set_content_url">Set Content Url</string>

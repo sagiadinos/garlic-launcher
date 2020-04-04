@@ -28,7 +28,10 @@ import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
+
+import java.io.IOException;
 
 /**
  *  DeviceOwner handles the methods to check for device owner
@@ -50,8 +53,8 @@ public class DeviceOwner
     private ComponentName       MyDeviceAdmin;
     private Context             ctx;
 
-    public static final String GARLIC_LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
-    public static final String GARLIC_PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
+    public static final String LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
+    public static final String PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
 
     public DeviceOwner(Context c)
     {
@@ -60,23 +63,30 @@ public class DeviceOwner
         MyDevicePolicyManager = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if (MyDeviceAdmin == null || MyDevicePolicyManager == null)
         {
-            showToast("handle device owner is null");
             return;
         }
         if (!isAdminActive())
         {
-            showToast("This app is not a device admin!");
             return;
         }
         if (isDeviceOwner())
         {
             determinePermittedLockTaskPackages("");
         }
-        else
+    }
+
+    public void makeDeviceOwner()
+    {
+        try
         {
-            showToast("This app is not the device owner!");
+            Runtime.getRuntime().exec(new String[]{"su","-c","dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"});
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
+
 
     public void activateRestrictions()
     {
@@ -150,10 +160,6 @@ public class DeviceOwner
         {
             MyDevicePolicyManager.clearPackagePersistentPreferredActivities(MyDeviceAdmin, ctx.getPackageName());
         }
-        else
-        {
-            showToast("This app is not the device owner!");
-        }
     }
 
     /**
@@ -164,20 +170,12 @@ public class DeviceOwner
     {
         if (second_app_name.equals(""))
         {
-            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), ctx.getPackageName()+".ActivityConfigAdmin", GARLIC_PLAYER_PACKAGE_NAME});
+            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), ctx.getPackageName()+".ActivityConfigAdmin", PLAYER_PACKAGE_NAME});
         }
         else
         {
             // Todo Clear or add
-            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), GARLIC_PLAYER_PACKAGE_NAME, second_app_name});
-        }
-    }
-
-    private void showToast(String text)
-    {
-        if (BuildConfig.DEBUG)
-        {
-            Toast.makeText(ctx, text, Toast.LENGTH_LONG).show();
+            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), PLAYER_PACKAGE_NAME, second_app_name});
         }
     }
 

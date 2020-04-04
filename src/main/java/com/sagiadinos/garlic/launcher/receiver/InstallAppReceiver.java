@@ -49,7 +49,7 @@ public class InstallAppReceiver extends BroadcastReceiver
             return;
         }
         if (!intent.getAction().equals("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver") ||
-                !ctx.getPackageName().equals(DeviceOwner.GARLIC_LAUNCHER_PACKAGE_NAME))
+                !ctx.getPackageName().equals(DeviceOwner.LAUNCHER_PACKAGE_NAME))
         {
             return;
         }
