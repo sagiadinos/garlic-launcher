@@ -65,7 +65,7 @@ class ConfigXMLModelTest
         });
 
        // assertEquals("no/existing/filepath (Datei oder Verzeichnis nicht gefunden)", exception.getMessage());
-        // Todo Try to find out who we get this idiotic system to throw error messages in english for testing
+        // Todo Try to find out how we get this idiotic system to throw error messages in english for testing
         assertTrue(Objects.requireNonNull(exception.getMessage()).contains("no/existing/filepath"));
     }
 
