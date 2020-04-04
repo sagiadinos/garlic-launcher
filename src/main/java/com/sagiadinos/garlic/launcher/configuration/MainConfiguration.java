@@ -26,6 +26,8 @@ import java.util.UUID;
 public class MainConfiguration
 {
     private SharedPreferencesModel Model;
+    private final String DEFAULT_CONTENT_URL = "https://indexes.smil-control.com";
+
     public MainConfiguration(SharedPreferencesModel model)
     {
         this.Model = model;
@@ -37,6 +39,7 @@ public class MainConfiguration
         if (getUUID() == null)
         {
             Model.storeString("uuid", UUID.randomUUID().toString());
+            writeSmilIndex(DEFAULT_CONTENT_URL);
         }
     }
 
