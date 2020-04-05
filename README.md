@@ -38,3 +38,31 @@ One solution is to root Android, but rooted devices are a potential security ris
  - Garlic-launcher must set as Device Owner
 
 Garlic-launcher is tested also with Android 9 on a non-rooted consumer Tablet.
+
+## Download
+You can download latest signed build from our CI [here](https://garlic-player.com/downloads/ci-builds/latest_android_launcher.apk)
+
+## Installation (read carefully first)
+
+You need unprovisioned Android Hardware. This means a device without which has not configured a playstore account.
+
+For example: You could do a factory reset first... but!
+**Don' t do this on productive devices, tablets or smartphone, cause a factory reset will delete all the data.**
+
+In developer mode you can install garlic-launcher via adb
+
+`adb shell install "/YOUR_PATH_TO_APK/latest_android.apk"`
+
+### Set Device Owner
+
+Garlic-launcher is able to detect a rooted device. In this case the app can set the Device Owner mode by itself.
+
+If the device is not rooted, you can set the Device Owner with following adb command:
+
+`adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver`
+
+Currently we prepare a web process in our SmilControl-CMS to provision Android Devices much easier via a qr-code.
+
+## Finally Installation of a Digital Signage Media Player 
+ 
+Garlic-launcher will start to download the latest [Digital Signage Media Player](https://github.com/sagiadinos/garlic-player) automatically after it is set as Device owner and has access to a network.
