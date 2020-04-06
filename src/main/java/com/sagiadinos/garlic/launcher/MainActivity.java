@@ -157,7 +157,7 @@ public class MainActivity extends Activity
 
     private void checkForInstalledPlayer()
     {
-        if (MyMainConfiguration.isPlayerInstalled() && !BuildConfig.DEBUG)
+        if (MyMainConfiguration.isPlayerInstalled())
         {
             startGarlicPlayerDelayed();
             return;
@@ -327,7 +327,7 @@ public class MainActivity extends Activity
             btStartPlayer.setText(R.string.play);
             return;
         }
-        if (is_countdown_running) // prevent running countdown multiple times
+        if (is_countdown_running || BuildConfig.DEBUG) // prevent running countdown multiple times
         {
             return;
         }
