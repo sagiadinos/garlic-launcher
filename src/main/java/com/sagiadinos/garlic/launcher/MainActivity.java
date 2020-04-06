@@ -157,9 +157,9 @@ public class MainActivity extends Activity
 
     private void checkForInstalledPlayer()
     {
-        if (MyMainConfiguration.isPlayerInstalled())
+        if (MyMainConfiguration.isPlayerInstalled() && !BuildConfig.DEBUG)
         {
-           // startGarlicPlayerDelayed();
+            startGarlicPlayerDelayed();
             return;
         }
         if (!BuildConfig.DEBUG)

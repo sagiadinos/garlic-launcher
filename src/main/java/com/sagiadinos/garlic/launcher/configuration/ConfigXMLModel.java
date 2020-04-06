@@ -162,6 +162,9 @@ public class ConfigXMLModel
             case "content.serverUrl":
                 MyMainConfiguration.writeSmilIndex(xpp.getAttributeValue(null, "value"));
                 break;
+            default:
+                // do nothing on unsupported attributes
+                break;
         }
     }
 

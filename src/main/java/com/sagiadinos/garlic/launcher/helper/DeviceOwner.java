@@ -75,6 +75,9 @@ public class DeviceOwner
         }
     }
 
+    /**
+     * This works only on rooted devices
+     */
     public void makeDeviceOwner()
     {
         try
