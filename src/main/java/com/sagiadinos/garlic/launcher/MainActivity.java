@@ -209,7 +209,7 @@ public class MainActivity extends Activity
         {
             btAdminConfiguration.setVisibility(View.VISIBLE);
             btStartPlayer.setEnabled(true);
-            btToggleServiceMode.setText(R.string.exit_service_mode);
+            btToggleServiceMode.setText(R.string.enter_strict_mode);
             btConfigureWiFi.setVisibility(View.VISIBLE);
             btAndroidSettings.setVisibility(View.VISIBLE);
             btContentUri.setVisibility(View.VISIBLE);
@@ -297,7 +297,7 @@ public class MainActivity extends Activity
                     if (MyKiosk.isStrictKioskModeActive())
                     {
                         MyKiosk.toggleServiceMode(true);
-                        btToggleServiceMode.setText(R.string.exit_service_mode);
+                        btToggleServiceMode.setText(R.string.enter_strict_mode);
                         MyDeviceOwner.activateRestrictions();
                     }
                     else
@@ -327,7 +327,7 @@ public class MainActivity extends Activity
             btStartPlayer.setText(R.string.play);
             return;
         }
-        if (is_countdown_running || BuildConfig.DEBUG) // prevent running countdown multiple times
+        if (is_countdown_running)
         {
             return;
         }

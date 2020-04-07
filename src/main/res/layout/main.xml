@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -30,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <Button
@@ -41,8 +42,9 @@
             android:layout_gravity="center_horizontal"
             android:onClick="toggleLockTask"
             android:text="@string/pin_app"
-            android:textSize="24sp"
-            android:visibility="gone" />
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
         <Button
             android:id="@+id/btToggleLauncher"
@@ -51,8 +53,9 @@
             android:layout_height="wrap_content"
             android:onClick="toggleLauncher"
             android:text="@string/restore_old_launcher"
-            android:textSize="24sp"
-            android:visibility="gone" />
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
         <Button
             android:id="@+id/btToggleServiceMode"
@@ -61,8 +64,9 @@
             android:layout_height="wrap_content"
             android:onClick="toggleServiceMode"
             android:text="@string/enter_service_mode"
-            android:textSize="24sp"
-            android:visibility="gone" />
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="gone" />
     </LinearLayout>
 
     <TextView
@@ -70,9 +74,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:visibility="invisible" />
 
     <ProgressBar
@@ -88,18 +92,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btAdminConfiguration"
+           <Button
+            android:id="@+id/btAndroidSettings"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="configAdmin"
-            android:text="@string/config_service_admin"
-            android:textSize="24sp"
-            android:visibility="gone" />
+            android:onClick="openAndroidSettings"
+            android:text="@string/android_settings"
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/btConfigureWiFi"
@@ -108,22 +113,29 @@
             android:layout_height="wrap_content"
             android:onClick="configWiFi"
             android:text="@string/config_wifi"
-            android:textSize="24sp"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btAndroidSettings"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="openAndroidSettings"
-            android:text="@string/android_settings"
-            android:textSize="24sp"
-            android:visibility="gone" />
-
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btAdminConfiguration"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="configAdmin"
+            android:text="@string/config_launcher"
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -138,7 +150,7 @@
             android:layout_height="wrap_content"
             android:onClick="setContentUrl"
             android:text="@string/set_content_url"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:visibility="gone" />
 
 
@@ -149,7 +161,7 @@
             android:layout_height="wrap_content"
             android:onClick="handleGarlicPlayerStartTimer"
             android:text="@string/play"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:visibility="gone" />
 
     </LinearLayout>
