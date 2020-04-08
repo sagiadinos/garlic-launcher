@@ -3,16 +3,16 @@ package com.sagiadinos.garlic.launcher.configuration;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 
 public class SharedPreferencesModel
 {
     private SharedPreferences pref;
-
+    private String error_text = "";
     public SharedPreferencesModel(Context c)
     {
-        final String APP_KEY             = "GARLIC_LAUNCHER_HEIDEWITZKA_DER_KAPITAEN";
-        pref  = c.getSharedPreferences(APP_KEY, Context.MODE_PRIVATE);
+        pref  = c.getSharedPreferences(DeviceOwner.LAUNCHER_PACKAGE_NAME, Context.MODE_PRIVATE);
     }
 
     public void storeString(String param, String value)
@@ -25,8 +25,14 @@ public class SharedPreferencesModel
         }
         catch (GarlicLauncherException e)
         {
-            e.printStackTrace();
+            // Todo insert some log functionality
+            error_text = e.getMessage();
         }
+    }
+
+    public String getErrorText()
+    {
+        return error_text;
     }
 
     public String getString(String param)
@@ -44,7 +50,7 @@ public class SharedPreferencesModel
         }
         catch (GarlicLauncherException e)
         {
-            e.printStackTrace();
+            error_text = e.getMessage();
         }
     }
 
@@ -57,9 +63,8 @@ public class SharedPreferencesModel
     {
         if (!ed.commit())
         {
-            throw new GarlicLauncherException("commit SharedPreferences failed");
+            throw new GarlicLauncherException("commit of SharedPreferences failed");
         }
-
     }
 
 }
