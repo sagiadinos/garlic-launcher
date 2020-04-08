@@ -25,8 +25,6 @@ class DeviceOwnerTest
 {
 
     @Mock
-    Context ContextMocked = mock(Context.class);
-    @Mock
     DevicePolicyManager DevicePolicyManagerMocked;
     @Mock
     ComponentName DeviceAdminMocked;
@@ -35,7 +33,6 @@ class DeviceOwnerTest
     @AfterEach
     void tearDown()
     {
-        ContextMocked             = null;
         DevicePolicyManagerMocked = null;
         DeviceAdminMocked         = null;
     }
@@ -230,10 +227,9 @@ class DeviceOwnerTest
 
     DeviceOwner createClass()
     {
-        ContextMocked                   = mock(Context.class);
         DevicePolicyManagerMocked       = mock(DevicePolicyManager.class);
         DeviceAdminMocked               = mock(ComponentName.class);
-        return new DeviceOwner(ContextMocked, DevicePolicyManagerMocked, DeviceAdminMocked);
+        return new DeviceOwner(DevicePolicyManagerMocked, DeviceAdminMocked);
     }
 
 }

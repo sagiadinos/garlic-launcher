@@ -46,14 +46,12 @@ public class DeviceOwner
 {
     private DevicePolicyManager MyDevicePolicyManager;
     private ComponentName       MyDeviceAdmin;
-    private Context             ctx;
 
     public static final String LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
 
-    public DeviceOwner(Context c, DevicePolicyManager dpm, ComponentName da)
+    public DeviceOwner(DevicePolicyManager dpm, ComponentName da)
     {
-        ctx                   = c;
         MyDeviceAdmin         = da;
         MyDevicePolicyManager = dpm;
     }

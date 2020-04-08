@@ -41,8 +41,6 @@ public class Installer
     private Context ctx;
     private PackageInstaller MyPackageInstaller;
     private PackageInstaller.Session session;
-    public static final String ACTION_INSTALL_COMPLETE
-            = "com.sagiadinos.garlic.launcher.INSTALL_COMPLETE";
 
     public Installer(Context c)
     {
@@ -84,7 +82,7 @@ public class Installer
         out.close();
 
         // to commit without re-creating MainActivity
-        session.commit(PendingIntent.getBroadcast(ctx, session_id, new Intent(ACTION_INSTALL_COMPLETE), 0).getIntentSender());
+        session.commit(PendingIntent.getBroadcast(ctx, session_id, new Intent("com.sagiadinos.garlic.launcher.INSTALL_COMPLETE"), 0).getIntentSender());
         session.close();
     }
 

@@ -87,8 +87,7 @@ public class MainActivity extends Activity
          getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
-         MyDeviceOwner = new DeviceOwner(this,
-                 (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                  new ComponentName(this, AdminReceiver.class)
          );
          AppPermissions.verifyStandardPermissions(this);
