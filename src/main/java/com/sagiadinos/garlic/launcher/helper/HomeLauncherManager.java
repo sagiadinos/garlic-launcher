@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.sagiadinos.garlic.launcher.MainActivity;
+
 public class HomeLauncherManager
 {
     private Context ctx;
@@ -58,11 +60,7 @@ public class HomeLauncherManager
 
     public void becomeHomeActivity()
     {
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MAIN);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        intentFilter.addCategory(Intent.CATEGORY_HOME);
-
-        MyDeviceOwner.addPersistentPreferredActivity(intentFilter);
+        MyDeviceOwner.addPersistentPreferredActivity(new ComponentName(ctx, MainActivity.class), new IntentFilter(Intent.ACTION_MAIN));
     }
 
     public void restoreHomeActivity()

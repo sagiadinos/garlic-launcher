@@ -19,7 +19,9 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
@@ -40,7 +42,10 @@ public class RebootReceiver extends BroadcastReceiver
         {
             return;
         }
-        DeviceOwner.reboot(context);
+        DeviceOwner.reboot(
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE),
+                new ComponentName(context, AdminReceiver.class)
+        );
     }
 
 }

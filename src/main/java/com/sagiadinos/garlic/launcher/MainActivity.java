@@ -22,6 +22,8 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,6 +50,7 @@ import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
+import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
@@ -84,8 +87,10 @@ public class MainActivity extends Activity
          getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
-         MyDeviceOwner = new DeviceOwner(this);
-
+         MyDeviceOwner = new DeviceOwner(this,
+                 (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                 new ComponentName(this, AdminReceiver.class)
+         );
          AppPermissions.verifyStandardPermissions(this);
 
          MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
@@ -106,6 +111,7 @@ public class MainActivity extends Activity
         }
         if (MyDeviceOwner.isDeviceOwner())
         {
+            MyDeviceOwner.determinePermittedLockTaskPackages("");
             hideInformationText();
             ReceiverManager.registerAllReceiver(this);
             initButtonViews();
@@ -118,7 +124,7 @@ public class MainActivity extends Activity
             if (MyMainConfiguration.isDeviceRooted())
             {
                 displayInformationText(getString(R.string.root_found_set_device_owner));
-                MyDeviceOwner.makeDeviceOwner();
+                MyDeviceOwner.makeDeviceOwner(Runtime.getRuntime());
             }
             else
             {

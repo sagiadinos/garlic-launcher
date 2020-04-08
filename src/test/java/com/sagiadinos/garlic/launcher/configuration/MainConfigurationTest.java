@@ -53,7 +53,7 @@ class MainConfigurationTest
 
         MyMainConfiguration.checkForUUID();
 
-        verify(SharedPreferencesModelMocked, times(1)).storeString(anyString(), anyString());
+        verify(SharedPreferencesModelMocked, times(2)).storeString(anyString(), anyString());
 
     }
 

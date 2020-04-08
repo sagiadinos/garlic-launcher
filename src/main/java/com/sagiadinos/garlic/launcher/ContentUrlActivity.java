@@ -22,6 +22,7 @@ package com.sagiadinos.garlic.launcher;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 
@@ -37,6 +38,7 @@ public class ContentUrlActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
         setContentView(R.layout.activity_content_url);
         ed_content_url = findViewById(R.id.editContentUrl);

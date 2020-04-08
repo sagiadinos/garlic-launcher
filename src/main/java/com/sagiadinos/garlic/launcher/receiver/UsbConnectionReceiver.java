@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -60,7 +61,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
         // otherwise it can crash beacause we
         // try to do things which do not work without device owner rights
-        if (!DeviceOwner.isDeviceOwner(ctx))
+        if (!DeviceOwner.isDeviceOwner((DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE)))
         {
             return;
         }

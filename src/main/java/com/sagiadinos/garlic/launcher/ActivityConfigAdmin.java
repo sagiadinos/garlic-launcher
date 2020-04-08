@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -51,6 +52,7 @@ public class ActivityConfigAdmin extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_config_admin);
         cbOwnBackButton          = findViewById(R.id.cbOwnBackButton);
         cbActiveServicePassword  = findViewById(R.id.cbActiveServicePassword);

@@ -22,14 +22,9 @@ package com.sagiadinos.garlic.launcher.helper;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
-import android.widget.Toast;
-
-import com.sagiadinos.garlic.launcher.BuildConfig;
-import com.sagiadinos.garlic.launcher.MainActivity;
-import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
-import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 
 import java.io.IOException;
 
@@ -56,33 +51,21 @@ public class DeviceOwner
     public static final String LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
 
-    public DeviceOwner(Context c)
+    public DeviceOwner(Context c, DevicePolicyManager dpm, ComponentName da)
     {
         ctx                   = c;
-        MyDeviceAdmin         = new ComponentName(ctx, AdminReceiver.class);
-        MyDevicePolicyManager = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (MyDeviceAdmin == null || MyDevicePolicyManager == null)
-        {
-            return;
-        }
-        if (!isAdminActive())
-        {
-            return;
-        }
-        if (isDeviceOwner())
-        {
-            determinePermittedLockTaskPackages("");
-        }
+        MyDeviceAdmin         = da;
+        MyDevicePolicyManager = dpm;
     }
 
     /**
      * This works only on rooted devices
      */
-    public void makeDeviceOwner()
+    public void makeDeviceOwner(Runtime MyRuntime)
     {
         try
         {
-            Runtime.getRuntime().exec(new String[]{"su","-c","dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"});
+            MyRuntime.exec(new String[]{"su","-c","dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"});
         }
         catch (IOException e)
         {
@@ -101,7 +84,7 @@ public class DeviceOwner
         MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_MODIFY_ACCOUNTS);
 
         MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_FUN);
-   }
+    }
 
     public void deactivateRestrictions()
     {
@@ -117,7 +100,7 @@ public class DeviceOwner
 
     public boolean isLockTaskPermitted()
     {
-        return MyDevicePolicyManager.isLockTaskPermitted(ctx.getPackageName());
+        return MyDevicePolicyManager.isLockTaskPermitted(LAUNCHER_PACKAGE_NAME);
     }
 
     public boolean isAdminActive()
@@ -127,41 +110,43 @@ public class DeviceOwner
 
     public boolean isDeviceOwner()
     {
-        String s = ctx.getPackageName();
-        return MyDevicePolicyManager.isDeviceOwnerApp(s);
+        return MyDevicePolicyManager.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
     }
 
-    public static boolean isDeviceOwner(Context ctx)
+    public static boolean isDeviceOwner(DevicePolicyManager dpm)
     {
-        DevicePolicyManager dpm = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if (dpm == null)
         {
             return false;
         }
-        return dpm.isDeviceOwnerApp(ctx.getPackageName());
+        return dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
     }
 
-    public static void reboot(Context ctx)
+    public static void reboot(DevicePolicyManager dpm, ComponentName da)
     {
-        DevicePolicyManager dpm         = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (dpm != null && dpm.isDeviceOwnerApp(ctx.getPackageName()))
+        if (dpm != null && dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME))
         {
-            dpm.reboot(new ComponentName(ctx, AdminReceiver.class));
+            dpm.reboot(da);
         }
     }
 
-    public void addPersistentPreferredActivity(IntentFilter intentFilter)
+    public void addPersistentPreferredActivity(ComponentName activity, IntentFilter MyIntentFilter)
     {
-        ComponentName activity = new ComponentName(ctx, MainActivity.class);
-        MyDevicePolicyManager.addPersistentPreferredActivity(MyDeviceAdmin, intentFilter, activity);
+        if (activity == null || MyIntentFilter == null)
+        {
+            return;
+        }
 
+        MyIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        MyIntentFilter.addCategory(Intent.CATEGORY_HOME);
+        MyDevicePolicyManager.addPersistentPreferredActivity(MyDeviceAdmin, MyIntentFilter, activity);
     }
 
     public void clearMainPackageFromPersistent()
     {
-        if (isAdminActive())
+        if (isDeviceOwner())
         {
-            MyDevicePolicyManager.clearPackagePersistentPreferredActivities(MyDeviceAdmin, ctx.getPackageName());
+            MyDevicePolicyManager.clearPackagePersistentPreferredActivities(MyDeviceAdmin, LAUNCHER_PACKAGE_NAME);
         }
     }
 
@@ -171,15 +156,21 @@ public class DeviceOwner
      */
     public void determinePermittedLockTaskPackages(String second_app_name)
     {
-        if (second_app_name.equals(""))
+        String[] s;
+        if (second_app_name == null)
         {
-            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), ctx.getPackageName()+".ActivityConfigAdmin", PLAYER_PACKAGE_NAME});
+            return;
+        }
+        if (second_app_name.isEmpty())
+        {
+            s = new String[]{DeviceOwner.LAUNCHER_PACKAGE_NAME, DeviceOwner.PLAYER_PACKAGE_NAME};
         }
         else
         {
-            // Todo Clear or add
-            MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, new String[]{ctx.getPackageName(), PLAYER_PACKAGE_NAME, second_app_name});
+            s = new String[]{LAUNCHER_PACKAGE_NAME, PLAYER_PACKAGE_NAME, second_app_name};
         }
+        // Todo Later Clear or add functionality
+        MyDevicePolicyManager.setLockTaskPackages(MyDeviceAdmin, s);
     }
 
 }

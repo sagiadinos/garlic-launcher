@@ -26,7 +26,7 @@
     <string name="unpin_app">Unpin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_no_network">Player is not installed and there is no network- Install via USB or activate network for an automatic download!</string>
+    <string name="no_garlic_no_network">No Player and No Network - Install Player via USB or Activate a Network!</string>
     <string name="download_player_in_progress">Try downloading garlic-player - Please wait!</string>
     <string name="install_player_in_progress">Install garlic-player - Please wait!</string>
     <string name="config_launcher">Config Launcher</string>
