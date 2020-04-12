@@ -19,7 +19,6 @@
 
 package com.sagiadinos.garlic.launcher;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
@@ -41,6 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
@@ -81,6 +81,7 @@ public class MainActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+
          super.onCreate(savedInstanceState);
 
          setContentView(R.layout.main);
@@ -95,6 +96,7 @@ public class MainActivity extends Activity
          MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
          MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
+         MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
 
 
          MyKiosk               = new KioskManager(MyDeviceOwner,
@@ -115,7 +117,6 @@ public class MainActivity extends Activity
             ReceiverManager.registerAllReceiver(this);
             initButtonViews();
             startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
-
             checkForInstalledPlayer();
         }
         else
@@ -303,13 +304,13 @@ public class MainActivity extends Activity
                     {
                         MyKiosk.toggleServiceMode(true);
                         btToggleServiceMode.setText(R.string.enter_strict_mode);
-                        MyDeviceOwner.activateRestrictions();
+                        MyDeviceOwner.deactivateRestrictions();
                     }
                     else
                     {
                         MyKiosk.toggleServiceMode(false);
                         btToggleServiceMode.setText(R.string.enter_service_mode);
-                        MyDeviceOwner.deactivateRestrictions();
+                        MyDeviceOwner.activateRestrictions();
                     }
                     recreate();
                 }

@@ -21,7 +21,6 @@ android {
     defaultConfig {
         applicationId "com.sagiadinos.garlic.launcher"
         minSdkVersion 25
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         // For signating keystore.properties includes the credentials
@@ -59,7 +58,7 @@ dependencies {
     implementation 'com.android.support:support-annotations:28.0.0'
 }
 
-// activate warnings when deprecated API commands are used
+// activate warnings to check if deprecated API commands are used
 /*
 allprojects {
     tasks.withType(JavaCompile) {
