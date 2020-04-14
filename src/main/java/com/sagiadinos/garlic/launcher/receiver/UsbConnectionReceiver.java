@@ -21,6 +21,7 @@ package com.sagiadinos.garlic.launcher.receiver;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -88,6 +89,9 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         File smil_index = new File(path + "/index.smil");
         if (checkAccessibility(smil_index))
         {
+            MainConfiguration MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
+            MyMainConfiguration.writeSmilIndex(path + "/index.smil");
+
             ctx.sendBroadcast(createIntentForSmilIndex(smil_index));
             return;
         }
@@ -95,8 +99,12 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         File config_xml = new File(path + "/config.xml");
         if (checkAccessibility(config_xml))
         {
-
-            sendBroadcastForConfigXml(config_xml);
+            parseConfigFile(config_xml);
+//            sendBroadcastForConfigXml(config_xml);
+            DeviceOwner.reboot(
+                    (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE),
+                    new ComponentName(ctx, AdminReceiver.class)
+            );
             return;
         }
 
@@ -123,12 +131,10 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         return intent;
     }
 
-    private void sendBroadcastForConfigXml(File file)
+    private void parseConfigFile(File file)
     {
         try
         {
-            GarlicLauncherApplication MyApplication = (GarlicLauncherApplication) ctx.getApplicationContext();
-
             // parse configFile first for Wifi content Url etc...
             NetworkData MyNetWorkData = new NetworkData();
             ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new MainConfiguration(new SharedPreferencesModel(ctx)));
@@ -159,18 +165,23 @@ public class UsbConnectionReceiver extends BroadcastReceiver
                // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
             }
 */
-            // currently not necessary as player gets all data from launcher
-/*            if (!MyApplication.isOnForeground() && Installer.isGarlicPlayerInstalled(ctx))
-            {
-                ctx.sendBroadcast(createIntentForConfigXml(file));
-            }
-*/        }
-        catch (IOException e)
+        }
+            catch (IOException e)
         {
             Log.e("Usb config_xml", Objects.requireNonNull(e.getMessage()));
         }
     }
 
+    // currently not necessary as player gets all data from launcher
+/*   private void sendBroadcastForConfigXml(File file)
+    {
+             if (!MyApplication.isOnForeground() && Installer.isGarlicPlayerInstalled(ctx))
+            {
+                ctx.sendBroadcast(createIntentForConfigXml(file));
+            }
+
+    }
+*/
     private float convertPercent(String value)
     {
        return Float.parseFloat(value.substring(0, value.length()-1)) / 100f;
