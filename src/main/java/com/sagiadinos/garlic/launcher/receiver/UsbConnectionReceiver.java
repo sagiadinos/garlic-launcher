@@ -23,11 +23,14 @@ import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
@@ -138,20 +141,39 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
             // Todo later: set time and time zone
 
-            if (!MyApplication.isOnForeground() && Installer.isGarlicPlayerInstalled(ctx))
+            if (MyConfigXMLModel.getVolume().contains("%"))
+            {
+                AudioManager audio = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+                assert audio != null;
+                int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                float percent = convertPercent(MyConfigXMLModel.getVolume());
+                int volume = (int) (maxVolume * percent);
+                audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            }
+            // Todo: find a way to check if system app
+            // this works only when system app
+/*            if (MyConfigXMLModel.getBrightness().contains("%"))
+            {
+              //  int brightness = (int) (255f * convertPercent(MyConfigXMLModel.getBrightness()));
+               // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+               // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
+            }
+*/
+            // currently not necessary as player gets all data from launcher
+/*            if (!MyApplication.isOnForeground() && Installer.isGarlicPlayerInstalled(ctx))
             {
                 ctx.sendBroadcast(createIntentForConfigXml(file));
             }
-            else
-            {
-                // move ConfigFile to DownloadDirectory when player starts it later
-                MyConfigXMLModel.copy(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/config.xml"));
-            }
-        }
+*/        }
         catch (IOException e)
         {
-            Log.e("cUsb config_xml", Objects.requireNonNull(e.getMessage()));
+            Log.e("Usb config_xml", Objects.requireNonNull(e.getMessage()));
         }
+    }
+
+    private float convertPercent(String value)
+    {
+       return Float.parseFloat(value.substring(0, value.length()-1)) / 100f;
     }
 
     private Intent createIntentForConfigXml(File file)

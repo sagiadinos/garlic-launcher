@@ -42,11 +42,23 @@ public class ConfigXMLModel
 {
     private NetworkData MyNetworkData;
     private MainConfiguration MyMainConfiguration;
+    private String volume = "";
+    private String brightness = "";
 
     public ConfigXMLModel(NetworkData myNetworkData, MainConfiguration myMainConfiguration)
     {
         this.MyNetworkData        = myNetworkData;
         this.MyMainConfiguration = myMainConfiguration;
+    }
+
+    public String getVolume()
+    {
+        return volume;
+    }
+
+    public String getBrightness()
+    {
+        return brightness;
     }
 
     public String readConfigXml(File config_xml) throws IOException
@@ -155,6 +167,13 @@ public class ConfigXMLModel
                 break;
             case "net.ethernet.domain":
                 MyNetworkData.setEthernetDomain(xpp.getAttributeValue(null, "value"));
+                break;
+            case "audio.soundLevel":
+            case "hardware.audioOut.0.masterSoundLevel":
+                volume = xpp.getAttributeValue(null, "value");
+                break;
+            case "display.brightness":
+                brightness = xpp.getAttributeValue(null, "value");
                 break;
             case "net.ethernet.dnsServers":
                 MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
