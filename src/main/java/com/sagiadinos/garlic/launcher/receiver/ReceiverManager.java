@@ -29,6 +29,7 @@ public class ReceiverManager
     private static SecondAppReceiver MySecondAppReceiver = null;
     private static RebootReceiver MyRebootReceiver = null;
     private static InstallAppReceiver MyInstallAppReceiver = null;
+    private static ConfigXMLReceiver MyConfigXMLReceiver = null;
 
     // private static MainActivity Activity; see below
     public static void registerAllReceiver(MainActivity MainActivity)
@@ -69,6 +70,11 @@ public class ReceiverManager
                 createIntentFilter("InstallAppReceiver")
         );
 
+        MyConfigXMLReceiver =  new ConfigXMLReceiver();
+        MainActivity.registerReceiver(
+                MyConfigXMLReceiver,
+                createIntentFilter("ConfigXMLReceiver")
+        );
 
 
         //   USBConnectionReceiver is initialized in AndroidManifest
@@ -84,6 +90,7 @@ public class ReceiverManager
         MainActivity.unregisterReceiver(MySecondAppReceiver);
         MainActivity.unregisterReceiver(MyRebootReceiver);
         MainActivity.unregisterReceiver(MyInstallAppReceiver);
+        MainActivity.unregisterReceiver(MyConfigXMLReceiver);
 
     }
 

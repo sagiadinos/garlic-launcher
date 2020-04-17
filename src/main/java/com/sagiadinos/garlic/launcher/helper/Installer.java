@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,8 +41,7 @@ public class Installer
 {
     private Context ctx;
     private PackageInstaller MyPackageInstaller;
-    private PackageInstaller.Session session;
-
+    private String task_id = "";
     public Installer(Context c)
     {
         ctx = c;
@@ -54,36 +54,72 @@ public class Installer
         return isPackageInstalled(c, DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
-    public void installPackage(String package_path) throws IOException
+    public void installPackage(String t_id, String package_path) throws IOException
     {
-
-        InputStream fileInputStream            = createInputStream(package_path);
-        PackageInstaller.SessionParams params  = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        String package_name                    = getAppNameFromPkgName(ctx, package_path);
+        this.task_id = t_id;
+        String package_name   = getAppNameFromPkgName(ctx, package_path);
         if (package_name.isEmpty())
         {
             return;
         }
+
+        PackageInstaller.SessionParams params  = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         params.setAppPackageName(package_name);
+        int                      session_id    = MyPackageInstaller.createSession(params);
+        PackageInstaller.Session session       = MyPackageInstaller.openSession(session_id);
 
-        // set params
-        int                      session_id = MyPackageInstaller.createSession(params);
-        session                             = MyPackageInstaller.openSession(session_id);
-        OutputStream              out       = session.openWrite(package_name, 0, -1);
+        MyPackageInstaller.registerSessionCallback(new PackageInstaller.SessionCallback()
+        {
+            @Override
+            public void onCreated(int sessionid)
+            {
+            }
 
-        byte[] buffer = new byte[65536];
+            @Override
+            public void onBadgingChanged(int sessionId)
+            {
+            }
+
+            @Override
+            public void onActiveChanged(int sessionId, boolean active)
+            {
+            }
+
+            @Override
+            public void onProgressChanged(int sessionId, float progress)
+            {
+            }
+
+            @Override
+            public void onFinished(int sessionId, boolean success)
+            {
+                if (success)
+                {
+                    TaskExecutionReport.append(task_id, "completed");
+                }
+                else
+                {
+                    TaskExecutionReport.append(task_id, "aborted");
+                }
+            }
+        });
+
+        InputStream  in  = createInputStream(package_path);
+        OutputStream out = session.openWrite(package_name, 0, -1);
+        byte[] buffer = new byte[16384];
         int c;
-        while ((c = fileInputStream.read(buffer)) != -1)
+        while ((c = in.read(buffer)) != -1)
         {
             out.write(buffer, 0, c);
         }
         session.fsync(out);
-        fileInputStream.close();
+        in.close();
         out.close();
 
         // to commit without re-creating MainActivity
-        session.commit(PendingIntent.getBroadcast(ctx, session_id, new Intent("com.sagiadinos.garlic.launcher.INSTALL_COMPLETE"), 0).getIntentSender());
-        session.close();
+        PendingIntent pi = PendingIntent.getBroadcast(ctx, session_id, new Intent("com.sagiadinos.garlic.launcher.ACTION_UPDATE"), 0);
+        session.commit(pi.getIntentSender());
+   //   session.close();
     }
 
     public void uninstall(String package_name)

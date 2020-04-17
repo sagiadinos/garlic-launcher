@@ -15,6 +15,7 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
 
 import java.io.File;
@@ -24,6 +25,7 @@ import java.util.Objects;
 public class ConfigXMLReceiver extends BroadcastReceiver
 {
     Context ctx;
+    NetworkData MyNetWorkData = null;
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -33,46 +35,49 @@ public class ConfigXMLReceiver extends BroadcastReceiver
         {
             return;
         }
-        // otherwise it can crash beacause we
-        // try to do things which do not work without device owner rights
-        if (!DeviceOwner.isDeviceOwner((DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE)))
+
+        File config_xml = new File(Objects.requireNonNull(intent.getStringExtra("config_path")));
+
+        String task_id = "";
+        if (intent.getStringExtra("task_id") != null)
         {
-            return;
+            task_id        = intent.getStringExtra("task_id");
         }
-        String path = intent.getStringExtra("config_path");
-        File config_xml = new File(path + "/config.xml");
 
-        parseConfigFile(config_xml);
+        if (parseConfigFile(config_xml))
+        {
+            Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.RebootReceiver");
+            i.putExtra("task_id", task_id);
+            ctx.sendBroadcast(i);
+        }
+        else
+        {
+            TaskExecutionReport.append(task_id, "aborted");
 
-        ctx.sendBroadcast(new Intent("com.sagiadinos.garlic.launcher.receiver.RebootReceiver"));
+        }
     }
 
-
-    private void parseConfigFile(File file)
+    private boolean parseConfigFile(File file)
     {
+        boolean ret = false;
         try
         {
             // parse configFile first for Wifi content Url etc...
-            NetworkData MyNetWorkData = new NetworkData();
+            MyNetWorkData                   = new NetworkData();
             ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new MainConfiguration(new SharedPreferencesModel(ctx)));
-            String xml = MyConfigXMLModel.readConfigXml(file);
-            MyConfigXMLModel.parseConfigXml(xml);
-            WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
+            MyConfigXMLModel.parseConfigXml(MyConfigXMLModel.readConfigXml(file));
 
-            MyWiFi.prepareConnection(MyNetWorkData);
-            MyWiFi.connectToNetwork();
-
-            // Todo later: set time and time zone
+            if (!MyNetWorkData.getWifiSSID().isEmpty())
+            {
+                configWiFi();
+            }
 
             if (MyConfigXMLModel.getVolume().contains("%"))
             {
-                AudioManager audio = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-                assert audio != null;
-                int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                float percent = convertPercent(MyConfigXMLModel.getVolume());
-                int volume = (int) (maxVolume * percent);
-                audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+                configAudioVolume(MyConfigXMLModel.getVolume());
             }
+            // Todo: set time zone
+
             // Todo: find a way to check if system app
             // this works only when system app
 /*            if (MyConfigXMLModel.getBrightness().contains("%"))
@@ -82,11 +87,29 @@ public class ConfigXMLReceiver extends BroadcastReceiver
                // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
             }
 */
+            ret = true;
         }
         catch (IOException e)
         {
             Log.e("Usb config_xml", Objects.requireNonNull(e.getMessage()));
         }
+        return ret;
+    }
+
+    private void configWiFi()
+    {
+        WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
+        MyWiFi.prepareConnection(MyNetWorkData);
+        MyWiFi.connectToNetwork();
+    }
+
+    private void configAudioVolume(String percent)
+    {
+        AudioManager audio = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+        assert audio != null;
+        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int volume = (int) (maxVolume * convertPercent(percent));
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
     }
 
     private float convertPercent(String value)

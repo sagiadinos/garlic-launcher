@@ -26,6 +26,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
+
+import java.util.Objects;
 
 public class RebootReceiver extends BroadcastReceiver
 {
@@ -42,6 +45,12 @@ public class RebootReceiver extends BroadcastReceiver
         {
             return;
         }
+        String task_id = "";
+        if (intent.getStringExtra("task_id") != null)
+        {
+            task_id        = intent.getStringExtra("task_id");
+        }
+        TaskExecutionReport.append(task_id, "completed");
         DeviceOwner.reboot(
                 (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE),
                 new ComponentName(context, AdminReceiver.class)

@@ -18,9 +18,7 @@
  */
 package com.sagiadinos.garlic.launcher.receiver;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
@@ -57,7 +55,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
 
         // Solution:
         // Check the extras for for Replacing key and in this case ignore REMOVE and ADDED
-        if (Objects.requireNonNull(intent.getExtras()).containsKey(Intent.EXTRA_REPLACING) &&
+        if (intent.getExtras().containsKey(Intent.EXTRA_REPLACING) &&
                 (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
                         intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)
                 )
@@ -78,10 +76,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
         {
             if (!BuildConfig.DEBUG)
             {
-                DeviceOwner.reboot(
-                        (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                        new ComponentName(context, AdminReceiver.class)
-                );
+                context.sendBroadcast(new Intent("com.sagiadinos.garlic.launcher.receiver.RebootReceiver"));
             }
         }
     }

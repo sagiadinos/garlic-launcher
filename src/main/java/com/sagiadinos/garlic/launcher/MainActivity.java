@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,6 +51,7 @@ import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
+import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
@@ -71,6 +73,7 @@ public class MainActivity extends Activity
     private MainConfiguration   MyMainConfiguration = null;
     private KioskManager        MyKiosk               = null;
 
+    private TaskExecutionReport MyTaskExecutionReport;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -93,6 +96,7 @@ public class MainActivity extends Activity
          );
          AppPermissions.verifyStandardPermissions(this);
 
+         MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
          MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
          MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());

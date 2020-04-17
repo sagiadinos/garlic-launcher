@@ -21,30 +21,17 @@ package com.sagiadinos.garlic.launcher.receiver;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.net.Uri;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
-import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.WindowManager;
 
-import com.sagiadinos.garlic.launcher.GarlicLauncherApplication;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
-import com.sagiadinos.garlic.launcher.helper.WiFi;
-import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
-import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -54,7 +41,6 @@ import java.util.Objects;
 public class UsbConnectionReceiver extends BroadcastReceiver
 {
     Context ctx;
-
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -99,23 +85,20 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         File config_xml = new File(path + "/config.xml");
         if (checkAccessibility(config_xml))
         {
-            sendBroadcastForConfigXml(config_xml);
+            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver");
+            intent.putExtra("config_path", config_xml.getAbsolutePath());
+            ctx.sendBroadcast(intent);
             return;
         }
 
         File player_apk = new File(path + "/garlic-player.apk");
-        if (checkAccessibility(player_apk) &&
-                Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.PLAYER_PACKAGE_NAME))
+        if (checkAccessibility(player_apk)/* &&
+                Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.PLAYER_PACKAGE_NAME)*/)
         {
-            Installer MyInstaller = new Installer(ctx);
-            try
-            {
-                MyInstaller.installPackage(player_apk.getAbsolutePath());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
+            intent.putExtra("apk_path", player_apk.getAbsolutePath());
+            intent.putExtra("task_id", "via usb");
+            ctx.sendBroadcast(intent);
         }
     }
 
@@ -123,18 +106,6 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         Intent intent = new Intent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
         intent.putExtra("smil_index_path", file.getAbsolutePath());
-        return intent;
-    }
-
-    private void sendBroadcastForConfigXml(File file)
-    {
-        ctx.sendBroadcast(createIntentForConfigXml(file));
-    }
-
-    private Intent createIntentForConfigXml(File file)
-    {
-        Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver");
-        intent.putExtra("config_path", file.getAbsolutePath());
         return intent;
     }
 
