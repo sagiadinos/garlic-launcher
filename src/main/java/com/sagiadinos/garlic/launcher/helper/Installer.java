@@ -35,7 +35,7 @@ import java.io.OutputStream;
 
 /**
  *  This class install and uninstall (later) software
- *  Only apk file-path is neccessary
+ *  Only apk file-path is necessary
  */
 public class Installer
 {
@@ -133,12 +133,12 @@ public class Installer
         MyPackageInstaller.uninstall(package_name, sender.getIntentSender());
     }
 
-    public static boolean isPackageInstalled(Context c, String targetPackage)
+    public static boolean isPackageInstalled(Context c, String check_package)
     {
         PackageManager pm = c.getPackageManager();
         try
         {
-            pm.getPackageInfo(targetPackage, PackageManager.GET_META_DATA);
+            pm.getPackageInfo(check_package, PackageManager.GET_META_DATA);
         }
         catch (PackageManager.NameNotFoundException e)
         {
