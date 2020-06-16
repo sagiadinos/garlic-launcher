@@ -57,12 +57,12 @@ public class LockTaskManager
 
     private boolean isLockTaskActive()
     {
-        ActivityManager activityManager = (ActivityManager) MyMainActivity.getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager == null)
+        ActivityManager MyActivityManager = (ActivityManager) MyMainActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        if (MyActivityManager == null)
         {
             return false;
         }
-        return activityManager.getLockTaskModeState() != ActivityManager.LOCK_TASK_MODE_NONE;
+        return MyActivityManager.getLockTaskModeState() != ActivityManager.LOCK_TASK_MODE_NONE;
     }
 
 }
