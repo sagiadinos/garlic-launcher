@@ -22,7 +22,7 @@ public class TaskExecutionReport
         try
         {
             createDir(path);
-            LogFile = createFile(path + "task_execution_log.xml");
+            LogFile = createFile(path + "/task_execution_log.xml");
         }
         catch (IOException | GarlicLauncherException e)
         {
