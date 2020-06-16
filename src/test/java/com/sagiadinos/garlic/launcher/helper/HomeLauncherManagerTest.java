@@ -44,42 +44,42 @@ class HomeLauncherManagerTest
     void isHomeActivitySuccess()
     {
         ComponentName ComponentNameMocked    = mock(ComponentName.class);
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
         when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(ComponentNameMocked);
         when(ComponentNameMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
         when(ContextMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
 
-        assertTrue(MyHomeLauncherManager.isHomeActivity());
+        assertTrue(MyTestClass.isHomeActivity());
     }
 
     @Test
     void isHomeActivityFailByName()
     {
         ComponentName ComponentNameMocked    = mock(ComponentName.class);
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
         when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(ComponentNameMocked);
         when(ComponentNameMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
         when(ContextMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.heidewitzka");
-        assertFalse(MyHomeLauncherManager.isHomeActivity());
+        assertFalse(MyTestClass.isHomeActivity());
     }
 
 
     @Test
     void isHomeActivityFailsOnActivity()
     {
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
         when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(null);
 
-        assertFalse(MyHomeLauncherManager.isHomeActivity());
+        assertFalse(MyTestClass.isHomeActivity());
     }
 
     @Test
     void toggleHomeActivityActivate()
     {
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
         when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(null);
 
-        assertTrue(MyHomeLauncherManager.toggleHomeActivity());
+        assertTrue(MyTestClass.toggleHomeActivity());
 
         verify(DeviceOwnerMocked, times(1)).addPersistentPreferredActivity();
     }
@@ -88,12 +88,12 @@ class HomeLauncherManagerTest
     void toggleHomeActivityInactivate()
     {
         ComponentName ComponentNameMocked    = mock(ComponentName.class);
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
         when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(ComponentNameMocked);
         when(ComponentNameMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
         when(ContextMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
 
-        assertFalse(MyHomeLauncherManager.toggleHomeActivity());
+        assertFalse(MyTestClass.toggleHomeActivity());
 
         verify(DeviceOwnerMocked, times(1)).clearMainPackageFromPersistent();
     }
@@ -102,9 +102,9 @@ class HomeLauncherManagerTest
     @Test
     void becomeHomeActivity()
     {
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
 
-        MyHomeLauncherManager.becomeHomeActivity();
+        MyTestClass.becomeHomeActivity();
 
         verify(DeviceOwnerMocked, times(1)).addPersistentPreferredActivity();
 
@@ -113,9 +113,9 @@ class HomeLauncherManagerTest
     @Test
     void restoreHomeActivity()
     {
-        HomeLauncherManager MyHomeLauncherManager = createClass();
+        HomeLauncherManager MyTestClass = createClass();
 
-        MyHomeLauncherManager.restoreHomeActivity();
+        MyTestClass.restoreHomeActivity();
 
         verify(DeviceOwnerMocked, times(1)).clearMainPackageFromPersistent();
     }
