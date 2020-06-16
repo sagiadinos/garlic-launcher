@@ -46,14 +46,18 @@ public class DeviceOwner
 {
     private DevicePolicyManager MyDevicePolicyManager;
     private ComponentName       MyDeviceAdmin;
+    private ComponentName       MyActivityComponent;
+    private IntentFilter        MyIntentFilter;
 
     public static final String LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
 
-    public DeviceOwner(DevicePolicyManager dpm, ComponentName da)
+    public DeviceOwner(DevicePolicyManager dpm, ComponentName da, ComponentName activity, IntentFilter filter)
     {
         MyDeviceAdmin         = da;
         MyDevicePolicyManager = dpm;
+        MyActivityComponent   = activity;
+        MyIntentFilter        = filter;
     }
 
     /**
@@ -128,16 +132,11 @@ public class DeviceOwner
         }
     }
 
-    public void addPersistentPreferredActivity(ComponentName activity, IntentFilter MyIntentFilter)
+    public void addPersistentPreferredActivity()
     {
-        if (activity == null || MyIntentFilter == null)
-        {
-            return;
-        }
-
         MyIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         MyIntentFilter.addCategory(Intent.CATEGORY_HOME);
-        MyDevicePolicyManager.addPersistentPreferredActivity(MyDeviceAdmin, MyIntentFilter, activity);
+        MyDevicePolicyManager.addPersistentPreferredActivity(MyDeviceAdmin, MyIntentFilter, MyActivityComponent);
     }
 
     public void clearMainPackageFromPersistent()

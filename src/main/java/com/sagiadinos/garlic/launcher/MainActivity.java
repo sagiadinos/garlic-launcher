@@ -26,6 +26,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -92,7 +93,9 @@ public class MainActivity extends Activity
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
          MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
-                 new ComponentName(this, AdminReceiver.class)
+                         new ComponentName(this, AdminReceiver.class),
+                         new ComponentName(this, MainActivity.class),
+                         new IntentFilter(Intent.ACTION_MAIN)
          );
          AppPermissions.verifyStandardPermissions(this);
 
@@ -104,7 +107,7 @@ public class MainActivity extends Activity
 
 
          MyKiosk               = new KioskManager(MyDeviceOwner,
-                                                new HomeLauncherManager(MyDeviceOwner, this),
+                                                new HomeLauncherManager(MyDeviceOwner, this, new Intent(Intent.ACTION_MAIN)),
                                                 new LockTaskManager(this),
                                                 MyMainConfiguration
         );

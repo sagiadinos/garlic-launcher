@@ -30,11 +30,13 @@ public class HomeLauncherManager
 {
     private Context ctx;
     private DeviceOwner MyDeviceOwner;
+    private Intent      MyIntent;
 
-    public HomeLauncherManager(DeviceOwner dvo, Context c)
+    public HomeLauncherManager(DeviceOwner dvo, Context c, Intent intent)
     {
         ctx           = c;
         MyDeviceOwner = dvo;
+        MyIntent      = intent;
     }
 
     public boolean isHomeActivity()
@@ -60,7 +62,7 @@ public class HomeLauncherManager
 
     public void becomeHomeActivity()
     {
-        MyDeviceOwner.addPersistentPreferredActivity(new ComponentName(ctx, MainActivity.class), new IntentFilter(Intent.ACTION_MAIN));
+        MyDeviceOwner.addPersistentPreferredActivity();
     }
 
     public void restoreHomeActivity()
@@ -70,9 +72,8 @@ public class HomeLauncherManager
 
     private String getHomeActivity()
     {
-        Intent intent     = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        ComponentName cn  = intent.resolveActivity(ctx.getPackageManager());
+        MyIntent.addCategory(Intent.CATEGORY_HOME);
+        ComponentName cn  = MyIntent.resolveActivity(ctx.getPackageManager());
         if (cn != null)
         {
             return cn.getPackageName();

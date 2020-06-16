@@ -134,7 +134,6 @@ public class ActivityConfigAdmin extends Activity
         cbActiveServicePassword.setChecked(MyMainConfiguration.hasActiveServicePassword());
 
         prepareVisibilityOfEditServicePassword(MyMainConfiguration.hasActiveServicePassword());
-
     }
 
     public void prepareVisibilityOfEditServicePassword(Boolean is_checked)

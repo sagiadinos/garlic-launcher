@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,6 +31,10 @@ class DeviceOwnerTest
     DevicePolicyManager DevicePolicyManagerMocked;
     @Mock
     ComponentName DeviceAdminMocked;
+    @Mock
+    IntentFilter IntentFilterMocked;
+    @Mock
+    ComponentName MainActivityComponentMocked;
 
 
     @AfterEach
@@ -143,40 +150,10 @@ class DeviceOwnerTest
     void addPersistentPreferredActivity()
     {
         DeviceOwner MyTestClass         = createClass();
-        ComponentName cn                = mock(ComponentName.class);
-        IntentFilter IntentFilterMocked = mock(IntentFilter.class);
-        MyTestClass.addPersistentPreferredActivity(cn, IntentFilterMocked);
-        verify(DevicePolicyManagerMocked, times(1)).addPersistentPreferredActivity(DeviceAdminMocked, IntentFilterMocked, cn);
+        MyTestClass.addPersistentPreferredActivity();
+        verify(DevicePolicyManagerMocked, times(1)).addPersistentPreferredActivity(DeviceAdminMocked, IntentFilterMocked, MainActivityComponentMocked);
         verify(IntentFilterMocked, times(1)).addCategory(Intent.CATEGORY_DEFAULT);
         verify(IntentFilterMocked, times(1)).addCategory(Intent.CATEGORY_HOME);
-    }
-
-    @Test
-    void addPersistentPreferredActivityFirstParamIsNull()
-    {
-        // create normal dto do the verify checks
-        DeviceOwner MyTestClass         = createClass();
-        ComponentName cn                = mock(ComponentName.class);;
-        IntentFilter IntentFilterMocked = mock(IntentFilter.class);
-
-        MyTestClass.addPersistentPreferredActivity(null, IntentFilterMocked);
-
-        verify(DevicePolicyManagerMocked, never()).addPersistentPreferredActivity(DeviceAdminMocked, IntentFilterMocked, cn);
-        verify(IntentFilterMocked, never()).addCategory(Intent.CATEGORY_HOME);
-    }
-
-    @Test
-    void addPersistentPreferredActivitySecondParamIsNull()
-    {
-        // create normal dto do the verify checks
-        DeviceOwner MyTestClass         = createClass();
-        ComponentName cn                = mock(ComponentName.class);;
-        IntentFilter IntentFilterMocked = mock(IntentFilter.class);
-
-        MyTestClass.addPersistentPreferredActivity(cn, null);
-
-        verify(DevicePolicyManagerMocked, never()).addPersistentPreferredActivity(DeviceAdminMocked, IntentFilterMocked, cn);
-        verify(IntentFilterMocked, never()).addCategory(Intent.CATEGORY_HOME);
     }
 
     @Test
@@ -229,7 +206,10 @@ class DeviceOwnerTest
     {
         DevicePolicyManagerMocked       = mock(DevicePolicyManager.class);
         DeviceAdminMocked               = mock(ComponentName.class);
-        return new DeviceOwner(DevicePolicyManagerMocked, DeviceAdminMocked);
+        MainActivityComponentMocked     = mock(ComponentName.class);
+        IntentFilterMocked              = mock(IntentFilter.class);;
+
+        return new DeviceOwner(DevicePolicyManagerMocked, DeviceAdminMocked, MainActivityComponentMocked, IntentFilterMocked);
     }
 
 }
