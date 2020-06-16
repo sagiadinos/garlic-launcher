@@ -55,6 +55,7 @@ import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
+import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 public class MainActivity extends Activity
@@ -233,7 +234,7 @@ public class MainActivity extends Activity
             btToggleLock.setText(R.string.unpin_app);
             btToggleLauncher.setText(R.string.restore_old_launcher);
         }
-        NavigationBar.show(this, MyMainConfiguration);
+        NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
     }
 
 
@@ -406,7 +407,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = true;
-        NavigationBar.hide(this, MyMainConfiguration);
+        NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
@@ -414,7 +415,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = true;
         has_player_started     = false;
-        NavigationBar.show(this, MyMainConfiguration);
+        NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
     }

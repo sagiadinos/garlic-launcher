@@ -1,10 +1,7 @@
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.ActivityManager;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.IntentFilter;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
 

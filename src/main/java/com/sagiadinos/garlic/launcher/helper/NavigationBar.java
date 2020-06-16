@@ -30,11 +30,11 @@ import com.sagiadinos.garlic.launcher.services.HUD;
  */
 public class NavigationBar
 {
-    public static void hide(Activity a, MainConfiguration sc)
+    public static void hide(Activity a, MainConfiguration sc, Intent i)
     {
         if (sc.hasOwnBackButton())
         {
-            a.stopService(new Intent(a, HUD.class));
+            a.stopService(i);
         }
 
         a.getWindow().getDecorView()
@@ -49,11 +49,11 @@ public class NavigationBar
 
     }
 
-    public static void show(Activity a, MainConfiguration sc)
+    public static void show(Activity a, MainConfiguration sc, Intent i)
     {
         if (sc.hasOwnBackButton())
         {
-            a.startService(new Intent(a, HUD.class));
+            a.startService(i);
         }
         a.getWindow().getDecorView()
             .setSystemUiVisibility(
