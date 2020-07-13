@@ -173,7 +173,7 @@ public class MainActivity extends Activity
     {
         if (MyMainConfiguration.isPlayerInstalled())
         {
-            startGarlicPlayerDelayed();
+            startGarlicPlayer();
             return;
         }
         if (!BuildConfig.DEBUG)
@@ -284,6 +284,8 @@ public class MainActivity extends Activity
         }
     }
 
+
+
     public void toggleServiceMode(View view)
     {
         stopPlayerRestart(); // otherwise we start the countdown multiple times when recreate
@@ -331,6 +333,19 @@ public class MainActivity extends Activity
         alert.show();
     }
 
+    public void startGarlicPlayer()
+    {
+        if (MyMainConfiguration.hasNoPlayerStartDelayAfterBoot())
+        {
+            startGarlicPlayerInstantly(null);
+        }
+        else
+        {
+            startGarlicPlayerDelayed();
+        }
+
+    }
+
     public void startGarlicPlayerDelayed()
     {
         has_second_app_started = false;
@@ -347,12 +362,6 @@ public class MainActivity extends Activity
         }
 
         int start_delay = MyMainConfiguration.getPlayerStartDelay();
-        if (start_delay == 0)
-        {
-            startGarlicPlayer(null);
-            return;
-        }
-
         PlayerCountDown      = new CountDownTimer(start_delay * 1000, 1000)
         {
             public void onTick(long millisUntilFinished)
@@ -366,7 +375,7 @@ public class MainActivity extends Activity
                 btStartPlayer.setText(R.string.play);
                 is_countdown_running = false;
 
-                startGarlicPlayer(null);
+                startGarlicPlayerInstantly(null);
             }
 
         }.start();
@@ -383,7 +392,7 @@ public class MainActivity extends Activity
         }
         else
         {
-            startGarlicPlayer(view);
+            startGarlicPlayerInstantly(view);
         }
     }
 
@@ -411,7 +420,7 @@ public class MainActivity extends Activity
         startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
     }
 
-    public void startGarlicPlayer(View view)
+    public void startGarlicPlayerInstantly(View view)
     {
         has_second_app_started = false;
         has_player_started     = true;

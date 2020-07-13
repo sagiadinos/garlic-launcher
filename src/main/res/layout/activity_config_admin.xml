@@ -63,23 +63,28 @@
 
     </LinearLayout>
 
+    <CheckBox
+        android:id="@+id/cbNoPlayerStartDelayAfterBoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="No Player Start Delay after Booting"
+        android:textColor="#FFFFFF" />
+
     <TextView
         android:id="@+id/labelStartPlayerDelay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:labelFor="@id/editPlayerStartDelay"
-        android:text="Start Delay for Player (in s)" />
+        android:text="Start Delay for Player in s (5 - 99)" />
 
-    <EditText
+    <NumberPicker
         android:id="@+id/editPlayerStartDelay"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:textAlignment="viewStart"
-        android:visibility="visible"
-        tools:text="Start Delay for Player (in s)" />
+        />
 
     <TextView
         android:id="@+id/textViewInformation"

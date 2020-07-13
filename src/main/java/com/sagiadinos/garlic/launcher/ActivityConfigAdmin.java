@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
@@ -43,8 +44,9 @@ import java.util.Objects;
 public class ActivityConfigAdmin extends Activity
 {
     TextView tvInformation;
-    EditText editPlayerStartDelay;
+    NumberPicker editPlayerStartDelay;
     CheckBox cbOwnBackButton;
+    CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
     Boolean  is_password_changed = false;
@@ -64,7 +66,11 @@ public class ActivityConfigAdmin extends Activity
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
 
         editPlayerStartDelay = findViewById(R.id.editPlayerStartDelay);
-        editPlayerStartDelay.setText(Integer.toString(MyMainConfiguration.getPlayerStartDelay()));
+        editPlayerStartDelay.setMaxValue(99);
+        editPlayerStartDelay.setMinValue(5);
+        editPlayerStartDelay.setValue(MyMainConfiguration.getPlayerStartDelay());
+        cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
+        cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
         prepareOptionsVisibility();
     }
 
@@ -77,6 +83,7 @@ public class ActivityConfigAdmin extends Activity
             checkServicePassword();
             toggleOwnBackButton();
             storeNewPlayerStartDelay();
+            MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
             finish();
 
         }
@@ -112,7 +119,13 @@ public class ActivityConfigAdmin extends Activity
 
     private void storeNewPlayerStartDelay()
     {
-        MyMainConfiguration.storePlayerStartDelay(Integer.parseInt(editPlayerStartDelay.getText().toString()));
+        int count = editPlayerStartDelay.getValue();
+
+        if (count < 5)
+        {
+            count = 5;
+        }
+        MyMainConfiguration.storePlayerStartDelay(count);
     }
 
     private void prepareOptionsVisibility()

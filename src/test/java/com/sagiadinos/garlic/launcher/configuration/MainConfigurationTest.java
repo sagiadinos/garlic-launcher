@@ -122,6 +122,25 @@ class MainConfigurationTest
         verify(SharedPreferencesModelMocked, times(0)).getInt("player_start_delay");
     }
 
+    @Test
+    void hasNoPlayerStartDelayAfterBoot()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+
+        MyMainConfiguration.hasNoPlayerStartDelayAfterBoot();
+
+        verify(SharedPreferencesModelMocked, times(1)).getBoolean("no_player_start_delay_after_boot");
+    }
+
+    @Test
+    void toggleNoPlayerStartDelayAfterBoot()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+
+        MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(true);
+
+        verify(SharedPreferencesModelMocked, times(1)).storeBoolean("no_player_start_delay_after_boot", true);
+    }
 
     @Test
     void getUUID()

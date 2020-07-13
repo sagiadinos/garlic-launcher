@@ -70,6 +70,17 @@ public class MainConfiguration
         }
     }
 
+    public void toggleNoPlayerStartDelayAfterBoot(boolean value)
+    {
+        Model.storeBoolean("no_player_start_delay_after_boot", value);
+    }
+
+    public boolean hasNoPlayerStartDelayAfterBoot()
+    {
+        return Model.getBoolean("no_player_start_delay_after_boot");
+    }
+
+
     public String getUUID()
     {
         return Model.getString("uuid");
