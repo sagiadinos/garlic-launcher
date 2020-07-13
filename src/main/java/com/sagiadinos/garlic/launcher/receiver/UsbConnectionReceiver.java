@@ -27,11 +27,9 @@ import android.net.Uri;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
-import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -76,7 +74,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         if (checkAccessibility(smil_index))
         {
             MainConfiguration MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
-            MyMainConfiguration.writeSmilIndex(path + "/index.smil");
+            MyMainConfiguration.storeSmilIndex(path + "/index.smil");
 
             ctx.sendBroadcast(createIntentForSmilIndex(smil_index));
             return;

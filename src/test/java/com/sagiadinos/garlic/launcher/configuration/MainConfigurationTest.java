@@ -70,11 +70,11 @@ class MainConfigurationTest
 
 
     @Test
-    void writeSmilIndex()
+    void storeSmilIndex()
     {
         MainConfiguration MyMainConfiguration = createClass();
 
-        MyMainConfiguration.writeSmilIndex("an index");
+        MyMainConfiguration.storeSmilIndex("an index");
 
         verify(SharedPreferencesModelMocked, times(1)).storeString("smil_index_uri", "an index");
     }
@@ -88,6 +88,40 @@ class MainConfigurationTest
 
         verify(SharedPreferencesModelMocked, times(1)).getString("smil_index_uri");
     }
+
+    @Test
+    void storePlayerStartDelay()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+
+        MyMainConfiguration.storePlayerStartDelay(22);
+
+        verify(SharedPreferencesModelMocked, times(1)).storeInt("player_start_delay", 22);
+    }
+
+    @Test
+    void getPlayerStartDelayWithExistingParameter()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+        when(SharedPreferencesModelMocked.hasParameter("player_start_delay")).thenReturn(true);
+        when(SharedPreferencesModelMocked.getInt("player_start_delay")).thenReturn(10);
+
+        assertEquals(10, MyMainConfiguration.getPlayerStartDelay());
+
+        verify(SharedPreferencesModelMocked, times(1)).getInt("player_start_delay");
+    }
+
+    @Test
+    void getPlayerStartDelayWithOutExistingParameter()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+        when(SharedPreferencesModelMocked.hasParameter("player_start_delay")).thenReturn(false);
+
+        assertEquals(15, MyMainConfiguration.getPlayerStartDelay());
+
+        verify(SharedPreferencesModelMocked, times(0)).getInt("player_start_delay");
+    }
+
 
     @Test
     void getUUID()

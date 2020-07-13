@@ -47,7 +47,7 @@ public class ContentUrlActivity extends Activity
 
     public void setContentUrl(View view)
     {
-        MyMainConfiguration.writeSmilIndex(ed_content_url.getText().toString().trim());
+        MyMainConfiguration.storeSmilIndex(ed_content_url.getText().toString().trim());
     }
 
     public void closeActivity(View view)

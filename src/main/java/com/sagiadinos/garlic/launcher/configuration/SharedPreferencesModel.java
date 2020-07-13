@@ -15,6 +15,11 @@ public class SharedPreferencesModel
         pref  = c.getSharedPreferences(DeviceOwner.LAUNCHER_PACKAGE_NAME, Context.MODE_PRIVATE);
     }
 
+    public boolean hasParameter(String key)
+    {
+        return pref.contains(key);
+    }
+
     public void storeString(String param, String value)
     {
         try
@@ -39,6 +44,26 @@ public class SharedPreferencesModel
     {
         return pref.getString(param, null);
     }
+
+    public int getInt(String param)
+    {
+        return pref.getInt(param, 0);
+    }
+
+    public void storeInt(String param, int value)
+    {
+        try
+        {
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putInt(param, value);
+            commit(ed);
+        }
+        catch (GarlicLauncherException e)
+        {
+            error_text = e.getMessage();
+        }
+    }
+
 
     public void storeBoolean(String param, boolean value)
     {

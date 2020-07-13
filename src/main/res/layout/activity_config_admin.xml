@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -61,6 +62,24 @@
             android:visibility="visible" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/labelStartPlayerDelay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:labelFor="@id/editPlayerStartDelay"
+        android:text="Start Delay for Player (in s)" />
+
+    <EditText
+        android:id="@+id/editPlayerStartDelay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:textAlignment="viewStart"
+        android:visibility="visible"
+        tools:text="Start Delay for Player (in s)" />
 
     <TextView
         android:id="@+id/textViewInformation"

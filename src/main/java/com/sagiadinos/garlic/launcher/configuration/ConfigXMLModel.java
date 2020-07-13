@@ -179,7 +179,7 @@ public class ConfigXMLModel
                 MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));
                 break;
             case "content.serverUrl":
-                MyMainConfiguration.writeSmilIndex(xpp.getAttributeValue(null, "value"));
+                MyMainConfiguration.storeSmilIndex(xpp.getAttributeValue(null, "value"));
                 break;
             default:
                 // do nothing on unsupported attributes

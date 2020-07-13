@@ -345,7 +345,15 @@ public class MainActivity extends Activity
         {
             return;
         }
-        PlayerCountDown      = new CountDownTimer(15000, 1000)
+
+        int start_delay = MyMainConfiguration.getPlayerStartDelay();
+        if (start_delay == 0)
+        {
+            startGarlicPlayer(null);
+            return;
+        }
+
+        PlayerCountDown      = new CountDownTimer(start_delay * 1000, 1000)
         {
             public void onTick(long millisUntilFinished)
             {

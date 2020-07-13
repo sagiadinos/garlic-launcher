@@ -39,11 +39,11 @@ public class MainConfiguration
         if (getUUID() == null)
         {
             Model.storeString("uuid", UUID.randomUUID().toString());
-            writeSmilIndex(DEFAULT_CONTENT_URL);
+            storeSmilIndex(DEFAULT_CONTENT_URL);
         }
     }
 
-    public void writeSmilIndex(String smil_index)
+    public void storeSmilIndex(String smil_index)
     {
         Model.storeString("smil_index_uri", smil_index);
     }
@@ -51,6 +51,23 @@ public class MainConfiguration
     public String getSmilIndex()
     {
         return Model.getString("smil_index_uri");
+    }
+
+    public void storePlayerStartDelay(int player_start_delay)
+    {
+        Model.storeInt("player_start_delay", player_start_delay);
+    }
+
+    public int getPlayerStartDelay()
+    {
+        if (Model.hasParameter("player_start_delay"))
+        {
+            return Model.getInt("player_start_delay");
+        }
+        else
+        {
+            return 15;
+        }
     }
 
     public String getUUID()

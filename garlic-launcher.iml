@@ -4,8 +4,8 @@
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
         <option name="GRADLE_PROJECT_PATH" value=":" />
-        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" value="3.6.1" />
-        <option name="LAST_KNOWN_AGP_VERSION" value="3.6.1" />
+        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" value="4.0.0" />
+        <option name="LAST_KNOWN_AGP_VERSION" value="4.0.0" />
       </configuration>
     </facet>
     <facet type="android" name="Android">
@@ -88,10 +88,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.jupiter:junit-jupiter:5.6.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.jupiter:junit-jupiter-params:5.6.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.6.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-commons:1.6.0@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.jupiter:junit-jupiter:5.6.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.apiguardian:apiguardian-api:1.1.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.opentest4j:opentest4j:1.2.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.mockito:mockito-core:3.3.3@jar" level="project" />

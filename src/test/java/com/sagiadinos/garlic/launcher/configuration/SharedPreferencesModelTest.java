@@ -32,6 +32,38 @@ class SharedPreferencesModelTest
     }
 
     @Test
+    void storeInt()
+    {
+        SharedPreferencesModel TestClass = createClass();
+        when(SharedPreferencesMocked.edit()).thenReturn(EditorMock);
+        when(EditorMock.commit()).thenReturn(true);
+
+        TestClass.storeInt("parameter", 10);
+
+        verify(EditorMock, times(1)).putInt("parameter", 10);
+        verify(EditorMock, times(1)).commit();
+    }
+
+    @Test
+    void hasParameterWithTrue()
+    {
+        SharedPreferencesModel TestClass = createClass();
+        when(SharedPreferencesMocked.contains("parameter_to_check")).thenReturn(true);
+
+        assertTrue(TestClass.hasParameter("parameter_to_check"));
+    }
+
+    @Test
+    void hasParameterWithFalse()
+    {
+        SharedPreferencesModel TestClass = createClass();
+        when(SharedPreferencesMocked.contains("parameter_to_check")).thenReturn(false);
+
+        assertFalse(TestClass.hasParameter("parameter_to_check"));
+    }
+
+
+    @Test
     void storeString()
     {
         SharedPreferencesModel TestClass = createClass();

@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,12 +43,14 @@ import java.util.Objects;
 public class ActivityConfigAdmin extends Activity
 {
     TextView tvInformation;
+    EditText editPlayerStartDelay;
     CheckBox cbOwnBackButton;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
     Boolean  is_password_changed = false;
     MainConfiguration MyMainConfiguration;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -58,8 +61,10 @@ public class ActivityConfigAdmin extends Activity
         cbActiveServicePassword  = findViewById(R.id.cbActiveServicePassword);
         editServicePassword      = findViewById(R.id.editServicePassword);
         tvInformation            = findViewById(R.id.textViewInformation);
-
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
+
+        editPlayerStartDelay = findViewById(R.id.editPlayerStartDelay);
+        editPlayerStartDelay.setText(Integer.toString(MyMainConfiguration.getPlayerStartDelay()));
         prepareOptionsVisibility();
     }
 
@@ -71,6 +76,7 @@ public class ActivityConfigAdmin extends Activity
         {
             checkServicePassword();
             toggleOwnBackButton();
+            storeNewPlayerStartDelay();
             finish();
 
         }
@@ -97,7 +103,6 @@ public class ActivityConfigAdmin extends Activity
         {
             stopService(new Intent(this, HUD.class));
         }
-
     }
 
     public void onServicePassWordClicked(View view)
@@ -105,6 +110,10 @@ public class ActivityConfigAdmin extends Activity
         prepareVisibilityOfEditServicePassword(cbActiveServicePassword.isChecked());
     }
 
+    private void storeNewPlayerStartDelay()
+    {
+        MyMainConfiguration.storePlayerStartDelay(Integer.parseInt(editPlayerStartDelay.getText().toString()));
+    }
 
     private void prepareOptionsVisibility()
     {
