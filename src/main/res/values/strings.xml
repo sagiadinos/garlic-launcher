@@ -49,4 +49,6 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="no_player_start_delay_after_booting">No Player Start Delay after Booting</string>
+    <string name="start_delay_for_player_in_s">Start Delay for Player in s</string>
 </resources>
