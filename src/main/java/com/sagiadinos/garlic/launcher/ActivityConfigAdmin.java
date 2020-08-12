@@ -49,6 +49,7 @@ public class ActivityConfigAdmin extends Activity
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
+    EditText editContentUrl;
     Boolean  is_password_changed = false;
     MainConfiguration MyMainConfiguration;
 
@@ -63,11 +64,13 @@ public class ActivityConfigAdmin extends Activity
         cbActiveServicePassword  = findViewById(R.id.cbActiveServicePassword);
         editServicePassword      = findViewById(R.id.editServicePassword);
         tvInformation            = findViewById(R.id.textViewInformation);
-        MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
+        editContentUrl           = findViewById(R.id.editContentUrl);
+        editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
 
-        editPlayerStartDelay = findViewById(R.id.editPlayerStartDelay);
+        MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
         editPlayerStartDelay.setMaxValue(99);
         editPlayerStartDelay.setMinValue(5);
+        editContentUrl.setText(MyMainConfiguration.getSmilIndex());
         editPlayerStartDelay.setValue(MyMainConfiguration.getPlayerStartDelay());
         cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
         cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
@@ -84,6 +87,7 @@ public class ActivityConfigAdmin extends Activity
             toggleOwnBackButton();
             storeNewPlayerStartDelay();
             MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
+            MyMainConfiguration.storeSmilIndex(editContentUrl.getText().toString().trim());
             finish();
 
         }

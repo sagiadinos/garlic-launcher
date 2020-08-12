@@ -192,19 +192,15 @@ public class MainActivity extends Activity
         btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
         btStartPlayer        = findViewById(R.id.btStartPlayer);
         Button btAdminConfiguration = findViewById(R.id.btAdminConfiguration);
-        Button btConfigureWiFi      = findViewById(R.id.btConfigureWiFi);
         Button btAndroidSettings    = findViewById(R.id.btAndroidSettings);
-        Button btContentUri  = findViewById(R.id.btSetContentURI);
 
         if (MyMainConfiguration.isPlayerInstalled())
         {
-            btContentUri.setVisibility(View.VISIBLE);
             btStartPlayer.setVisibility(View.VISIBLE);
             hideInformationText();
         }
         else
         {
-            btContentUri.setVisibility(View.INVISIBLE);
             btStartPlayer.setVisibility(View.INVISIBLE);
         }
 
@@ -215,18 +211,14 @@ public class MainActivity extends Activity
             btStartPlayer.setEnabled(false);
             btToggleServiceMode.setText(R.string.enter_service_mode);
             btAdminConfiguration.setVisibility(View.GONE);
-            btConfigureWiFi.setVisibility(View.GONE);
             btAndroidSettings.setVisibility(View.GONE);
-            btContentUri.setVisibility(View.GONE);
         }
         else
         {
             btAdminConfiguration.setVisibility(View.VISIBLE);
             btStartPlayer.setEnabled(true);
             btToggleServiceMode.setText(R.string.enter_strict_mode);
-            btConfigureWiFi.setVisibility(View.VISIBLE);
             btAndroidSettings.setVisibility(View.VISIBLE);
-            btContentUri.setVisibility(View.VISIBLE);
         }
 
         if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
@@ -244,9 +236,15 @@ public class MainActivity extends Activity
         {
             btToggleLock        = findViewById(R.id.btToggleLockTask);
             btToggleLauncher    = findViewById(R.id.btToggleLauncher);
-
+            findViewById(R.id.layoutDebug).setVisibility(View.VISIBLE);
             btToggleLock.setVisibility(View.VISIBLE);
             btToggleLauncher.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            findViewById(R.id.layoutDebug).setVisibility(View.GONE);
+            findViewById(R.id.btToggleLockTask).setVisibility(View.GONE);
+            findViewById(R.id.btToggleLauncher).setVisibility(View.GONE);
         }
     }
 
@@ -394,12 +392,6 @@ public class MainActivity extends Activity
         {
             startGarlicPlayerInstantly(view);
         }
-    }
-
-    public void setContentUrl(View view)
-    {
-        stopPlayerRestart();
-        startActivity(new Intent(this, ContentUrlActivity.class));
     }
 
     public void configAdmin(View view)

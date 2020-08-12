@@ -34,7 +34,7 @@ import com.sagiadinos.garlic.launcher.R;
 import java.io.IOException;
 
 /**
- * creates overlay back button
+ * creates overlay back_btn button
  *
  * Necessary when you a have a custom Android image with deactivated navigation bar
  * It is intended to prevent a user from being stranded in an activity,
@@ -65,7 +65,7 @@ public class HUD extends Service
         // Starts the button overlay.
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         overlayPowerBtn = new ImageView(this);
-        overlayPowerBtn.setImageResource(R.drawable.back);
+        overlayPowerBtn.setImageResource(R.drawable.back_btn);
 
         int LAYOUT_FLAG;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

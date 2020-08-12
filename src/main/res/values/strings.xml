@@ -29,7 +29,7 @@
     <string name="no_garlic_no_network">No Player and No Network - Install Player via USB or Activate a Network!</string>
     <string name="download_player_in_progress">Try downloading garlic-player - Please wait!</string>
     <string name="install_player_in_progress">Install garlic-player - Please wait!</string>
-    <string name="config_launcher">Config Launcher</string>
+    <string name="config_launcher">Launcher Setting</string>
     <string name="root_found_set_device_owner">Device is rooted! Try to config Launcher as Device Owner - Please wait</string>
     <string name="config_wifi">Set WiFi</string>
     <string name="android_settings">Android Settings</string>
