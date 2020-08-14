@@ -53,7 +53,10 @@ public class WiFi
     public void connectToNetwork()
     {
         enableWifi();
+
         List<WifiConfiguration> list = MyWiFiManager.getConfiguredNetworks();
+        if (list == null)
+            return;
         for( WifiConfiguration i : list )
         {
             if(i.SSID != null && i.SSID.equals( MyWifiConfig.SSID ))

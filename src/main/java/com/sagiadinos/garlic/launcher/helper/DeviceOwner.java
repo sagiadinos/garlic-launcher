@@ -115,15 +115,6 @@ public class DeviceOwner
         return MyDevicePolicyManager.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
     }
 
-    public static boolean isDeviceOwner(DevicePolicyManager dpm)
-    {
-        if (dpm == null)
-        {
-            return false;
-        }
-        return dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
-    }
-
     public static void reboot(DevicePolicyManager dpm, ComponentName da)
     {
         if (dpm != null && dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME))

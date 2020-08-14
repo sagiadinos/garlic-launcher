@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
@@ -39,6 +40,9 @@ import java.io.File;
 public class UsbConnectionReceiver extends BroadcastReceiver
 {
     Context ctx;
+    DeviceOwner MyDeviceOwner = null;
+    MainConfiguration MyMainConfiguration = null;
+
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -47,21 +51,25 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         {
             return;
         }
-        // otherwise it can crash beacause we
-        // try to do things which do not work without device owner rights
-        if (!DeviceOwner.isDeviceOwner((DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE)))
+
+        // can crash if not device owner
+        if (MyDeviceOwner == null || MyDeviceOwner.isDeviceOwner())
         {
             return;
         }
 
-        String action = intent.getAction();
-        Uri uri = intent.getData();
-        if (action.equals(Intent.ACTION_MEDIA_MOUNTED) && uri != null)
+        if (intent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED) && intent.getData() != null)
         {
             // Todo: refactor the down methods with a Sending Class
             // Todo: dispatch with a factory pattern.
             dispatchFilesOnUsb(intent.getData().getPath());
         }
+    }
+
+    public void injectDependencies(DeviceOwner dow, MainConfiguration mmc)
+    {
+        MyDeviceOwner = dow;
+        MyMainConfiguration = mmc;
     }
 
     /**
@@ -70,30 +78,28 @@ public class UsbConnectionReceiver extends BroadcastReceiver
      */
     private void dispatchFilesOnUsb(String path)
     {
-        File smil_index = new File(path + "/index.smil");
+        File smil_index = createFile(path + "/index.smil");
         if (checkAccessibility(smil_index))
         {
-            MainConfiguration MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
             MyMainConfiguration.storeSmilIndex(path + "/index.smil");
-
             ctx.sendBroadcast(createIntentForSmilIndex(smil_index));
             return;
         }
 
-        File config_xml = new File(path + "/config.xml");
+        File config_xml = createFile(path + "/config.xml");
         if (checkAccessibility(config_xml))
         {
-            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver");
+            Intent intent = createIntent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver");
             intent.putExtra("config_path", config_xml.getAbsolutePath());
             ctx.sendBroadcast(intent);
             return;
         }
 
-        File player_apk = new File(path + "/garlic-player.apk");
+        File player_apk = createFile(path + "/garlic-player.apk");
         if (checkAccessibility(player_apk)/* &&
                 Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.PLAYER_PACKAGE_NAME)*/)
         {
-            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
+            Intent intent = createIntent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
             intent.putExtra("apk_path", player_apk.getAbsolutePath());
             intent.putExtra("task_id", "via usb");
             ctx.sendBroadcast(intent);
@@ -102,7 +108,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
     private Intent createIntentForSmilIndex(File file)
     {
-        Intent intent = new Intent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
+        Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
         intent.putExtra("smil_index_path", file.getAbsolutePath());
         return intent;
     }
@@ -111,4 +117,27 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     {
         return (file.exists() && file.canRead());
     }
+
+
+    /**
+     * This method is factory like for testing this class with Mockitos spy
+     * So we avoid using tools like PowerMock and adding unnecessary complexity
+     *
+     * @return Intent
+     */
+    protected Intent createIntent(String action)
+    {
+        return new Intent(action);
+    }
+    /**
+     * This method is factory like for testing this class with Mockitos spy
+     * So we avoid using tools like PowerMock and adding unnecessary complexity
+     *
+     * @return Intent
+     */
+    protected File createFile(String file_path)
+    {
+        return new File(file_path);
+    }
+
 }

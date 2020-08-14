@@ -27,16 +27,27 @@ import com.sagiadinos.garlic.launcher.MainActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-
 public class AdminReceiver extends DeviceAdminReceiver
 {
     @Override
     public void onEnabled(@NotNull Context ctx, @NotNull Intent intent)
     {
         // restart MainActivity
-        Intent a = new Intent(ctx, MainActivity.class);
+        Intent a = createIntent(ctx);
         a.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.startActivity(a);
     }
 
+    /**
+     * This method is factory like for testing this class with Mockitos spy
+     * So we avoid using tools like PowerMock and adding unnecessary complexity
+     * @look AdminReceiverTest
+     *
+     * @param ctx
+     * @return Intent
+     */
+    protected Intent createIntent(Context ctx)
+    {
+        return new Intent(ctx, MainActivity.class);
+    }
 }

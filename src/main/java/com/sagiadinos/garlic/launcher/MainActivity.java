@@ -74,7 +74,7 @@ public class MainActivity extends Activity
     private DeviceOwner         MyDeviceOwner          = null;
     private MainConfiguration   MyMainConfiguration = null;
     private KioskManager        MyKiosk               = null;
-
+    private ReceiverManager     MyReceiverManager = null;
     private TaskExecutionReport MyTaskExecutionReport;
 
     @Override
@@ -101,7 +101,7 @@ public class MainActivity extends Activity
          AppPermissions.verifyStandardPermissions(this);
 
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
-         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
+         MyMainConfiguration   = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
          MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
          MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
@@ -122,7 +122,8 @@ public class MainActivity extends Activity
         {
             MyDeviceOwner.determinePermittedLockTaskPackages("");
             hideInformationText();
-            ReceiverManager.registerAllReceiver(this);
+            MyReceiverManager = new ReceiverManager(this, MyDeviceOwner, MyMainConfiguration);
+            MyReceiverManager.registerAllReceiver();
             initButtonViews();
             startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
             checkForInstalledPlayer();
@@ -153,7 +154,7 @@ public class MainActivity extends Activity
     {
         if (MyDeviceOwner.isDeviceOwner())
         {
-            ReceiverManager.unregisterAllReceiver(this);
+            MyReceiverManager.unregisterAllReceiver();
         }
         super.onDestroy();
     }
