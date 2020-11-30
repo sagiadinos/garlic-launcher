@@ -52,6 +52,7 @@ import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
+import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
@@ -133,7 +134,7 @@ public class MainActivity extends Activity
             if (MyMainConfiguration.isDeviceRooted())
             {
                 displayInformationText(getString(R.string.root_found_set_device_owner));
-                MyDeviceOwner.makeDeviceOwner(Runtime.getRuntime());
+                MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime()));
             }
             else
             {

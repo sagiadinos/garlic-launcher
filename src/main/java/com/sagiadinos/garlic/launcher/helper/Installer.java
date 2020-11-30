@@ -54,6 +54,17 @@ public class Installer
         return isPackageInstalled(c, DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
+    /**
+     * Needed, because some asian images are crapped build that
+     * an install via package manger fails without comment.
+     *
+     */
+    public boolean installViaShell(ShellExecute MyShellExecute, String package_path)
+    {
+        String cmd     = "pm install -r " + package_path + "\n";
+        return MyShellExecute.executeAsRoot(cmd);
+    }
+
     public void installPackage(String t_id, String package_path) throws IOException
     {
         this.task_id = t_id;

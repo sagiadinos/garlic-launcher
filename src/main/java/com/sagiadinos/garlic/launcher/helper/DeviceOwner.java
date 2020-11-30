@@ -64,21 +64,9 @@ public class DeviceOwner
     /**
      * This works only on rooted devices
      */
-    public void makeDeviceOwner(Runtime MyRuntime)
+    public void makeDeviceOwner(ShellExecute MyShellExecute)
     {
-        try
-        {
-            Process install = MyRuntime.exec("su\n");
-            DataOutputStream os = new DataOutputStream(install.getOutputStream());
-            os.writeBytes("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            install.waitFor();
-        }
-        catch (IOException | InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        MyShellExecute.executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver");
     }
 
 
