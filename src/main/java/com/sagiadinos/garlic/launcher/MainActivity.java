@@ -301,14 +301,19 @@ public class MainActivity extends Activity
             public void onClick(DialogInterface dialog, int whichButton)
             {
                 String value = input.getText().toString();
+                if (value.isEmpty())
+                {
+                    startGarlicPlayerDelayed();
+                    return;
+                }
 
                 // we need temporary for testing an alternative for those one who forget passwords
                 // so we get maybe the device UUID via
                 // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 // or set something own
-                String alt_password = "heidewitzka";
+               // String alt_password = "heidewitzka";
 
-                if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher()) || value.equals(alt_password))
+                if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher())/* || value.equals(alt_password)*/)
                 {
                     if (MyKiosk.isStrictKioskModeActive())
                     {
