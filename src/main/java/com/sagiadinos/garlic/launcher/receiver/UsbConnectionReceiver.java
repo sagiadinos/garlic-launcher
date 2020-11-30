@@ -53,7 +53,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
 
         // can crash if not device owner
-        if (MyDeviceOwner == null || MyDeviceOwner.isDeviceOwner())
+        if (MyDeviceOwner == null || !MyDeviceOwner.isDeviceOwner())
         {
             return;
         }
