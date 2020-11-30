@@ -10,6 +10,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.NetworkData;
@@ -37,7 +38,6 @@ public class ConfigXMLReceiver extends BroadcastReceiver
         }
 
         File config_xml = new File(Objects.requireNonNull(intent.getStringExtra("config_path")));
-
         String task_id = "";
         if (intent.getStringExtra("task_id") != null)
         {

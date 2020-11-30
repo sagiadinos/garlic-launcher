@@ -101,18 +101,6 @@ class DeviceOwnerTest
     }
 
     @Test
-    void testIsDeviceOwner()
-    {
-        // class is static, so we need the DevicePolicyManagerMocked only so no return value
-        createClass();
-
-        when(DevicePolicyManagerMocked.isDeviceOwnerApp(DeviceOwner.LAUNCHER_PACKAGE_NAME)).thenReturn(false);
-        assertFalse(DeviceOwner.isDeviceOwner(DevicePolicyManagerMocked));
-        verify(DevicePolicyManagerMocked, times(1)).isDeviceOwnerApp(DeviceOwner.LAUNCHER_PACKAGE_NAME);
-
-    }
-
-    @Test
     void reboot()
     {
         // class is static, so we need the DevicePolicyManagerMocked  and DeviceAdminMocked

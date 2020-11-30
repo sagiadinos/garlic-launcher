@@ -21,81 +21,98 @@ package com.sagiadinos.garlic.launcher.receiver;
 
 import android.content.IntentFilter;
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
+import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 
 public class ReceiverManager
 {
-    private static InForegroundReceiver MyPlayerNotInForegroundReceiver = null;
-    private static PlayerClosedReceiver MyPlayerClosedReceiver = null;
-    private static SecondAppReceiver MySecondAppReceiver = null;
-    private static RebootReceiver MyRebootReceiver = null;
-    private static InstallAppReceiver MyInstallAppReceiver = null;
-    private static ConfigXMLReceiver MyConfigXMLReceiver = null;
+    private MainActivity MyMainActivity;
+    private DeviceOwner  MyDeviceOwner;
+    private MainConfiguration MyMainConfiguration;
+    private InForegroundReceiver MyPlayerNotInForegroundReceiver = null;
+    private PlayerClosedReceiver MyPlayerClosedReceiver = null;
+    private SecondAppReceiver MySecondAppReceiver = null;
+    private RebootReceiver MyRebootReceiver = null;
+    private InstallAppReceiver MyInstallAppReceiver = null;
+    private ConfigXMLReceiver MyConfigXMLReceiver = null;
+    private UsbConnectionReceiver MyUsbConnectionReceiver = null;
 
-    // private static MainActivity Activity; see below
-    public static void registerAllReceiver(MainActivity MainActivity)
+
+    public ReceiverManager(MainActivity ma, DeviceOwner dow, MainConfiguration mmc)
+    {
+        MyMainActivity = ma;
+        MyDeviceOwner  = dow;
+        MyMainConfiguration = mmc;
+    }
+
+    public void registerAllReceiver()
     {
 
 //      AdminReceiver for Device Owner is initialized in AndroidManifest
 
         MyPlayerNotInForegroundReceiver =  new InForegroundReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MyPlayerNotInForegroundReceiver,
                 createIntentFilter("InForegroundReceiver")
         );
-        MyPlayerNotInForegroundReceiver.setMyActivity(MainActivity);
+        MyPlayerNotInForegroundReceiver.setMyActivity(MyMainActivity);
 
         MyPlayerClosedReceiver =  new PlayerClosedReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MyPlayerClosedReceiver,
                 createIntentFilter("PlayerClosedReceiver")
         );
-        MyPlayerClosedReceiver.setMyActivity(MainActivity);
+        MyPlayerClosedReceiver.setMyActivity(MyMainActivity);
 
         MySecondAppReceiver =  new SecondAppReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MySecondAppReceiver,
                 createIntentFilter("SecondAppReceiver")
         );
-        MySecondAppReceiver.setMyActivity(MainActivity);
+        MySecondAppReceiver.setMyActivity(MyMainActivity);
 
         MyRebootReceiver =  new RebootReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MyRebootReceiver,
                 createIntentFilter("RebootReceiver")
         );
 
         MyInstallAppReceiver =  new InstallAppReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MyInstallAppReceiver,
                 createIntentFilter("InstallAppReceiver")
         );
 
         MyConfigXMLReceiver =  new ConfigXMLReceiver();
-        MainActivity.registerReceiver(
+        MyMainActivity.registerReceiver(
                 MyConfigXMLReceiver,
                 createIntentFilter("ConfigXMLReceiver")
         );
 
-
-        //   USBConnectionReceiver is initialized in AndroidManifest
+        MyUsbConnectionReceiver = new UsbConnectionReceiver();
+        MyMainActivity.registerReceiver(
+                MyUsbConnectionReceiver,
+                createIntentFilter("UsbConnectionReceiver")
+        );
+        MyUsbConnectionReceiver.injectDependencies(MyDeviceOwner, MyMainConfiguration);
     }
 
-    public static void unregisterAllReceiver(MainActivity MainActivity)
+    public void unregisterAllReceiver()
     {
         if (MyPlayerNotInForegroundReceiver == null)
             return;
 
-        MainActivity.unregisterReceiver(MyPlayerNotInForegroundReceiver);
-        MainActivity.unregisterReceiver(MyPlayerClosedReceiver);
-        MainActivity.unregisterReceiver(MySecondAppReceiver);
-        MainActivity.unregisterReceiver(MyRebootReceiver);
-        MainActivity.unregisterReceiver(MyInstallAppReceiver);
-        MainActivity.unregisterReceiver(MyConfigXMLReceiver);
+        MyMainActivity.unregisterReceiver(MyPlayerNotInForegroundReceiver);
+        MyMainActivity.unregisterReceiver(MyPlayerClosedReceiver);
+        MyMainActivity.unregisterReceiver(MySecondAppReceiver);
+        MyMainActivity.unregisterReceiver(MyRebootReceiver);
+        MyMainActivity.unregisterReceiver(MyInstallAppReceiver);
+        MyMainActivity.unregisterReceiver(MyConfigXMLReceiver);
+        MyMainActivity.unregisterReceiver(MyUsbConnectionReceiver);
 
     }
 
-
-    private static IntentFilter createIntentFilter(String action_name)
+    private IntentFilter createIntentFilter(String action_name)
     {
         return new IntentFilter("com.sagiadinos.garlic.launcher.receiver." + action_name);
     }
