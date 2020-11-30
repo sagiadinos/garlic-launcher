@@ -52,7 +52,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActivityConfigAdmin" />
-        <activity android:name=".ContentUrlActivity" />
 
         <service
             android:name=".services.WatchDogService"

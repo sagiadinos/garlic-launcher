@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
@@ -67,9 +68,14 @@ public class DeviceOwner
     {
         try
         {
-            MyRuntime.exec(new String[]{"su","-c","dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"});
+            Process install = MyRuntime.exec("su\n");
+            DataOutputStream os = new DataOutputStream(install.getOutputStream());
+            os.writeBytes("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            install.waitFor();
         }
-        catch (IOException e)
+        catch (IOException | InterruptedException e)
         {
             e.printStackTrace();
         }
