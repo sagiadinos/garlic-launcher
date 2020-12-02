@@ -22,7 +22,8 @@ public class ShellExecute
             os.writeBytes(command + "\n");
             os.writeBytes("exit\n");
             os.flush();
-            if (MyProcess.waitFor() == 0)
+            int res = MyProcess.waitFor();
+            if (res == 0)
             {
                 succeed = true;
             }

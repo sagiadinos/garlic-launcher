@@ -32,6 +32,7 @@ import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
+import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 
 
 /**
@@ -62,28 +63,33 @@ public class InstallAppReceiver extends BroadcastReceiver
             MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
             Installer MyInstaller    = new Installer(ctx);
             String file_path         = intent.getStringExtra("apk_path");
+            String task_id           = "";
+            if (intent.getStringExtra("task_id") != null)
+            {
+                task_id = intent.getStringExtra("task_id");
+            }
             if (MyMainConfiguration.isDeviceRooted())
             {
-                MyInstaller.installViaShell(new ShellExecute(Runtime.getRuntime()), file_path);
-
+                if (MyInstaller.installViaShell(new ShellExecute(Runtime.getRuntime()), file_path))
+                {
+                    TaskExecutionReport.append(task_id, "completed");
+                }
+                else
+                {
+                    TaskExecutionReport.append(task_id, "aborted");
+                }
             }
             else
             {
-                String task_id = "";
-                if (intent.getStringExtra("task_id") != null)
-                {
-                    task_id = intent.getStringExtra("task_id");
-                }
-
                 MyInstaller.installPackage(task_id, file_path);
+            }
 
-                // delete downloaded files which are in player cache but not on usb or Download dir
-                if (file_path != null && file_path.contains("cache")) {
-                    File file = new File(file_path);
-
-                    //noinspection ResultOfMethodCallIgnored
-                    // file.delete();
-                }
+            // delete downloaded files which are in player cache but not on usb or Download dir
+            if (file_path != null && file_path.contains("cache"))
+            {
+                File file = new File(file_path);
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }
         catch (IOException e)
