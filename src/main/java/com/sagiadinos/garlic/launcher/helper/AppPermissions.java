@@ -83,10 +83,7 @@ public class AppPermissions
 
     public static void verifyStandardPermissions(Activity ma)
     {
-        if (!hasStandardPermissions(ma))
-        {
-            ma.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
-        }
+        ma.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
     }
 
     public static boolean hasStandardPermissions(Activity ma)
@@ -95,6 +92,13 @@ public class AppPermissions
         return (permissions == PackageManager.PERMISSION_GRANTED);
     }
 
+    /**
+     * This works only on rooted devices
+     */
+    public static void grantPermissionsViaADB(ShellExecute MyShellExecute)
+    {
+        MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission.WRITE_EXTERNAL_STORAGE");
+    }
 
     public static boolean verifyOverlayPermissions(Activity ma)
     {

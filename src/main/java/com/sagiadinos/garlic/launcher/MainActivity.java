@@ -94,17 +94,30 @@ public class MainActivity extends Activity
          getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
          tvInformation = findViewById(R.id.textViewInformation);
          initDebugButtons();
-         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
-                         new ComponentName(this, AdminReceiver.class),
-                         new ComponentName(this, MainActivity.class),
-                         new IntentFilter(Intent.ACTION_MAIN)
-         );
-         AppPermissions.verifyStandardPermissions(this);
+         boolean is_rooted = AppPermissions.isDeviceRooted();
 
+        if (!AppPermissions.hasStandardPermissions(this))
+        {
+            if (is_rooted)
+            {
+                AppPermissions.grantPermissionsViaADB(new ShellExecute(Runtime.getRuntime()));
+            }
+            else
+            {
+                AppPermissions.verifyStandardPermissions(this);
+                displayInformationText("Launcher needs read/write permissions for storage");
+            }
+        }
+
+         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                new ComponentName(this, AdminReceiver.class),
+                new ComponentName(this, MainActivity.class),
+                new IntentFilter(Intent.ACTION_MAIN)
+         );
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
          MyMainConfiguration   = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
-         MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
+         MyMainConfiguration.setIsDeviceRooted(is_rooted);
          MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
 
 
@@ -114,11 +127,6 @@ public class MainActivity extends Activity
                                                 MyMainConfiguration
         );
 
-        if (!AppPermissions.hasStandardPermissions(this))
-        {
-            displayInformationText("Launcher needs read/write permissions for storage");
-            return;
-        }
         if (MyDeviceOwner.isDeviceOwner())
         {
             MyDeviceOwner.determinePermittedLockTaskPackages("");
