@@ -87,29 +87,29 @@ public class MainActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        super.onCreate(savedInstanceState);
 
-         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        tvInformation = findViewById(R.id.textViewInformation);
 
-         setContentView(R.layout.main);
-         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-         tvInformation = findViewById(R.id.textViewInformation);
-         initDebugButtons();
-         boolean is_rooted = AppPermissions.isDeviceRooted();
+        AppPermissions.handlePermissions(this, tvInformation);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        // stop until permissions are saved
 
         if (!AppPermissions.hasStandardPermissions(this))
         {
-            if (is_rooted)
-            {
-                AppPermissions.grantPermissionsViaADB(new ShellExecute(Runtime.getRuntime()));
-            }
-            else
-            {
-                AppPermissions.verifyStandardPermissions(this);
-                displayInformationText("Launcher needs read/write permissions for storage");
-            }
+            return;
         }
 
-         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+        initDebugButtons();
+        MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                 new ComponentName(this, AdminReceiver.class),
                 new ComponentName(this, MainActivity.class),
                 new IntentFilter(Intent.ACTION_MAIN)
@@ -117,7 +117,7 @@ public class MainActivity extends Activity
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
          MyMainConfiguration   = new MainConfiguration(new SharedPreferencesModel(this));
          MyMainConfiguration.checkForUUID();
-         MyMainConfiguration.setIsDeviceRooted(is_rooted);
+         MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
          MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
 
 
@@ -161,7 +161,8 @@ public class MainActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        if (MyDeviceOwner.isDeviceOwner())
+        // MyDeviceOwner can be null when access rights are denied
+        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
         {
             MyReceiverManager.unregisterAllReceiver();
         }

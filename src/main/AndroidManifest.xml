@@ -21,6 +21,7 @@
 
     <application
         android:name=".GarlicLauncherApplication"
+        android:icon="@drawable/ic_garlic_launcher"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
         <receiver

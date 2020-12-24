@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -59,6 +60,24 @@ public class AppPermissions
             "/dev"
     };
 
+    public static void handlePermissions(Activity ma, TextView tvInformation)
+    {
+        if (!AppPermissions.hasStandardPermissions(ma))
+        {
+            if (AppPermissions.isDeviceRooted())
+            {
+                ShellExecute MyShellExecute = new ShellExecute(Runtime.getRuntime());
+                if (!MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission.WRITE_EXTERNAL_STORAGE"))
+                {
+                    tvInformation.setText(MyShellExecute.getErrorText());
+                }
+            }
+            else
+            {
+                AppPermissions.requestPermissions(ma);
+            }
+        }
+    }
 
     public static void onRequestPermissionsResult(Activity ma, int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
     {
@@ -81,7 +100,7 @@ public class AppPermissions
         }
     }
 
-    public static void verifyStandardPermissions(Activity ma)
+    public static void requestPermissions(Activity ma)
     {
         ma.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
     }
@@ -90,14 +109,6 @@ public class AppPermissions
     {
         int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return (permissions == PackageManager.PERMISSION_GRANTED);
-    }
-
-    /**
-     * This works only on rooted devices
-     */
-    public static void grantPermissionsViaADB(ShellExecute MyShellExecute)
-    {
-        MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission.WRITE_EXTERNAL_STORAGE");
     }
 
     public static boolean verifyOverlayPermissions(Activity ma)
