@@ -52,6 +52,7 @@ import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
+import com.sagiadinos.garlic.launcher.helper.RootChecker;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
@@ -77,6 +78,7 @@ public class MainActivity extends Activity
     private KioskManager        MyKiosk               = null;
     private ReceiverManager     MyReceiverManager = null;
     private TaskExecutionReport MyTaskExecutionReport;
+    private AppPermissions      MyAppPermissions;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -93,7 +95,19 @@ public class MainActivity extends Activity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvInformation = findViewById(R.id.textViewInformation);
 
-        AppPermissions.handlePermissions(this, tvInformation);
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
+        if (MyMainConfiguration.isFirstStart())
+        {
+            MyMainConfiguration.firstStart(new RootChecker());
+        }
+        MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
+
+        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
+
+        if (!AppPermissions.hasStandardPermissions(this))
+        {
+            MyAppPermissions.handlePermissions(tvInformation, new ShellExecute(Runtime.getRuntime()));
+        }
     }
 
     @Override
@@ -101,8 +115,7 @@ public class MainActivity extends Activity
     {
         super.onStart();
 
-        // stop until permissions are saved
-
+        // continue only when permissions are granted
         if (!AppPermissions.hasStandardPermissions(this))
         {
             return;
@@ -115,10 +128,6 @@ public class MainActivity extends Activity
                 new IntentFilter(Intent.ACTION_MAIN)
          );
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
-         MyMainConfiguration   = new MainConfiguration(new SharedPreferencesModel(this));
-         MyMainConfiguration.checkForUUID();
-         MyMainConfiguration.setIsDeviceRooted(AppPermissions.isDeviceRooted());
-         MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
 
 
          MyKiosk               = new KioskManager(MyDeviceOwner,
@@ -187,6 +196,7 @@ public class MainActivity extends Activity
             startGarlicPlayer();
             return;
         }
+
         if (!BuildConfig.DEBUG)
         {
             checkForNetwork();

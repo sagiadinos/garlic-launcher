@@ -52,7 +52,7 @@ public class ActivityConfigAdmin extends Activity
     EditText editContentUrl;
     Boolean  is_password_changed = false;
     MainConfiguration MyMainConfiguration;
-
+    AppPermissions MyAppPermissions;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,6 +68,7 @@ public class ActivityConfigAdmin extends Activity
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
 
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
+        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
         editPlayerStartDelay.setMaxValue(99);
         editPlayerStartDelay.setMinValue(5);
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());
@@ -141,7 +142,7 @@ public class ActivityConfigAdmin extends Activity
 
     private void prepareVisibilityOfBackButtonOption()
     {
-        if (MyMainConfiguration.isDeviceRooted() && AppPermissions.verifyOverlayPermissions(this))
+        if (MyMainConfiguration.isDeviceRooted() && MyAppPermissions.verifyOverlayPermissions())
         {
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);

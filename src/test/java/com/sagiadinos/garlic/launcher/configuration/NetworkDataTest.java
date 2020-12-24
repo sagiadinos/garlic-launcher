@@ -18,8 +18,6 @@
  */
 package com.sagiadinos.garlic.launcher.configuration;
 
-import com.sagiadinos.garlic.launcher.configuration.NetworkData;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

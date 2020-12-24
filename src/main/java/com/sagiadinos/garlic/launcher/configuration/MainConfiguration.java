@@ -21,6 +21,9 @@ package com.sagiadinos.garlic.launcher.configuration;
 
 import android.annotation.SuppressLint;
 
+import com.sagiadinos.garlic.launcher.helper.AppPermissions;
+import com.sagiadinos.garlic.launcher.helper.RootChecker;
+
 import java.util.UUID;
 
 public class MainConfiguration
@@ -34,13 +37,16 @@ public class MainConfiguration
     }
 
     @SuppressLint("ApplySharedPref")
-    public void checkForUUID()
+    public void firstStart(RootChecker MyRootChecker)
     {
-        if (getUUID() == null)
-        {
-            Model.storeString("uuid", UUID.randomUUID().toString());
-            storeSmilIndex(DEFAULT_CONTENT_URL);
-        }
+        Model.storeString("uuid", UUID.randomUUID().toString());
+        storeSmilIndex(DEFAULT_CONTENT_URL);
+        setIsDeviceRooted(MyRootChecker.isDeviceRooted());
+    }
+
+    public boolean isFirstStart()
+    {
+        return (getUUID() == null);
     }
 
     public void storeSmilIndex(String smil_index)
@@ -143,15 +149,13 @@ public class MainConfiguration
         return Model.getBoolean("is_device_rooted");
     }
 
-    public void setIsDeviceRooted(Boolean value)
-    {
-        Model.storeBoolean("is_device_rooted", value);
-    }
-
-
     public void setStrictKioskMode(boolean value)
     {
         Model.storeBoolean("is_strict_kiosk_mode", value);
     }
 
+    private void setIsDeviceRooted(Boolean value)
+    {
+        Model.storeBoolean("is_device_rooted", value);
+    }
   }

@@ -18,6 +18,8 @@
  */
 package com.sagiadinos.garlic.launcher.configuration;
 
+import com.sagiadinos.garlic.launcher.helper.RootChecker;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -46,26 +48,38 @@ class MainConfigurationTest
 
 
     @Test
-    void checkForUUIDWhenNull()
+    void firstStart()
     {
         MainConfiguration MyMainConfiguration = createClass();
-        when(SharedPreferencesModelMocked.getString("uuid")).thenReturn(null);
+        RootChecker RootCheckerMocked = mock(RootChecker.class);
 
-        MyMainConfiguration.checkForUUID();
+
+        when(RootCheckerMocked.isDeviceRooted()).thenReturn(false);
+
+        MyMainConfiguration.firstStart(RootCheckerMocked);
 
         verify(SharedPreferencesModelMocked, times(2)).storeString(anyString(), anyString());
+
+        verify(SharedPreferencesModelMocked, times(1)).storeBoolean("is_device_rooted", false);
 
     }
 
     @Test
-    void checkForUUIDWhenExists()
+    void isFirstStartWhenNull()
+    {
+        MainConfiguration MyMainConfiguration = createClass();
+        when(SharedPreferencesModelMocked.getString("uuid")).thenReturn(null);
+
+        assertTrue(MyMainConfiguration.isFirstStart());
+    }
+
+    @Test
+    void isFirstStartWhenNot()
     {
         MainConfiguration MyMainConfiguration = createClass();
         when(SharedPreferencesModelMocked.getString("uuid")).thenReturn("a uuid");
 
-        MyMainConfiguration.checkForUUID();
-
-        verify(SharedPreferencesModelMocked, never()).storeString(anyString(), anyString());
+        assertFalse(MyMainConfiguration.isFirstStart());
     }
 
 
@@ -294,16 +308,6 @@ class MainConfigurationTest
         MyMainConfiguration.isDeviceRooted();
 
         verify(SharedPreferencesModelMocked, times(1)).getBoolean("is_device_rooted");
-    }
-
-    @Test
-    void setIsDeviceRooted()
-    {
-        MainConfiguration MyMainConfiguration = createClass();
-
-        MyMainConfiguration.setIsDeviceRooted(false);
-
-        verify(SharedPreferencesModelMocked, times(1)).storeBoolean("is_device_rooted", false);
     }
 
     @Test

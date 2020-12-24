@@ -101,7 +101,7 @@ class UsbConnectionReceiverTest
 
         MyTestClass.onReceive(ContextMocked, IntentMocked);
         verify(DeviceOwnerMocked, times(1)).isDeviceOwner();
-        verify(IntentMocked, times(0)).getData();
+        verify(IntentMocked, times(1)).getData();
     }
 
     @Test

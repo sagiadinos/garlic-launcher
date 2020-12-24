@@ -48,10 +48,10 @@ class DeviceOwnerTest
     void makeDeviceOwner() throws IOException
     {
         DeviceOwner MyTestClass = createClass();
-        Runtime RuntimeMocked = mock(Runtime.class);
+        ShellExecute ShellExecuteMocked = mock(ShellExecute.class);
 
-        MyTestClass.makeDeviceOwner(RuntimeMocked);
-        verify(RuntimeMocked, times(1)).exec(new String[]{"su","-c","dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"});
+        MyTestClass.makeDeviceOwner(ShellExecuteMocked);
+        verify(ShellExecuteMocked, times(1)).executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver");
     }
 
     @Test

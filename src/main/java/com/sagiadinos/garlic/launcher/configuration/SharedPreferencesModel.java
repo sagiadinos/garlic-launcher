@@ -10,6 +10,7 @@ public class SharedPreferencesModel
 {
     private SharedPreferences pref;
     private String error_text = "";
+
     public SharedPreferencesModel(Context c)
     {
         pref  = c.getSharedPreferences(DeviceOwner.LAUNCHER_PACKAGE_NAME, Context.MODE_PRIVATE);
