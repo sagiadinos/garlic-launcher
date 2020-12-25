@@ -22,7 +22,9 @@ package com.sagiadinos.garlic.launcher;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -142,7 +144,9 @@ public class ActivityConfigAdmin extends Activity
 
     private void prepareVisibilityOfBackButtonOption()
     {
-        if (MyMainConfiguration.isDeviceRooted() && MyAppPermissions.verifyOverlayPermissions())
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+
+        if (MyMainConfiguration.isDeviceRooted() && MyAppPermissions.verifyOverlayPermissions(intent))
         {
             cbOwnBackButton.setVisibility(View.VISIBLE);
             cbOwnBackButton.setEnabled(true);

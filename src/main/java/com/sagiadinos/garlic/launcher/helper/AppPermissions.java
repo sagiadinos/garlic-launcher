@@ -23,7 +23,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
@@ -94,12 +93,11 @@ public class AppPermissions
         }
     }
 
-    public boolean verifyOverlayPermissions()
+    public boolean verifyOverlayPermissions(Intent intent)
     {
         // Check for overlay permission. If not enabled, request for it.
         if (MyMainConfiguration.isDeviceRooted() && !Settings.canDrawOverlays(MyActivity))
         {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + MyActivity.getPackageName()));
             MyActivity.startActivityForResult(intent, 12);
         }
         return Settings.canDrawOverlays(MyActivity);
@@ -126,6 +124,6 @@ public class AppPermissions
 
     private boolean executeShell(@NotNull ShellExecute MyShellExecute, String permission)
     {
-       return MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission." +permission);
+       return MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission." + permission);
     }
 }
