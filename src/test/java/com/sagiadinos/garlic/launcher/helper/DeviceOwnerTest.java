@@ -2,12 +2,8 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
-import com.sagiadinos.garlic.launcher.MainActivity;
-import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

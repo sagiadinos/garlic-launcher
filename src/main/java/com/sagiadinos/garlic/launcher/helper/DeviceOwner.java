@@ -21,13 +21,9 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 /**
  *  DeviceOwner handles the methods to check for device owner

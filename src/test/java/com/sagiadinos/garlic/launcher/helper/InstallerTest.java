@@ -1,7 +1,5 @@
 package com.sagiadinos.garlic.launcher.helper;
 
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
@@ -10,7 +8,6 @@ import android.content.pm.PackageManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,9 +48,29 @@ class InstallerTest
     }
 
     @Test
+    void installViaShell()
+    {
+        ShellExecute ShellExecuteMocked = mock(ShellExecute.class);
+        PackageManager PackageManagerMocked = mock(PackageManager.class);
+        String package_path = "heidewitzka.der.kapitän";
+
+        when(ShellExecuteMocked.executeAsRoot("pm install -r " + package_path + "\n")).thenReturn(true);
+        when(ContextMocked.getPackageManager()).thenReturn(PackageManagerMocked);
+        when(PackageManagerMocked.getPackageInstaller()).thenReturn(PackageInstallerMocked);
+
+        Installer MyTestClass = new Installer(ContextMocked);
+
+        assertTrue(MyTestClass.installViaShell(ShellExecuteMocked, package_path));
+
+        verify(ShellExecuteMocked, times(1)).executeAsRoot("pm install -r " + package_path + "\n");
+
+    }
+
+    @Test
     void installPackage()
     {
     }
+
     @Test
     void uninstall()
     {

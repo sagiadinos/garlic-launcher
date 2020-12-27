@@ -1,42 +1,53 @@
 package com.sagiadinos.garlic.launcher.helper;
 
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class ShellExecute
 {
+    Process MyProcess;
     Runtime MyRuntime;
-    String error_text;
-    String output_text;
+    String error_text  = "";
+    String command     = "";
 
     public ShellExecute(Runtime myRuntime)
     {
         MyRuntime = myRuntime;
     }
 
-    public boolean executeAsRoot(String command)
+    public boolean executeAsRoot(String cmd)
+    {
+        command = cmd;
+        return execute("su\n");
+    }
+
+    public boolean executeAsUser(String cmd)
+    {
+        command = cmd;
+        return execute("");
+    }
+
+      public String getErrorText()
+    {
+        return error_text + "\n" + formatOutput(MyProcess.getErrorStream());
+    }
+
+    public String getOutputText()
+    {
+        return formatOutput(MyProcess.getInputStream());
+    }
+
+    private boolean execute(String cmd)
     {
         boolean succeed = false;
         try
         {
-            error_text = "";
-            Process MyProcess = MyRuntime.exec("su\n");
-            DataOutputStream os = new DataOutputStream(MyProcess.getOutputStream());
-            os.writeBytes(command + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            int res = MyProcess.waitFor();
-            output_text = readBuffer(new BufferedReader(new InputStreamReader(MyProcess.getInputStream())));
-            if (res == 0)
-            {
-                succeed = true;
-            }
-            else
-            {
-                error_text = readBuffer(new BufferedReader(new InputStreamReader(MyProcess.getErrorStream())));;
-            }
+            MyProcess = MyRuntime.exec(cmd);
+            succeed   = (executeCommand() == 0);
         }
         catch (IOException | InterruptedException e)
         {
@@ -45,23 +56,22 @@ public class ShellExecute
         return succeed;
     }
 
-    public String getErrorText()
+    private int executeCommand() throws IOException, InterruptedException
     {
-        return error_text;
+        DataOutputStream MyDataOutputStream = new DataOutputStream(MyProcess.getOutputStream());
+        MyDataOutputStream.writeBytes(command + "\n");
+        MyDataOutputStream.writeBytes("exit\n");
+        MyDataOutputStream.flush();
+        return MyProcess.waitFor();
     }
-
-    public String getOutputText()
-    {
-        return output_text;
-    }
-
-    private String readBuffer(BufferedReader std_error)
+    private String formatOutput(InputStream in)
     {
         String s;
-        StringBuilder ret = new StringBuilder();
+        StringBuilder ret     = new StringBuilder();
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
         try
         {
-            while ((s = std_error.readLine()) != null)
+            while ((s = buffer.readLine()) != null)
             {
                 ret.append(s).append("\n");
             }
@@ -72,5 +82,6 @@ public class ShellExecute
         }
         return ret.toString();
     }
+
 
 }

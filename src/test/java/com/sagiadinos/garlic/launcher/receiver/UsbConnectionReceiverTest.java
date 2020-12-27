@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import java.io.File;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,24 +56,38 @@ class UsbConnectionReceiverTest
     }
 
     @Test
+    void onReceiveIntentGetActionNull()
+    {
+        UsbConnectionReceiver MyTestClass = createClass();
+
+        when(IntentMocked.getAction()).thenReturn(null);
+        MyTestClass.onReceive(ContextMocked, IntentMocked);
+
+
+        verify(IntentMocked, times(1)).getAction();
+        verify(DeviceOwnerMocked, never()).isDeviceOwner();
+    }
+
+    @Test
     void onReceiveDeviceOwnerNull()
     {
         UsbConnectionReceiver MyTestClass = createClass();
         MyTestClass.injectDependencies(null, null); // as it is set to a exist mock value in createClass
+        when(IntentMocked.getAction()).thenReturn("a value");
 
         MyTestClass.onReceive(ContextMocked, IntentMocked);
-        verify(DeviceOwnerMocked, times(0)).isDeviceOwner();
+        verify(DeviceOwnerMocked, never()).isDeviceOwner();
     }
 
     @Test
     void onReceiveDeviceOwnerFalse()
     {
         UsbConnectionReceiver MyTestClass = createClass();
-
         when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(false);
+        when(IntentMocked.getAction()).thenReturn("a value");
 
         MyTestClass.onReceive(ContextMocked, IntentMocked);
-        verify(DeviceOwnerMocked, times(0)).isDeviceOwner();
+        verify(DeviceOwnerMocked, times(1)).isDeviceOwner();
     }
 
 
@@ -87,7 +102,7 @@ class UsbConnectionReceiverTest
 
         MyTestClass.onReceive(ContextMocked, IntentMocked);
         verify(DeviceOwnerMocked, times(1)).isDeviceOwner();
-        verify(IntentMocked, times(0)).getData();
+        verify(IntentMocked, never()).getData();
     }
 
     @Test
@@ -104,32 +119,84 @@ class UsbConnectionReceiverTest
         verify(IntentMocked, times(1)).getData();
     }
 
+
     @Test
     void onReceiveIndexSmil()
     {
-        // create a Genericfactory for files and Intents
-        // otherwise this crap cannot be tested  properly
-/*        UsbConnectionReceiver MyTestClass = createClass();
-        Uri UriMocked           = mock(Uri.class);
-        File FileMock           = mock(File.class);
+        UsbConnectionReceiver MyTestClass = createClassForDispatch();
+        File FileMock              = mock(File.class);
+        Intent BroadCastIntentMock = mock(Intent.class);
 
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
-        when(IntentMocked.getAction()).thenReturn(Intent.ACTION_MEDIA_MOUNTED);
-        when(IntentMocked.getData()).thenReturn(UriMocked);
-        when(UriMocked.getPath()).thenReturn("a/path");
-        when(MyTestClass.createFile("a/path")).thenReturn(FileMock);
+        when(MyTestClass.createFile("//path/to/usb-mount/index.smil")).thenReturn(FileMock);
         when(FileMock.exists()).thenReturn(true);
         when(FileMock.canRead()).thenReturn(true);
+        when(FileMock.getAbsolutePath()).thenReturn("//path/to/usb-mount/index.smil");
 
+        when(MyTestClass.createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver")).thenReturn(BroadCastIntentMock);
 
         MyTestClass.onReceive(ContextMocked, IntentMocked);
 
-        verify(DeviceOwnerMocked, times(1)).isDeviceOwner();
-        verify(IntentMocked, times(0)).getData();
-        verify(MainConfigurationMocked, times(1)).storeSmilIndex("a/path/index.smil");
-              verify(ContextMocked, times(1)).sendBroadcast();
+        verify(MainConfigurationMocked, times(1)).storeSmilIndex("//path/to/usb-mount/index.smil");
+        verify(FileMock, times(1)).getAbsolutePath();
+        verify(BroadCastIntentMock, times(1)).putExtra("smil_index_path", "//path/to/usb-mount/index.smil");
+        verify(ContextMocked, times(1)).sendBroadcast(BroadCastIntentMock);
+    }
 
-*/   }
+    @Test
+    void onReceiveConfigXML()
+    {
+        UsbConnectionReceiver MyTestClass = createClassForDispatch();
+        File FileMock              = mock(File.class);
+        Intent BroadCastIntentMock = mock(Intent.class);
+
+        when(MyTestClass.createFile("//path/to/usb-mount/config.xml")).thenReturn(FileMock);
+        when(FileMock.exists()).thenReturn(true);
+        when(FileMock.canRead()).thenReturn(true);
+        when(FileMock.getAbsolutePath()).thenReturn("//path/to/usb-mount/config.xml");
+
+        when(MyTestClass.createIntent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver")).thenReturn(BroadCastIntentMock);
+
+        MyTestClass.onReceive(ContextMocked, IntentMocked);
+
+        verify(FileMock, times(1)).getAbsolutePath();
+        verify(BroadCastIntentMock, times(1)).putExtra("config_path", "//path/to/usb-mount/config.xml");
+        verify(ContextMocked, times(1)).sendBroadcast(BroadCastIntentMock);
+    }
+
+    @Test
+    void onReceivePlayerApk()
+    {
+        UsbConnectionReceiver MyTestClass = createClassForDispatch();
+        File FileMock              = mock(File.class);
+        Intent BroadCastIntentMock = mock(Intent.class);
+
+        when(MyTestClass.createFile("//path/to/usb-mount/garlic-player.apk")).thenReturn(FileMock);
+        when(FileMock.exists()).thenReturn(true);
+        when(FileMock.canRead()).thenReturn(true);
+        when(FileMock.getAbsolutePath()).thenReturn("//path/to/usb-mount/garlic-player.apk");
+
+        when(MyTestClass.createIntent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver")).thenReturn(BroadCastIntentMock);
+
+        MyTestClass.onReceive(ContextMocked, IntentMocked);
+
+        verify(FileMock, times(1)).getAbsolutePath();
+        verify(BroadCastIntentMock, times(1)).putExtra("apk_path", "//path/to/usb-mount/garlic-player.apk");
+        verify(ContextMocked, times(1)).sendBroadcast(BroadCastIntentMock);
+    }
+
+    UsbConnectionReceiver createClassForDispatch()
+    {
+        UsbConnectionReceiver MyTestClass = createClass();
+
+        Uri UriMock = mock(Uri.class);
+        when(IntentMocked.getAction()).thenReturn(Intent.ACTION_MEDIA_MOUNTED);
+        when(IntentMocked.getData()).thenReturn(UriMock);
+        when(UriMock.getPath()).thenReturn("//path/to/usb-mount");
+        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
+
+        MyTestClass.onReceive(ContextMocked, IntentMocked);
+        return MyTestClass;
+    }
 
 
     UsbConnectionReceiver createClass()

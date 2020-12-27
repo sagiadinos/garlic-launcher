@@ -42,12 +42,12 @@ public class Installer
     private Context ctx;
     private PackageInstaller MyPackageInstaller;
     private String task_id = "";
+
     public Installer(Context c)
     {
         ctx = c;
         MyPackageInstaller = ctx.getPackageManager().getPackageInstaller();
     }
-
 
     public static Boolean isGarlicPlayerInstalled(Context c)
     {

@@ -19,14 +19,10 @@
 
 package com.sagiadinos.garlic.launcher.receiver;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
-import com.sagiadinos.garlic.launcher.MainActivity;
-import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
@@ -82,7 +78,9 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         if (checkAccessibility(smil_index))
         {
             MyMainConfiguration.storeSmilIndex(path + "/index.smil");
-            ctx.sendBroadcast(createIntentForSmilIndex(smil_index));
+            Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
+            intent.putExtra("smil_index_path", smil_index.getAbsolutePath());
+            ctx.sendBroadcast(intent);
             return;
         }
 
@@ -96,8 +94,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
 
         File player_apk = createFile(path + "/garlic-player.apk");
-        if (checkAccessibility(player_apk)/* &&
-                Installer.getAppNameFromPkgName(ctx, player_apk.getAbsolutePath()).equals(DeviceOwner.PLAYER_PACKAGE_NAME)*/)
+        if (checkAccessibility(player_apk))
         {
             Intent intent = createIntent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
             intent.putExtra("apk_path", player_apk.getAbsolutePath());
@@ -106,12 +103,6 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
     }
 
-    private Intent createIntentForSmilIndex(File file)
-    {
-        Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
-        intent.putExtra("smil_index_path", file.getAbsolutePath());
-        return intent;
-    }
 
     private boolean checkAccessibility(File file)
     {
@@ -121,7 +112,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
     /**
      * This method is factory like for testing this class with Mockitos spy
-     * So we avoid using tools like PowerMock and adding unnecessary complexity
+     * So we avoid using tools like PowerMock which adds complexity
      *
      * @return Intent
      */
@@ -131,7 +122,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     }
     /**
      * This method is factory like for testing this class with Mockitos spy
-     * So we avoid using tools like PowerMock and adding unnecessary complexity
+     * So we avoid using tools like PowerMock which adds complexity
      *
      * @return Intent
      */

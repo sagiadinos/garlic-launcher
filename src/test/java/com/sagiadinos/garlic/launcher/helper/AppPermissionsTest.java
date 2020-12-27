@@ -2,11 +2,6 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.provider.Settings;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
@@ -14,8 +9,6 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;

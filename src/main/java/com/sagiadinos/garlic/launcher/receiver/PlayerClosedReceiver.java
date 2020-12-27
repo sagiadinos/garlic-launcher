@@ -34,7 +34,7 @@ import com.sagiadinos.garlic.launcher.MainActivity;
  */
 public class PlayerClosedReceiver extends BroadcastReceiver
 {
-    MainActivity MyActivity;
+    MainActivity MyActivity = null;
 
     public PlayerClosedReceiver()
     {

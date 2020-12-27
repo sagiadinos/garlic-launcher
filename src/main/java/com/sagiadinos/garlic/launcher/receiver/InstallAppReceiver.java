@@ -25,7 +25,6 @@ import android.content.Intent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
