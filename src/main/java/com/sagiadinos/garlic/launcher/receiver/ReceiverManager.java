@@ -26,9 +26,7 @@ import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 
 public class ReceiverManager
 {
-    private MainActivity MyMainActivity;
-    private DeviceOwner  MyDeviceOwner;
-    private MainConfiguration MyMainConfiguration;
+    private final MainActivity MyMainActivity;
     private InForegroundReceiver MyPlayerNotInForegroundReceiver = null;
     private PlayerClosedReceiver MyPlayerClosedReceiver = null;
     private SecondAppReceiver MySecondAppReceiver = null;
@@ -38,11 +36,9 @@ public class ReceiverManager
     private UsbConnectionReceiver MyUsbConnectionReceiver = null;
 
 
-    public ReceiverManager(MainActivity ma, DeviceOwner dow, MainConfiguration mmc)
+    public ReceiverManager(MainActivity ma)
     {
         MyMainActivity = ma;
-        MyDeviceOwner  = dow;
-        MyMainConfiguration = mmc;
     }
 
     public void registerAllReceiver()
@@ -94,7 +90,6 @@ public class ReceiverManager
                 MyUsbConnectionReceiver,
                 createIntentFilter("UsbConnectionReceiver")
         );
-        MyUsbConnectionReceiver.injectDependencies(MyDeviceOwner, MyMainConfiguration);
     }
 
     public void unregisterAllReceiver()

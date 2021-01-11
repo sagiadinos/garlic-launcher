@@ -60,7 +60,7 @@ class InstallerTest
 
         Installer MyTestClass = new Installer(ContextMocked);
 
-        assertTrue(MyTestClass.installViaShell(ShellExecuteMocked, package_path));
+        assertTrue(MyTestClass.installViaRootedShell(ShellExecuteMocked, package_path));
 
         verify(ShellExecuteMocked, times(1)).executeAsRoot("pm install -r " + package_path + "\n");
 

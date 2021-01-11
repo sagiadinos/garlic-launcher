@@ -23,7 +23,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
+import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import java.io.File;
@@ -36,7 +36,6 @@ import java.io.File;
 public class UsbConnectionReceiver extends BroadcastReceiver
 {
     Context ctx;
-    DeviceOwner MyDeviceOwner = null;
     MainConfiguration MyMainConfiguration = null;
 
     @Override
@@ -48,24 +47,13 @@ public class UsbConnectionReceiver extends BroadcastReceiver
             return;
         }
 
-        // can crash if not device owner
-        if (MyDeviceOwner == null || !MyDeviceOwner.isDeviceOwner())
-        {
-            return;
-        }
-
         if (intent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED) && intent.getData() != null)
         {
             // Todo: refactor the down methods with a Sending Class
             // Todo: dispatch with a factory pattern.
+            MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
             dispatchFilesOnUsb(intent.getData().getPath());
         }
-    }
-
-    public void injectDependencies(DeviceOwner dow, MainConfiguration mmc)
-    {
-        MyDeviceOwner = dow;
-        MyMainConfiguration = mmc;
     }
 
     /**

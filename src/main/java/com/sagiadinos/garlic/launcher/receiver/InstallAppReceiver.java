@@ -69,7 +69,7 @@ public class InstallAppReceiver extends BroadcastReceiver
             }
             if (MyMainConfiguration.isDeviceRooted())
             {
-                if (MyInstaller.installViaShell(new ShellExecute(Runtime.getRuntime()), file_path))
+                if (MyInstaller.installViaRootedShell(new ShellExecute(Runtime.getRuntime()), file_path))
                 {
                     TaskExecutionReport.append(task_id, "completed");
                 }

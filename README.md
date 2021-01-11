@@ -4,7 +4,7 @@ The Garlic-Launcher is useful to create digital signage media player on Android-
 
 **A rooted Android is not necessary!**
 
-**You can transfer nearly every consumer hardware to a robust Digital Signage system!**
+**You can transfer nearly every consumer hardware with device owner support to a robust Digital Signage system!**
 
 If you want to build a Digital Signage Media Player Hardware or an interactive Kiosk System which should run 24/7, it is necessary to take some precautions.
 
@@ -66,7 +66,7 @@ For example: You could do a factory reset first, but although I assume that you 
 
 Activate the "Developer options" then enter:
 
-`adb shell install "/YOUR_PATH_TO_APK/latest_android.apk"`
+`adb install "/YOUR_PATH_TO_APK/latest_android.apk"`
 
 ## Set Garlic-Launcher as Device Owner
 

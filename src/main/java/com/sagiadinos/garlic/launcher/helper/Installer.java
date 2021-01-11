@@ -55,11 +55,10 @@ public class Installer
     }
 
     /**
-     * Needed, because some asian images are crapped build that
-     * an install via package manger fails without comment.
-     *
+     * Needed, because some asian rooted images are so crapped  that
+     * an install via package manger fails without a notification.
      */
-    public boolean installViaShell(ShellExecute MyShellExecute, String package_path)
+    public boolean installViaRootedShell(ShellExecute MyShellExecute, String package_path)
     {
         String cmd     = "pm install -r " + package_path + "\n";
         return MyShellExecute.executeAsRoot(cmd);

@@ -140,7 +140,7 @@ public class MainActivity extends Activity
         {
             MyDeviceOwner.determinePermittedLockTaskPackages("");
             hideInformationText();
-            MyReceiverManager = new ReceiverManager(this, MyDeviceOwner, MyMainConfiguration);
+            MyReceiverManager = new ReceiverManager(this);
             MyReceiverManager.registerAllReceiver();
             initButtonViews();
             startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks

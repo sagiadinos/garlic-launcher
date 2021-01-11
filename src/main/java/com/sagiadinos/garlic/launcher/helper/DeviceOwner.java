@@ -65,7 +65,6 @@ public class DeviceOwner
         MyShellExecute.executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver");
     }
 
-
     public void activateRestrictions()
     {
         MyDevicePolicyManager.addUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_APPS_CONTROL);
