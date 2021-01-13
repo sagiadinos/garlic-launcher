@@ -39,8 +39,8 @@ import java.io.OutputStream;
  */
 public class Installer
 {
-    private Context ctx;
-    private PackageInstaller MyPackageInstaller;
+    private final Context ctx;
+    private final PackageInstaller MyPackageInstaller;
     private String task_id = "";
 
     public Installer(Context c)

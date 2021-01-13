@@ -55,6 +55,7 @@ import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
+import com.sagiadinos.garlic.launcher.helper.VersionInformation;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.HUD;
@@ -71,6 +72,7 @@ public class MainActivity extends Activity
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
+    private TextView       tvAppVersion    = null;
 
     private CountDownTimer      PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
@@ -94,6 +96,9 @@ public class MainActivity extends Activity
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvInformation = findViewById(R.id.textViewInformation);
+        tvAppVersion  = findViewById(R.id.textViewAppVersion);
+        VersionInformation MyVersionInformation = new VersionInformation(this);
+        tvAppVersion.setText(MyVersionInformation.forLauncher() + " | " + MyVersionInformation.forPlayer());
 
         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
         if (MyMainConfiguration.isFirstStart())
@@ -108,12 +113,10 @@ public class MainActivity extends Activity
         {
             MyAppPermissions.handlePermissions(tvInformation, new ShellExecute(Runtime.getRuntime()));
         }
-    }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
+        // ATTENTION!
+        // Do not the rows blow in a onStart -method, cause it will slow down an back to app
+        // respectivetely a restart dramatically! e.g. when you close a  player regulary
 
         // continue only when permissions are granted
         if (!AppPermissions.hasStandardPermissions(this))
@@ -201,10 +204,6 @@ public class MainActivity extends Activity
         {
             checkForNetwork();
             displayInformationText(getString(R.string.no_garlic_no_network));
-        }
-        else
-        {
-            displayInformationText("debug mode: no player");
         }
    }
 
@@ -359,7 +358,7 @@ public class MainActivity extends Activity
 
     public void startGarlicPlayer()
     {
-        if (MyMainConfiguration.hasNoPlayerStartDelayAfterBoot())
+        if (MyMainConfiguration.hasNoPlayerStartDelayAfterBoot() && MyMainConfiguration.isJustBooted())
         {
             startGarlicPlayerInstantly(null);
         }
@@ -442,6 +441,7 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = true;
+        MyMainConfiguration.toggleJustBooted(false);
         NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }

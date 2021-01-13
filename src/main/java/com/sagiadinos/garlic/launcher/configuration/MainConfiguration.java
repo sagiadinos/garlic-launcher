@@ -49,6 +49,7 @@ public class MainConfiguration
         return (getUUID() == null);
     }
 
+
     public void storeSmilIndex(String smil_index)
     {
         Model.storeString("smil_index_uri", smil_index);
@@ -86,6 +87,15 @@ public class MainConfiguration
         return Model.getBoolean("no_player_start_delay_after_boot");
     }
 
+    public void toggleJustBooted(boolean value)
+    {
+        Model.storeBoolean("just_booted", value);
+    }
+
+    public boolean isJustBooted()
+    {
+        return Model.getBoolean("just_booted");
+    }
 
     public String getUUID()
     {
