@@ -32,64 +32,20 @@ One solution is to root Android, but rooted devices are a potential security ris
 - Strict Kiosk Mode. (explanation down)
 - Password secured "Service Mode" for administrating systems in "Strict Kiosk Mode" manually
 
-### Why you could need a custom back button?
-
-Some (mostly chinese) manufacturers builds rooted Android images (AOSP) on customer request, which have additional options in their settings. Amongst other things often there is an opportunity to disable the navigation bar totally in these Unfortunately every manufacturer provides his own API for that. So instead of supporting dozens of different manufacturers APIs for hide/show I decide to create a custom Back-Button which can be activated in the case it should needed. For example when starting a second app, a browser, do some maintance etc...
-
-Personally I prefer to use regulary supported features like the so called "immersive mode", but there are customers which do not want a visible navigation bar in their kiosk systems under any circumstances. So there is a back button overlay possible.
-
-### What is the Strict Kiosk Mode?
-
-The "Normal Kiosk Mode" means that garlic-launcher is pinned, so it is not possibility to exit into the known Android-UI. However, you are still able to install/uninstall apps or configurate your device manually or remotely from a CMS. That is the common use case for the most requirements.
-
-In some high-security environments this is a no-go. To cover this you can activate the so called "Strict Kiosk Mode". This decativates the config buttons in garlic-launcher and prevent the installing/uninstalling of apps, the modifying of accounts and some more things. So even on a application crash it is not possible to manipulate apps or user. If a maintenance technician needs physical access to the device, there is a passsword secured "Service Mode"-Button which temporary deactivates the restrictions.
-
-The password for activating the "Service-Mode" must be set personally and is not recoverable. For security reasons, the password is stored hashed with an individual salt that is new created each time. So if the password is choosen wisely it cannnot be attacked via brute-force or with [rainbow tables](https://en.wikipedia.org/wiki/Rainbow_table).
-
 ## Requirements
  - Android >= 7.1.1 
  - Garlic-launcher must set as Device Owner
 
 Garlic-launcher is tested also with Android 9 on a non-rooted consumer Tablet.
 
-## Download & Installation
+## Binary Download
 
 You can download latest signed build from our CI [here](https://garlic-player.com/downloads/ci-builds/latest_android_launcher.apk)
 
-## Installation (read carefully first)
+## Installation
 
-You need unprovisioned Android Hardware. This means a device which has not configured an playstore account.
+[Installation-Guide](https://github.com/sagiadinos/garlic-launcher/wiki/Installation)
 
-For example: You could do a factory reset first, but although I assume that you know what you are doing:
+## Configuration
 
-**Don't do this on productive media device, tablets or smartphone, cause a factory reset will delete all your data!**
-
-Activate the "Developer options" then enter:
-
-`adb install "/YOUR_PATH_TO_APK/latest_android.apk"`
-
-## Set Garlic-Launcher as Device Owner
-
-Device Owner is needed, cause it makes all the magic like silent installation, configurations, reboot... etc possible.
-
-### On a Rooted Device
-
-Garlic-launcher is able to detect a rooted device. In this case the app can set the Device Owner mode by itself.
-
-### Manually
-
-If the device is not rooted, you can set the Device Owner with following adb command:
-
-`adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver`
-
-### Via SmilControl CMS and QR-Code
-
-The [SmilControl-CMS](https://admin.smil-conrol.com) can provision non-rooted sevices easily via a QR-code.
-
-You can register for free. A video tutorial which describes this process can be found on [YouTube](https://www.youtube.com/watch?v=gf832iRd5pY)
-
-
-
-## Finally Installation of a Digital Signage Media Player 
- 
-Garlic-launcher will start to download the latest [Digital Signage Media Player](https://github.com/sagiadinos/garlic-player) automatically after it is set as Device owner and has access to a network.
+[Settings-Guide]https://github.com/sagiadinos/garlic-launcher/wiki/Launcher_Settings
