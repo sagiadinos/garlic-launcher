@@ -70,15 +70,25 @@ Activate the "Developer options" then enter:
 
 ## Set Garlic-Launcher as Device Owner
 
+Device Owner is needed, cause it makes all the magic like silent installation, configurations, reboot... etc possible.
+
+### On a Rooted Device
+
 Garlic-launcher is able to detect a rooted device. In this case the app can set the Device Owner mode by itself.
+
+### Manually
 
 If the device is not rooted, you can set the Device Owner with following adb command:
 
 `adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver`
 
-Currently my Company prepares a web process in our SmilControl-CMS to provision Android Devices much easier via a simple qr-code.
+### Via SmilControl CMS and QR-Code
 
-Device Owner is needed, cause it makes all the magic like silent installation, configurations, reboot... etc possible.
+The [SmilControl-CMS](https://admin.smil-conrol.com) can provision non-rooted sevices easily via a QR-code.
+
+You can register for free. A video tutorial which describes this process can be found on [YouTube](https://www.youtube.com/watch?v=gf832iRd5pY)
+
+
 
 ## Finally Installation of a Digital Signage Media Player 
  
