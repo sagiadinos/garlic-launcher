@@ -25,6 +25,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
 
+import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
+
 /**
  *  DeviceOwner handles the methods to check for device owner
  *  and encapsulates some simple functions like reboot.
@@ -102,6 +104,23 @@ public class DeviceOwner
     public boolean isDeviceOwner()
     {
         return MyDevicePolicyManager.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
+    }
+
+    public void lockNow()
+    {
+        if (isAdminActive())
+        {
+            MyDevicePolicyManager.lockNow();
+        }
+    }
+
+
+    public static void lock(DevicePolicyManager dpm, ComponentName da)
+    {
+        if (dpm != null && dpm.isAdminActive(da))
+        {
+            dpm.lockNow();
+        }
     }
 
     public static void reboot(DevicePolicyManager dpm, ComponentName da)

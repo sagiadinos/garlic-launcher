@@ -18,15 +18,14 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.USES_POLICY_FORCE_LOCK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:name=".GarlicLauncherApplication"
         android:icon="@drawable/ic_garlic_launcher"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
-        <receiver
-            android:name=".receiver.ConfigXMLReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
 
         <provider
             android:name=".SettingsProvider"
@@ -47,6 +46,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.settings.WIFI_SETTINGS" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -74,6 +74,17 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".receiver.CommandReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".receiver.ConfigXMLReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".receiver.RebootReceiver"
+            android:enabled="true" />
+        <receiver
             android:name=".receiver.InForegroundReceiver"
             android:enabled="true" />
         <receiver
@@ -83,18 +94,17 @@
             android:name=".receiver.SecondAppReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".receiver.RebootReceiver"
-            android:enabled="true" />
-        <receiver
             android:name=".receiver.InstallAppReceiver"
             android:enabled="true" />
-        <receiver android:name=".receiver.BootCompletedReceiver"
+        <receiver
+            android:name=".receiver.BootCompletedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>       <receiver
+        </receiver>
+        <receiver
             android:name=".receiver.InstalledAppReceiver"
             android:enabled="true"
             android:exported="true">

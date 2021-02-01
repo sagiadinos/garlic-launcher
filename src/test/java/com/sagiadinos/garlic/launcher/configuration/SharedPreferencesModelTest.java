@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
-import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;

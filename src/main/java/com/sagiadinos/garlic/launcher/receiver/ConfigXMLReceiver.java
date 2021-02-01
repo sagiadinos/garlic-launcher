@@ -46,7 +46,8 @@ public class ConfigXMLReceiver extends BroadcastReceiver
 
         if (parseConfigFile(config_xml))
         {
-            Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.RebootReceiver");
+            Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
+            i.putExtra("command", "reboot");
             i.putExtra("task_id", task_id);
             ctx.sendBroadcast(i);
         }

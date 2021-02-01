@@ -15,12 +15,12 @@ public class VersionInformation
 
     public String forLauncher()
     {
-        return "Launcher: " + determineVersion(DeviceOwner.LAUNCHER_PACKAGE_NAME);
+        return determineVersion(DeviceOwner.LAUNCHER_PACKAGE_NAME);
     }
 
     public String forPlayer()
     {
-        return "Player: " + determineVersion(DeviceOwner.PLAYER_PACKAGE_NAME);
+        return determineVersion(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
     private String determineVersion(String package_name)

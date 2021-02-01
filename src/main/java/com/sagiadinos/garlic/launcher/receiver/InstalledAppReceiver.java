@@ -76,7 +76,9 @@ public class InstalledAppReceiver extends BroadcastReceiver
         {
             if (!BuildConfig.DEBUG)
             {
-                context.sendBroadcast(new Intent("com.sagiadinos.garlic.launcher.receiver.RebootReceiver"));
+                Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
+                i.putExtra("command", "reboot");
+                context.sendBroadcast(new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver"));
             }
         }
     }

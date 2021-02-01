@@ -22,6 +22,7 @@ One solution is to root Android, but rooted devices are a potential security ris
 - The app will be start pinned and as system launcher (Kiosk mode)
 - Watchdog service checks if garlic-player is running
 - OS reboots
+- set screen off/on
 - Support remote software updates with garlic player
 - Software updates via USB-Stick/SD-Card
 - Configuration via USB-Stick/SD-Card

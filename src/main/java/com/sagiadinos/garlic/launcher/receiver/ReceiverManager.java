@@ -21,8 +21,6 @@ package com.sagiadinos.garlic.launcher.receiver;
 
 import android.content.IntentFilter;
 import com.sagiadinos.garlic.launcher.MainActivity;
-import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
-import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 
 public class ReceiverManager
 {
@@ -30,6 +28,7 @@ public class ReceiverManager
     private InForegroundReceiver MyPlayerNotInForegroundReceiver = null;
     private PlayerClosedReceiver MyPlayerClosedReceiver = null;
     private SecondAppReceiver MySecondAppReceiver = null;
+    private CommandReceiver MyCommandReceiver = null;
     private RebootReceiver MyRebootReceiver = null;
     private InstallAppReceiver MyInstallAppReceiver = null;
     private ConfigXMLReceiver MyConfigXMLReceiver = null;
@@ -73,6 +72,12 @@ public class ReceiverManager
                 createIntentFilter("RebootReceiver")
         );
 
+        MyCommandReceiver =  new CommandReceiver();
+        MyMainActivity.registerReceiver(
+                MyCommandReceiver,
+                createIntentFilter("CommandReceiver")
+        );
+
         MyInstallAppReceiver =  new InstallAppReceiver();
         MyMainActivity.registerReceiver(
                 MyInstallAppReceiver,
@@ -100,6 +105,7 @@ public class ReceiverManager
         MyMainActivity.unregisterReceiver(MyPlayerNotInForegroundReceiver);
         MyMainActivity.unregisterReceiver(MyPlayerClosedReceiver);
         MyMainActivity.unregisterReceiver(MySecondAppReceiver);
+        MyMainActivity.unregisterReceiver(MyCommandReceiver);
         MyMainActivity.unregisterReceiver(MyRebootReceiver);
         MyMainActivity.unregisterReceiver(MyInstallAppReceiver);
         MyMainActivity.unregisterReceiver(MyConfigXMLReceiver);

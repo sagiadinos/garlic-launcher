@@ -97,15 +97,14 @@ public class MainActivity extends Activity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvInformation = findViewById(R.id.textViewInformation);
         tvAppVersion  = findViewById(R.id.textViewAppVersion);
-        VersionInformation MyVersionInformation = new VersionInformation(this);
-        tvAppVersion.setText(MyVersionInformation.forLauncher() + " | " + MyVersionInformation.forPlayer());
-
         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
         if (MyMainConfiguration.isFirstStart())
         {
             MyMainConfiguration.firstStart(new RootChecker());
         }
         MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
+        VersionInformation MyVersionInformation = new VersionInformation(this);
+        tvAppVersion.setText("Launcher: " + MyVersionInformation.forLauncher() + " | Player: " + MyVersionInformation.forPlayer() + " | UUUID: " + MyMainConfiguration.getUUID());
 
         MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
 
@@ -358,7 +357,7 @@ public class MainActivity extends Activity
 
     public void startGarlicPlayer()
     {
-        if (MyMainConfiguration.hasNoPlayerStartDelayAfterBoot() && MyMainConfiguration.isJustBooted())
+         if (MyMainConfiguration.hasNoPlayerStartDelayAfterBoot() && MyMainConfiguration.isJustBooted())
         {
             startGarlicPlayerInstantly(null);
         }
@@ -366,7 +365,6 @@ public class MainActivity extends Activity
         {
             startGarlicPlayerDelayed();
         }
-
     }
 
     public void startGarlicPlayerDelayed()
@@ -423,12 +421,7 @@ public class MainActivity extends Activity
     {
         stopPlayerRestart();
         startActivity(new Intent(this, ActivityConfigAdmin.class));
-    }
 
-    public void configWiFi(View view)
-    {
-        stopPlayerRestart();
-        startActivityForResult(new Intent(android.net.wifi.WifiManager.ACTION_PICK_WIFI_NETWORK), 0);
     }
 
     public void openAndroidSettings(View view)

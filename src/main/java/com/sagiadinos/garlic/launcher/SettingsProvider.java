@@ -28,6 +28,8 @@ import android.net.Uri;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
+import com.sagiadinos.garlic.launcher.helper.VersionInformation;
+
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -38,14 +40,17 @@ public class SettingsProvider extends ContentProvider
     private static final int SMIL_CONTENT_URL = 1;
     private static final int SERVICE_PASSWORD = 2;
     private static final int LAUNCHER_UUID    = 3;
+    private static final int LAUNCHER_VERSION = 4;
     private static final UriMatcher uriMatcher = getUriMatcher();
 
     private MainConfiguration MyMainConfiguration = null;
+    private VersionInformation MyVersionInformation = null;
 
     @Override
     public boolean onCreate()
     {
-        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(Objects.requireNonNull(getContext())));
+        MyMainConfiguration  = new MainConfiguration(new SharedPreferencesModel(Objects.requireNonNull(getContext())));
+        MyVersionInformation = new VersionInformation(getContext());
         return true;
     }
 
@@ -80,6 +85,9 @@ public class SettingsProvider extends ContentProvider
             case SERVICE_PASSWORD:
                 rowBuilder.add(validatePassword(selection));
                 break;
+            case LAUNCHER_VERSION:
+                rowBuilder.add(MyVersionInformation.forLauncher());
+                break;
             case LAUNCHER_UUID:
                 rowBuilder.add(MyMainConfiguration.getUUID());
                 break;
@@ -102,6 +110,7 @@ public class SettingsProvider extends ContentProvider
         uriMatcher.addURI(PROVIDER_NAME, "smil_content_url", SMIL_CONTENT_URL);
         uriMatcher.addURI(PROVIDER_NAME, "service_password", SERVICE_PASSWORD);
         uriMatcher.addURI(PROVIDER_NAME, "uuid", LAUNCHER_UUID);
+        uriMatcher.addURI(PROVIDER_NAME, "launcher_version", LAUNCHER_VERSION);
         return uriMatcher;
     }
 
