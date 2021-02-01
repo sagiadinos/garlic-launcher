@@ -49,4 +49,4 @@ You can download latest signed build from our CI [here](https://garlic-player.co
 
 ## Configuration
 
-[Settings-Guide]https://github.com/sagiadinos/garlic-launcher/wiki/Launcher_Settings
+[Settings-Guide](https://github.com/sagiadinos/garlic-launcher/wiki/Launcher_Settings)
