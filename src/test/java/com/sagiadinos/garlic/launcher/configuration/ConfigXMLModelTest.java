@@ -100,7 +100,7 @@ class ConfigXMLModelTest
 
     ConfigXMLModel createModel()
     {
-        NetworkDataMocked         = mock(NetworkData.class);
+        NetworkDataMocked       = mock(NetworkData.class);
         mainConfigurationMocked = mock(MainConfiguration.class);
         return new ConfigXMLModel(NetworkDataMocked, mainConfigurationMocked);
     }

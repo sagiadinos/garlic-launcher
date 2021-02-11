@@ -36,7 +36,7 @@ import java.io.File;
 public class UsbConnectionReceiver extends BroadcastReceiver
 {
     Context ctx;
-    MainConfiguration MyMainConfiguration = null;
+    String mount_path = null;
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -51,37 +51,54 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         {
             // Todo: refactor the down methods with a Sending Class
             // Todo: dispatch with a factory pattern.
-            MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
-            dispatchFilesOnUsb(intent.getData().getPath());
+            mount_path               = intent.getData().getPath();
+            dispatchFilesOnUsb();
         }
     }
 
-    /**
-     *
-     * @param path String
-     */
-    private void dispatchFilesOnUsb(String path)
+    private void dispatchFilesOnUsb()
     {
-        File smil_index = createFile(path + "/index.smil");
+        if (hasSmilIndex(createMainConfiguration()))
+            return;
+
+        if (hasConfigXML())
+            return;
+
+        hasPlayerApk();
+    }
+
+    private boolean hasSmilIndex(MainConfiguration MyMainConfiguration)
+    {
+        File smil_index = createFile(mount_path + "/index.smil");
         if (checkAccessibility(smil_index))
         {
-            MyMainConfiguration.storeSmilIndex(path + "/index.smil");
+            MyMainConfiguration.storeSmilIndex(mount_path + "/index.smil");
+
             Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
             intent.putExtra("smil_index_path", smil_index.getAbsolutePath());
             ctx.sendBroadcast(intent);
-            return;
+            return true;
         }
+        return false;
+    }
 
-        File config_xml = createFile(path + "/config.xml");
+    private boolean hasConfigXML()
+    {
+        File config_xml = createFile(mount_path + "/config.xml");
         if (checkAccessibility(config_xml))
         {
             Intent intent = createIntent("com.sagiadinos.garlic.launcher.receiver.ConfigXMLReceiver");
             intent.putExtra("config_path", config_xml.getAbsolutePath());
             ctx.sendBroadcast(intent);
-            return;
+            return true;
         }
 
-        File player_apk = createFile(path + "/garlic-player.apk");
+        return false;
+    }
+
+    private void hasPlayerApk()
+    {
+        File player_apk = createFile(mount_path + "/garlic-player.apk");
         if (checkAccessibility(player_apk))
         {
             Intent intent = createIntent("com.sagiadinos.garlic.launcher.receiver.InstallAppReceiver");
@@ -91,32 +108,33 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         }
     }
 
-
     private boolean checkAccessibility(File file)
     {
         return (file.exists() && file.canRead());
     }
 
 
-    /**
-     * This method is factory like for testing this class with Mockitos spy
-     * So we avoid using tools like PowerMock which adds complexity
-     *
-     * @return Intent
-     */
+ // This methods are factory like for testing this class with Mockitos spy
+ // So we avoid using tools like PowerMock which adds complexity
+
     protected Intent createIntent(String action)
     {
         return new Intent(action);
     }
-    /**
-     * This method is factory like for testing this class with Mockitos spy
-     * So we avoid using tools like PowerMock which adds complexity
-     *
-     * @return Intent
-     */
+
     protected File createFile(String file_path)
     {
         return new File(file_path);
+    }
+
+    protected MainConfiguration createMainConfiguration()
+    {
+        return new MainConfiguration(createSharedPreferencesModel());
+    }
+
+    protected SharedPreferencesModel createSharedPreferencesModel()
+    {
+        return new SharedPreferencesModel(ctx);
     }
 
 }

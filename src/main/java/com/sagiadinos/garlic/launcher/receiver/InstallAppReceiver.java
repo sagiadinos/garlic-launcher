@@ -57,16 +57,17 @@ public class InstallAppReceiver extends BroadcastReceiver
         {
             return;
         }
+
+        MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
+        Installer MyInstaller    = new Installer(ctx);
+        String file_path         = intent.getStringExtra("apk_path");
+        String task_id           = "";
+        if (intent.getStringExtra("task_id") != null)
+        {
+            task_id = intent.getStringExtra("task_id");
+        }
         try
         {
-            MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(ctx));
-            Installer MyInstaller    = new Installer(ctx);
-            String file_path         = intent.getStringExtra("apk_path");
-            String task_id           = "";
-            if (intent.getStringExtra("task_id") != null)
-            {
-                task_id = intent.getStringExtra("task_id");
-            }
             if (MyMainConfiguration.isDeviceRooted())
             {
                 if (MyInstaller.installViaRootedShell(new ShellExecute(Runtime.getRuntime()), file_path))
@@ -82,18 +83,19 @@ public class InstallAppReceiver extends BroadcastReceiver
             {
                 MyInstaller.installPackage(task_id, file_path);
             }
-
-            // delete downloaded files which are in player cache but not on usb or Download dir
-            if (file_path != null && file_path.contains("cache"))
-            {
-                File file = new File(file_path);
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
         }
         catch (IOException e)
         {
-            e.getStackTrace();
+            TaskExecutionReport.append(task_id, "aborted");
+        }
+
+        // delete downloaded files in all cases which are in player cache
+        // important! No delete - No further updates
+        if (file_path != null && file_path.contains("cache"))
+        {
+            File file = new File(file_path);
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
         }
     }
 }

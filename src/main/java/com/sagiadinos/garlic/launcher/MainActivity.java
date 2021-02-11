@@ -42,6 +42,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.Installer;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
@@ -102,6 +103,7 @@ public class MainActivity extends Activity
         {
             MyMainConfiguration.firstStart(new RootChecker());
         }
+
         MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
         VersionInformation MyVersionInformation = new VersionInformation(this);
         tvAppVersion.setText("Launcher: " + MyVersionInformation.forLauncher() + " | Player: " + MyVersionInformation.forPlayer() + " | UUUID: " + MyMainConfiguration.getUUID());
@@ -122,6 +124,10 @@ public class MainActivity extends Activity
         {
             return;
         }
+
+        CleanUp MyCleanUp = new CleanUp();
+        MyCleanUp.removePlayerApks(Environment.getExternalStorageDirectory().getAbsolutePath());
+        MyCleanUp.removeXMLFiles(Environment.getExternalStorageDirectory().getAbsolutePath());
 
         initDebugButtons();
         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
