@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerDownloader extends ConnectivityManager.NetworkCallback
 {
-    private final String            PLAYER_DOWNLOAD_URL = "https://garlic-player.com/downloads/ci-builds/latest_android_player.apk";
+    private final String            PLAYER_DOWNLOAD_URL = "https://garlic-player.com/downloads/garlic-player.apk";
     private static final String     DOWNLOADED_FILENAME = "garlic-player.apk";
     private ProgressBar             DownloadProgressBar;
     private String                  apk_path;
