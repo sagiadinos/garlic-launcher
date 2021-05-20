@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -34,6 +35,8 @@ import android.os.CountDownTimer;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -54,6 +57,7 @@ import com.sagiadinos.garlic.launcher.helper.KioskManager;
 import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
+import com.sagiadinos.garlic.launcher.helper.Screen;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.VersionInformation;
@@ -68,8 +72,6 @@ public class MainActivity extends Activity
     private boolean        has_player_started     = false;
     private boolean        is_countdown_running   = false;
 
-    private Button         btToggleLock = null;
-    private Button         btToggleLauncher = null;
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
@@ -82,11 +84,37 @@ public class MainActivity extends Activity
     private ReceiverManager     MyReceiverManager = null;
     private TaskExecutionReport MyTaskExecutionReport;
     private AppPermissions      MyAppPermissions;
+    private Screen              MyScreen;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
     {
         AppPermissions.onRequestPermissionsResult(this, request_code, permissions, grant_results);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        if (!MyKiosk.isStrictKioskModeActive() &&
+            event.getActionMasked() == MotionEvent.ACTION_DOWN &&
+                MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
+        {
+            MyKiosk.unpin();
+            // start other Launcher Activity
+            ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
+
+            ComponentName name=new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+            Intent i=new Intent(Intent.ACTION_MAIN);
+
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            i.setComponent(name);
+
+            startActivity(i);
+        }
+
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -103,6 +131,10 @@ public class MainActivity extends Activity
         {
             MyMainConfiguration.firstStart(new RootChecker());
         }
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        MyScreen = new Screen(displayMetrics);
 
         MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
         VersionInformation MyVersionInformation = new VersionInformation(this);
@@ -129,7 +161,6 @@ public class MainActivity extends Activity
         MyCleanUp.removePlayerApks(Environment.getExternalStorageDirectory().getAbsolutePath());
         MyCleanUp.removeXMLFiles(Environment.getExternalStorageDirectory().getAbsolutePath());
 
-        initDebugButtons();
         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                 new ComponentName(this, AdminReceiver.class),
                 new ComponentName(this, MainActivity.class),
@@ -137,9 +168,8 @@ public class MainActivity extends Activity
          );
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
 
-
          MyKiosk               = new KioskManager(MyDeviceOwner,
-                                                new HomeLauncherManager(MyDeviceOwner, this, new Intent(Intent.ACTION_MAIN)),
+                                                new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
                                                 new LockTaskManager(this),
                                                 MyMainConfiguration
         );
@@ -166,6 +196,13 @@ public class MainActivity extends Activity
                 displayInformationText(getString(R.string.no_device_owner));
             }
         }
+    }
+
+    @Override
+    protected void onResume()
+    {
+        MyKiosk.unpin();
+        super.onResume();
     }
 
     @Override
@@ -245,33 +282,10 @@ public class MainActivity extends Activity
             btToggleServiceMode.setText(R.string.enter_strict_mode);
             btAndroidSettings.setVisibility(View.VISIBLE);
         }
-
-        if (MyKiosk.startKioskMode() && btToggleLock != null) // Pin this app and set it as Launcher
-        {
-            btToggleLock.setText(R.string.unpin_app);
-            btToggleLauncher.setText(R.string.restore_old_launcher);
-        }
+        MyKiosk.becomeHomeActivity();
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
     }
 
-
-    public void initDebugButtons()
-    {
-        if (BuildConfig.DEBUG)
-        {
-            btToggleLock        = findViewById(R.id.btToggleLockTask);
-            btToggleLauncher    = findViewById(R.id.btToggleLauncher);
-            findViewById(R.id.layoutDebug).setVisibility(View.VISIBLE);
-            btToggleLock.setVisibility(View.VISIBLE);
-            btToggleLauncher.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            findViewById(R.id.layoutDebug).setVisibility(View.GONE);
-            findViewById(R.id.btToggleLockTask).setVisibility(View.GONE);
-            findViewById(R.id.btToggleLauncher).setVisibility(View.GONE);
-        }
-    }
 
     public boolean hasSecondAppStarted()
     {
@@ -282,32 +296,6 @@ public class MainActivity extends Activity
     {
         return has_player_started;
     }
-
-    public void toggleLockTask(View view)
-    {
-        if (MyKiosk.toggleKioskMode())
-        {
-            btToggleLock.setText(R.string.unpin_app);
-        }
-        else
-        {
-            btToggleLock.setText(R.string.pin_app);
-       }
-    }
-
-    public void toggleLauncher(View view)
-    {
-        if (MyKiosk.toggleHomeActivity())
-        {
-            btToggleLauncher.setText(R.string.restore_old_launcher);
-        }
-        else
-        {
-            btToggleLauncher.setText(R.string.become_launcher);
-        }
-    }
-
-
 
     public void toggleServiceMode(View view)
     {
@@ -334,7 +322,7 @@ public class MainActivity extends Activity
                 // so we get maybe the device UUID via
                 // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 // or set something own
-               // String alt_password = "heidewitzka";
+                // String alt_password = "heidewitzka";
 
                 if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher())/* || value.equals(alt_password)*/)
                 {
@@ -427,7 +415,6 @@ public class MainActivity extends Activity
     {
         stopPlayerRestart();
         startActivity(new Intent(this, ActivityConfigAdmin.class));
-
     }
 
     public void openAndroidSettings(View view)
@@ -442,6 +429,7 @@ public class MainActivity extends Activity
         has_player_started     = true;
         MyMainConfiguration.toggleJustBooted(false);
         NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
+        MyKiosk.pin();
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 

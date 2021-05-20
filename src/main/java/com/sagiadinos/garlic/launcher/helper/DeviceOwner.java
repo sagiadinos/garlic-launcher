@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
 
-import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 
 /**
  *  DeviceOwner handles the methods to check for device owner
@@ -43,10 +42,10 @@ import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
  */
 public class DeviceOwner
 {
-    private DevicePolicyManager MyDevicePolicyManager;
-    private ComponentName       MyDeviceAdmin;
-    private ComponentName       MyActivityComponent;
-    private IntentFilter        MyIntentFilter;
+    private final DevicePolicyManager MyDevicePolicyManager;
+    private final ComponentName       MyDeviceAdmin;
+    private final ComponentName       MyActivityComponent;
+    private final IntentFilter        MyIntentFilter;
 
     public static final String LAUNCHER_PACKAGE_NAME = "com.sagiadinos.garlic.launcher";
     public static final String PLAYER_PACKAGE_NAME = "com.sagiadinos.garlic.player";
@@ -113,7 +112,6 @@ public class DeviceOwner
             MyDevicePolicyManager.lockNow();
         }
     }
-
 
     public static void lock(DevicePolicyManager dpm, ComponentName da)
     {

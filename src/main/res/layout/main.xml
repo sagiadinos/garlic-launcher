@@ -37,39 +37,6 @@
         android:visibility="visible" />
 
     <LinearLayout
-        android:id="@+id/layoutDebug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btToggleLockTask"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="toggleLockTask"
-            android:text="@string/pin_app"
-            android:textSize="16sp"
-            android:visibility="gone"
-            tools:visibility="gone" />
-
-        <Button
-            android:id="@+id/btToggleLauncher"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="toggleLauncher"
-            android:text="@string/restore_old_launcher"
-            android:textSize="16sp"
-            android:visibility="gone"
-            tools:visibility="gone" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layoutInformation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

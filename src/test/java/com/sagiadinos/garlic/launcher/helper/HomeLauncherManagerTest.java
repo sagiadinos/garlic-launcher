@@ -22,14 +22,12 @@ import static org.mockito.Mockito.when;
 
 class HomeLauncherManagerTest
 {
-
     @Mock
     DeviceOwner DeviceOwnerMocked;
     @Mock
     Context ContextMocked;
     @Mock
     Intent IntentMocked;
-
 
     @AfterEach
     void tearDown()
@@ -38,7 +36,6 @@ class HomeLauncherManagerTest
         ContextMocked     = null;
         IntentMocked      = null;
     }
-
 
     @Test
     void isHomeActivitySuccess()
@@ -63,7 +60,6 @@ class HomeLauncherManagerTest
         assertFalse(MyTestClass.isHomeActivity());
     }
 
-
     @Test
     void isHomeActivityFailsOnActivity()
     {
@@ -74,37 +70,12 @@ class HomeLauncherManagerTest
     }
 
     @Test
-    void toggleHomeActivityActivate()
-    {
-        HomeLauncherManager MyTestClass = createClass();
-        when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(null);
-
-        assertTrue(MyTestClass.toggleHomeActivity());
-
-        verify(DeviceOwnerMocked, times(1)).addPersistentPreferredActivity();
-    }
-
-    @Test
-    void toggleHomeActivityInactivate()
-    {
-        ComponentName ComponentNameMocked    = mock(ComponentName.class);
-        HomeLauncherManager MyTestClass = createClass();
-        when(IntentMocked.resolveActivity(ContextMocked.getPackageManager())).thenReturn(ComponentNameMocked);
-        when(ComponentNameMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
-        when(ContextMocked.getPackageName()).thenReturn("com.sagiadinos.garlic.launcher");
-
-        assertFalse(MyTestClass.toggleHomeActivity());
-
-        verify(DeviceOwnerMocked, times(1)).clearMainPackageFromPersistent();
-    }
-
-
-    @Test
     void becomeHomeActivity()
     {
         HomeLauncherManager MyTestClass = createClass();
 
-        MyTestClass.becomeHomeActivity();
+        DeviceOwnerMocked       = mock(DeviceOwner.class);
+        MyTestClass.becomeHomeActivity(DeviceOwnerMocked);
 
         verify(DeviceOwnerMocked, times(1)).addPersistentPreferredActivity();
 
@@ -115,7 +86,8 @@ class HomeLauncherManagerTest
     {
         HomeLauncherManager MyTestClass = createClass();
 
-        MyTestClass.restoreHomeActivity();
+        DeviceOwnerMocked       = mock(DeviceOwner.class);
+        MyTestClass.restoreHomeActivity(DeviceOwnerMocked);
 
         verify(DeviceOwnerMocked, times(1)).clearMainPackageFromPersistent();
     }
@@ -123,10 +95,9 @@ class HomeLauncherManagerTest
 
     HomeLauncherManager createClass()
     {
-        DeviceOwnerMocked       = mock(DeviceOwner.class);
         ContextMocked           = mock(Context.class);
         IntentMocked            = mock(Intent.class);
-        return new HomeLauncherManager(DeviceOwnerMocked, ContextMocked, IntentMocked);
+        return new HomeLauncherManager(ContextMocked, IntentMocked);
     }
 
 

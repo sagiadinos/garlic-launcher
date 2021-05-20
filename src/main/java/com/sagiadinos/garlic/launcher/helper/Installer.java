@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  *  This class install and uninstall (later) software
@@ -54,8 +56,22 @@ public class Installer
         return isPackageInstalled(c, DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
+    public static ResolveInfo determineOtherLauncherPackagename(PackageManager pm)
+    {
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        List<ResolveInfo> lst = pm.queryIntentActivities(i, 0);
+        for (ResolveInfo resolveInfo : lst)
+        {
+            if (!resolveInfo.activityInfo.packageName.equals(DeviceOwner.LAUNCHER_PACKAGE_NAME))
+                return resolveInfo;
+        }
+        return null;
+    }
+
+
     /**
-     * Needed, because some asian rooted images are so crapped  that
+     * Needed, because some asian rooted images are so crappy  that
      * an install via package manger fails without a notification.
      */
     public boolean installViaRootedShell(ShellExecute MyShellExecute, String package_path)

@@ -19,11 +19,6 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
-
-import android.widget.Toast;
-
-import com.sagiadinos.garlic.launcher.BuildConfig;
-import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 /**
@@ -36,10 +31,10 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
  */
 public class KioskManager
 {
-    private DeviceOwner MyDeviceOwner;
-    private HomeLauncherManager  MyLauncher;
-    private LockTaskManager      MyLockTasks;
-    private MainConfiguration MyMainConfiguration;
+    private final DeviceOwner          MyDeviceOwner;
+    private final HomeLauncherManager  MyLauncher;
+    private final LockTaskManager      MyLockTasks;
+    private final MainConfiguration    MyMainConfiguration;
 
     public KioskManager(DeviceOwner dvo, HomeLauncherManager hlm, LockTaskManager ltm, MainConfiguration mc)
     {
@@ -49,45 +44,27 @@ public class KioskManager
         MyMainConfiguration = mc;
     }
 
-    public boolean startKioskMode()
+    public void pin()
     {
-        boolean ret = false;
-        if (checkforDeviceRights())
+        if (MyDeviceOwner.isLockTaskPermitted())
         {
             MyLockTasks.startLockTask();
-            MyLauncher.becomeHomeActivity();
-            ret = true;
         }
-        return ret;
-  }
+    }
+
+    public void unpin()
+    {
+        MyLockTasks.stopLockTask();
+    }
 
     public void toggleServiceMode(boolean value)
     {
-        if (value)
-        {
-            MyMainConfiguration.setStrictKioskMode(false);
-        }
-        else
-        {
-            MyMainConfiguration.setStrictKioskMode(true);
-        }
+        MyMainConfiguration.setStrictKioskMode(!value);
     }
 
     public boolean isStrictKioskModeActive()
     {
         return MyMainConfiguration.isStrictKioskModeActive();
-    }
-
-    /**
-     * @return boolean returns the status of locktask
-     */
-    public boolean toggleKioskMode()
-    {
-        if (checkforDeviceRights())
-        {
-            return MyLockTasks.toggleLockTask();
-        }
-        return false;
     }
 
     public boolean isHomeActivity()
@@ -99,17 +76,8 @@ public class KioskManager
     {
         if (checkforDeviceRights())
         {
-            MyLauncher.becomeHomeActivity();
+            MyLauncher.becomeHomeActivity(MyDeviceOwner);
         }
-    }
-
-    public boolean toggleHomeActivity()
-    {
-        if (checkforDeviceRights())
-        {
-           return MyLauncher.toggleHomeActivity();
-        }
-        return false;
     }
 
     private boolean checkforDeviceRights()
@@ -118,15 +86,7 @@ public class KioskManager
         {
             return false;
         }
-        if (!MyDeviceOwner.isDeviceOwner())
-        {
-            return false;
-        }
-        if (!MyDeviceOwner.isLockTaskPermitted())
-        {
-            return false;
-        }
-        return true;
+        return MyDeviceOwner.isDeviceOwner();
     }
 
 

@@ -40,9 +40,9 @@ class KioskManagerTest
         when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
         when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
 
-        assertTrue(MyTestClass.startKioskMode());
+        MyTestClass.becomeHomeActivity();
         verify(LockTaskManagerMocked, times(1)).startLockTask();
-        verify(HomeLauncherManagerMocked, times(1)).becomeHomeActivity();
+        verify(HomeLauncherManagerMocked, times(1)).becomeHomeActivity(DeviceOwnerMocked);
     }
 
     @Test
@@ -51,9 +51,9 @@ class KioskManagerTest
         KioskManager MyTestClass = createClass();
         when(DeviceOwnerMocked.isAdminActive()).thenReturn(false);
 
-        assertFalse(MyTestClass.startKioskMode());
+        MyTestClass.becomeHomeActivity();
         verify(LockTaskManagerMocked, times(0)).startLockTask();
-        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity();
+        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity(DeviceOwnerMocked);
     }
 
 
@@ -63,9 +63,9 @@ class KioskManagerTest
         KioskManager MyTestClass = createClass();
         when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(false);
 
-        assertFalse(MyTestClass.startKioskMode());
+        MyTestClass.becomeHomeActivity();
         verify(LockTaskManagerMocked, times(0)).startLockTask();
-        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity();
+        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity(DeviceOwnerMocked);
     }
 
     @Test
@@ -74,9 +74,8 @@ class KioskManagerTest
         KioskManager MyTestClass = createClass();
         when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(false);
 
-        assertFalse(MyTestClass.startKioskMode());
+        MyTestClass.pin();
         verify(LockTaskManagerMocked, times(0)).startLockTask();
-        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity();
     }
 
     @Test
@@ -109,45 +108,6 @@ class KioskManagerTest
     }
 
     @Test
-    void toggleKioskModeSuccess()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isAdminActive()).thenReturn(true);
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
-        when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
-        when(LockTaskManagerMocked.toggleLockTask()).thenReturn(true);
-
-        assertTrue(MyTestClass.toggleKioskMode());
-        verify(LockTaskManagerMocked, times(1)).toggleLockTask();
-
-    }
-
-    @Test
-    void toggleKioskModeFailsToggleLockTask()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isAdminActive()).thenReturn(true);
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
-        when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
-        when(LockTaskManagerMocked.toggleLockTask()).thenReturn(false);
-
-        assertFalse(MyTestClass.toggleKioskMode());
-        verify(LockTaskManagerMocked, times(1)).toggleLockTask();
-
-    }
-
-    @Test
-    void toggleKioskModeFailsDeviceOwner()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(false);
-
-        assertFalse(MyTestClass.toggleKioskMode());
-        verify(LockTaskManagerMocked, times(0)).toggleLockTask();
-
-    }
-
-    @Test
     void isHomeActivityTrue()
     {
         KioskManager MyTestClass = createClass();
@@ -177,7 +137,7 @@ class KioskManagerTest
         when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
 
         MyTestClass.becomeHomeActivity();
-        verify(HomeLauncherManagerMocked, times(1)).becomeHomeActivity();
+        verify(HomeLauncherManagerMocked, times(1)).becomeHomeActivity(DeviceOwnerMocked);
     }
 
     @Test
@@ -187,44 +147,7 @@ class KioskManagerTest
         when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(false);
 
         MyTestClass.becomeHomeActivity();
-        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity();
-    }
-
-
-    @Test
-    void toggleHomeActivitySuccess()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isAdminActive()).thenReturn(true);
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
-        when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
-        when(HomeLauncherManagerMocked.toggleHomeActivity()).thenReturn(true);
-
-        assertTrue(MyTestClass.toggleHomeActivity());
-        verify(HomeLauncherManagerMocked, times(1)).toggleHomeActivity();
-    }
-
-    @Test
-    void toggleHomeActivityFailsDeviceOwner()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(false);
-
-        assertFalse(MyTestClass.toggleHomeActivity());
-        verify(HomeLauncherManagerMocked, times(0)).toggleHomeActivity();
-    }
-
-    @Test
-    void toggleHomeActivityFailsToogleHomeActivity()
-    {
-        KioskManager MyTestClass = createClass();
-        when(DeviceOwnerMocked.isAdminActive()).thenReturn(true);
-        when(DeviceOwnerMocked.isDeviceOwner()).thenReturn(true);
-        when(DeviceOwnerMocked.isLockTaskPermitted()).thenReturn(true);
-        when(HomeLauncherManagerMocked.toggleHomeActivity()).thenReturn(false);
-
-        assertFalse(MyTestClass.toggleHomeActivity());
-        verify(HomeLauncherManagerMocked, times(1)).toggleHomeActivity();
+        verify(HomeLauncherManagerMocked, times(0)).becomeHomeActivity(DeviceOwnerMocked);
     }
 
     KioskManager createClass()

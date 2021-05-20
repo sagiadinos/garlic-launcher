@@ -19,13 +19,11 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import com.sagiadinos.garlic.launcher.MainActivity;
 
 public class LockTaskManager
 {
-    private MainActivity MyMainActivity;
+    private final MainActivity MyMainActivity;
 
 
     public LockTaskManager(MainActivity ma)
@@ -33,36 +31,14 @@ public class LockTaskManager
         MyMainActivity = ma;
     }
 
-    /**
-     * @return boolean returns the status of locktask
-     */
-    public boolean toggleLockTask()
-    {
-        if (!isLockTaskActive())
-        {
-            startLockTask();
-            return true;
-        }
-        else
-        {
-            MyMainActivity.stopLockTask();
-            return false;
-        }
-    }
-
     public void startLockTask()
     {
        MyMainActivity.startLockTask();
     }
 
-    private boolean isLockTaskActive()
+    public void stopLockTask()
     {
-        ActivityManager MyActivityManager = (ActivityManager) MyMainActivity.getSystemService(Context.ACTIVITY_SERVICE);
-        if (MyActivityManager == null)
-        {
-            return false;
-        }
-        return MyActivityManager.getLockTaskModeState() != ActivityManager.LOCK_TASK_MODE_NONE;
+        MyMainActivity.stopLockTask();
     }
 
 }

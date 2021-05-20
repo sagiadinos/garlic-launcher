@@ -22,20 +22,15 @@ package com.sagiadinos.garlic.launcher.helper;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-
-import com.sagiadinos.garlic.launcher.MainActivity;
 
 public class HomeLauncherManager
 {
-    private Context ctx;
-    private DeviceOwner MyDeviceOwner;
-    private Intent      MyIntent;
+    private final Context ctx;
+    private final Intent  MyIntent;
 
-    public HomeLauncherManager(DeviceOwner dvo, Context c, Intent intent)
+    public HomeLauncherManager(Context c, Intent intent)
     {
         ctx           = c;
-        MyDeviceOwner = dvo;
         MyIntent      = intent;
     }
 
@@ -44,28 +39,12 @@ public class HomeLauncherManager
         return getHomeActivity().equals(ctx.getPackageName());
     }
 
-    public boolean toggleHomeActivity()
-    {
-        boolean ret;
-        if (isHomeActivity())
-        {
-            restoreHomeActivity();
-            ret = false;
-        }
-        else
-        {
-            becomeHomeActivity();
-            ret = true;
-        }
-        return ret;
-    }
-
-    public void becomeHomeActivity()
+    public void becomeHomeActivity(DeviceOwner MyDeviceOwner)
     {
         MyDeviceOwner.addPersistentPreferredActivity();
     }
 
-    public void restoreHomeActivity()
+    public void restoreHomeActivity(DeviceOwner MyDeviceOwner)
     {
         MyDeviceOwner.clearMainPackageFromPersistent();
     }
@@ -83,6 +62,5 @@ public class HomeLauncherManager
             return "none";
         }
     }
-
 
 }
