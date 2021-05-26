@@ -26,9 +26,9 @@
     <string name="unpin_app">Unpin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_no_network">No Player and No Network - Install Player via USB or Activate a Network!</string>
-    <string name="download_player_in_progress">Try downloading garlic-player - Please wait!</string>
-    <string name="install_player_in_progress">Install garlic-player - Please wait!</string>
+pre    <string name="no_garlic_no_network">No Player and No Network - Install Digital Signage Player via USB or Activate a Network!</string>
+    <string name="download_player_in_progress">Try downloading Digital Signage Player - Please wait!</string>
+    <string name="install_player_in_progress">Install Digital Signage Player - Please wait!</string>
     <string name="config_launcher">Launcher Setting</string>
     <string name="root_found_set_device_owner">Device is rooted! Try to config Launcher as Device Owner - Please wait</string>
     <string name="config_wifi">Set WiFi</string>

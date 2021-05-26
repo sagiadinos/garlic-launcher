@@ -49,6 +49,31 @@ android {
             testCoverageEnabled = true
         }
     }
+/*    flavorDimensions "brandings"
+    productFlavors {
+        GarlicLauncher {
+            dimension "brandings"
+            applicationIdSuffix '.gl'
+            versionNameSuffix '-gl'
+            
+           resValue "string", "app_name", "DS-Launcher"
+            manifestPlaceholders = [
+                    appIcon: "@drawable//ic_garlic_launcher.xml"
+            ]
+      }
+        DigitalSignageDE {
+            dimension "brandings"
+            applicationIdSuffix '.ds'
+            versionNameSuffix '-ds'
+            resValue "string", "app_name", "DS-Launcher"
+                      manifestPlaceholders = [
+                               appIcon: "@drawable//ic_ds_logo_mobile"
+                       ]
+                      versionName '1.0'
+              }
+    }
+
+ */
 }
 
 dependencies {
