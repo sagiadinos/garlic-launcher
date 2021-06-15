@@ -1,6 +1,6 @@
 # Garlic-Launcher - Android Launcher for Digital Signage
 
-The Garlic-Launcher is useful to create digital signage media player on Android-hardware in combination with the [garlic-player](https://garlic-player.com).
+The Garlic-Launcher is useful to create a [digital signage player](https://smil-control.com/magazine/what-is-a-digital-signage-player/) on Android hardware in combination with the [garlic-player](https://garlic-player.com).
 
 **A rooted Android is not necessary!**
 
@@ -9,7 +9,7 @@ The Garlic-Launcher is useful to create digital signage media player on Android-
 If you want to build a Digital Signage Media Player Hardware or an interactive Kiosk System which should run 24/7, it is necessary to take some precautions.
 
 For example:
-- Security: You do not want the user can close or uninstall your Kiosk-App or jump into the operating system
+- [Security](https://smil-control.com/magazine/7-tips-to-improve-digital-signage-security/): You do not want the user can close or uninstall your Kiosk-App or jump into the operating system
 - It must be ensured that the player-app is running
 - The player-app must be able to restart in case of an error or crash.
 - When the media player gets his content only by network, it must be able to get administrated, updated, and rebooted after a remote request

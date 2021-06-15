@@ -31,14 +31,20 @@ public class ShellExecute
         return execute("");
     }
 
-      public String getErrorText()
+    public String getErrorText()
     {
-        return error_text + "\n" + formatOutput(MyProcess.getErrorStream());
+        if (MyProcess == null)
+            return error_text;
+        else
+            return error_text + "\n" + formatOutput(MyProcess.getErrorStream());
     }
 
     public String getOutputText()
     {
-        return formatOutput(MyProcess.getInputStream());
+        if (MyProcess != null)
+            return formatOutput(MyProcess.getInputStream());
+        else
+            return "No OutputText cause MyProcess is Null";
     }
 
     private boolean execute(String cmd)
