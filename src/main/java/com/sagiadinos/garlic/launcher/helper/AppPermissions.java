@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
@@ -41,6 +42,9 @@ public class AppPermissions
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
+    private static final String TAG = "AppPermissions";
+
+    private String error_text;
 
     Activity MyActivity;
     MainConfiguration MyMainConfiguration;
@@ -49,6 +53,7 @@ public class AppPermissions
     {
         MyActivity = ma;
         MyMainConfiguration = mc;
+        error_text = "";
     }
 
     public static void onRequestPermissionsResult(Activity ma, int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -58,7 +63,7 @@ public class AppPermissions
             if (grant_results.length > 0)
             {
                 // Validate the permissions result
-                if (hasStandardPermissions(ma))
+                if (hasImportantPermissions(ma))
                 {
                     ma.recreate();
                 }
@@ -70,7 +75,7 @@ public class AppPermissions
         }
     }
 
-    public static boolean hasStandardPermissions(Activity ma)
+    public static boolean hasImportantPermissions(Activity ma)
     {
         int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissions != PackageManager.PERMISSION_GRANTED)
@@ -81,16 +86,21 @@ public class AppPermissions
         return permissions == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void handlePermissions(TextView tvInformation, ShellExecute MyShellExecute)
+    public void handlePermissions(ShellExecute MyShellExecute)
     {
         if (MyMainConfiguration.isDeviceRooted())
         {
-            requestPermissionsbyShell(tvInformation, MyShellExecute);
+            requestPermissionsbyShell(MyShellExecute);
         }
         else
         {
             requestPermissions();
         }
+    }
+
+    public String getErrorText()
+    {
+        return error_text;
     }
 
     public boolean verifyOverlayPermissions(Intent intent)
@@ -108,15 +118,16 @@ public class AppPermissions
         MyActivity.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
     }
 
-    private void requestPermissionsbyShell(TextView tvInformation, ShellExecute MyShellExecute)
+    private void requestPermissionsbyShell(ShellExecute MyShellExecute)
     {
         String[] permissions = {"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW"};
-
+        error_text = "";
         for (String perm : permissions)
         {
             if (!executeShell(MyShellExecute, perm))
             {
-                tvInformation.setText(MyShellExecute.getErrorText());
+                error_text = "Add Permission: " + perm + " via Shell failed: " + MyShellExecute.getErrorText() + "\n";
+                Log.e(TAG, error_text);
                 return;
             }
         }

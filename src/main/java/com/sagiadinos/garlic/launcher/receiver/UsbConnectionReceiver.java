@@ -22,11 +22,18 @@ package com.sagiadinos.garlic.launcher.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
+import com.sagiadinos.garlic.launcher.helper.CopyHandler;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Objects;
 
 /**
  * When a usb stick or SD card is mountet we should look on it for
@@ -58,7 +65,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
     private void dispatchFilesOnUsb()
     {
-        if (hasSmilIndex(createMainConfiguration()))
+        if (hasSmilDir(createMainConfiguration()))
             return;
 
         if (hasConfigXML())
@@ -67,17 +74,34 @@ public class UsbConnectionReceiver extends BroadcastReceiver
         hasPlayerApk();
     }
 
-    private boolean hasSmilIndex(MainConfiguration MyMainConfiguration)
+    private boolean hasSmilDir(MainConfiguration MyMainConfiguration)
     {
-        File smil_index = createFile(mount_path + "/index.smil");
+        File smil_index = createFile(mount_path + "/SMIL");
         if (checkAccessibility(smil_index))
         {
-            MyMainConfiguration.storeSmilIndex(mount_path + "/index.smil");
+            try
+            {
+                File source               = createFile(mount_path + "/SMIL");
+                File destination = Environment.getExternalStoragePublicDirectory("garlic-player/cache/SMIL");
 
-            Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
-            intent.putExtra("smil_index_path", smil_index.getAbsolutePath());
-            ctx.sendBroadcast(intent);
-            return true;
+               // File destination          = createFile(ctx.getExternalFilesDir(null).getAbsolutePath()
+                        // + "/garlic-player/cache/SMIL");
+                CopyHandler MyCopyHandler = createCopyHandler();
+                MyCopyHandler.removeRecursively(destination); // if there is a previous copy
+                MyCopyHandler.copy(source, destination);
+
+                MyMainConfiguration.storeSmilIndex(destination + "/index.smil");
+                Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
+                intent.putExtra("smil_index_path", destination);
+                ctx.sendBroadcast(intent);
+                return true;
+            }
+            catch (IOException e)
+            {
+                Toast toast = Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
+                toast.show();
+                Log.e("UsbConnectionReceiver", Objects.requireNonNull(e.getMessage()));
+            }
         }
         return false;
     }
@@ -125,6 +149,11 @@ public class UsbConnectionReceiver extends BroadcastReceiver
     protected File createFile(String file_path)
     {
         return new File(file_path);
+    }
+
+    protected CopyHandler createCopyHandler()
+    {
+        return new CopyHandler();
     }
 
     protected MainConfiguration createMainConfiguration()

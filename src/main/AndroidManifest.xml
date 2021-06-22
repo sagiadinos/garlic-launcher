@@ -15,11 +15,13 @@
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
-    <uses-permission android:name="android.permission.USES_POLICY_FORCE_LOCK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+<!-- maybe not necessray    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.USES_POLICY_FORCE_LOCK" />
+-->
     <application
         android:name=".GarlicLauncherApplication"
         android:icon="${appIcon}"

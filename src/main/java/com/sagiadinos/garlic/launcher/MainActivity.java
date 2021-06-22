@@ -93,35 +93,9 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-        if (!MyKiosk.isStrictKioskModeActive() &&
-            event.getActionMasked() == MotionEvent.ACTION_DOWN &&
-                MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
-        {
-            MyKiosk.unpin();
-            // start other Launcher Activity
-            ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
-
-            ComponentName name=new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-            Intent i=new Intent(Intent.ACTION_MAIN);
-
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            i.setComponent(name);
-
-            startActivity(i);
-        }
-
-        return super.onTouchEvent(event);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvInformation = findViewById(R.id.textViewInformation);
@@ -132,6 +106,7 @@ public class MainActivity extends Activity
             MyMainConfiguration.firstStart(new RootChecker());
         }
 
+        // init screen area
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         MyScreen = new Screen(displayMetrics);
@@ -142,17 +117,17 @@ public class MainActivity extends Activity
 
         MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
 
-        if (!AppPermissions.hasStandardPermissions(this))
+        if (!AppPermissions.hasImportantPermissions(this))
         {
-            MyAppPermissions.handlePermissions(tvInformation, new ShellExecute(Runtime.getRuntime()));
+            MyAppPermissions.handlePermissions(new ShellExecute(Runtime.getRuntime()));
         }
 
         // ATTENTION!
-        // Do not the rows blow in a onStart -method, cause it will slow down an back to app
-        // respectivetely a restart dramatically! e.g. when you close a  player regulary
+        // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
+        // respectivetely a restart dramatically! e.g. when you close a player regulary
 
         // continue only when permissions are granted
-        if (!AppPermissions.hasStandardPermissions(this))
+        if (!AppPermissions.hasImportantPermissions(this))
         {
             return;
         }
@@ -167,7 +142,6 @@ public class MainActivity extends Activity
                 new IntentFilter(Intent.ACTION_MAIN)
          );
          MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
-
          MyKiosk               = new KioskManager(MyDeviceOwner,
                                                 new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
                                                 new LockTaskManager(this),
@@ -201,7 +175,11 @@ public class MainActivity extends Activity
     @Override
     protected void onResume()
     {
-        MyKiosk.unpin();
+        // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
+        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
+        {
+            MyKiosk.unpin();
+        }
         super.onResume();
     }
 
@@ -215,12 +193,40 @@ public class MainActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        // MyDeviceOwner can be null when access rights are denied
+        // Attention: MyDeviceOwner and dependend classes like MyReceiverManager can be null when access rights are denied
         if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
         {
             MyReceiverManager.unregisterAllReceiver();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        if (!MyKiosk.isStrictKioskModeActive() &&
+                event.getActionMasked() == MotionEvent.ACTION_DOWN &&
+                MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
+        {
+            stopPlayerRestart();
+            MyKiosk.unpin(); // just to make it sure
+
+            // start other Launcher Activity
+            ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
+
+            assert resolveInfo != null;
+            ComponentName name=new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+            Intent i=new Intent(Intent.ACTION_MAIN);
+
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            i.setComponent(name);
+
+            startActivity(i);
+        }
+
+        return super.onTouchEvent(event);
     }
 
     private void checkForNetwork()
