@@ -92,7 +92,7 @@ public class UsbConnectionReceiver extends BroadcastReceiver
 
                 MyMainConfiguration.storeSmilIndex(destination + "/index.smil");
                 Intent intent = createIntent("com.sagiadinos.garlic.player.java.SmilIndexReceiver");
-                intent.putExtra("smil_index_path", destination);
+                intent.putExtra("smil_index_path", destination.getAbsolutePath());
                 ctx.sendBroadcast(intent);
                 return true;
             }
