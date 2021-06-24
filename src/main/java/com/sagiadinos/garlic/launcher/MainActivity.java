@@ -255,7 +255,7 @@ public class MainActivity extends Activity
             return;
         }
 
-        if (!BuildConfig.DEBUG)
+      //  if (!BuildConfig.DEBUG)
         {
             checkForNetwork();
             displayInformationText(getString(R.string.no_garlic_no_network));

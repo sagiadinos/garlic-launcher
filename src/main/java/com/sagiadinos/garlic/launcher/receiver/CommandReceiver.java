@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
@@ -62,9 +63,12 @@ public class CommandReceiver extends BroadcastReceiver
             task_id = MyIntent.getStringExtra("task_id");
         }
         TaskExecutionReport.append(task_id, "completed");
-        DeviceOwner.reboot(
-                (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                new ComponentName(MyContext, AdminReceiver.class)
-        );
+        if (!BuildConfig.DEBUG)
+        {
+            DeviceOwner.reboot(
+                    (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
+                    new ComponentName(MyContext, AdminReceiver.class)
+            );
+        }
     }
 }
