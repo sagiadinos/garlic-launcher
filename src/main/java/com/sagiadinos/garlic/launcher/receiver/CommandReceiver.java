@@ -46,16 +46,6 @@ public class CommandReceiver extends BroadcastReceiver
     {
         ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
         MyShellExecute.executeAsRoot("input keyevent 26");
-        /*   DeviceOwner.lock(
-                (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                new ComponentName(MyContext, AdminReceiver.class));
-        Intent it = new         Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        it.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(this, AdminReceiver.class));
-        startActivityForResult(it, 0);
-       */
-
-//       ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
- //       MyShellExecute.executeAsUser("input keyevent 26");
     }
 
     private void setScreenOn()

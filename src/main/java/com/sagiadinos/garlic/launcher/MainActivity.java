@@ -20,6 +20,7 @@
 package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -54,7 +55,6 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.HomeLauncherManager;
 import com.sagiadinos.garlic.launcher.helper.KioskManager;
-import com.sagiadinos.garlic.launcher.helper.LockTaskManager;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
 import com.sagiadinos.garlic.launcher.helper.Screen;
@@ -85,109 +85,116 @@ public class MainActivity extends Activity
     private TaskExecutionReport MyTaskExecutionReport;
     private AppPermissions      MyAppPermissions;
     private Screen              MyScreen;
+    private ActivityManager     MyActivityManager;
 
-    @Override
-    public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
-    {
-        AppPermissions.onRequestPermissionsResult(this, request_code, permissions, grant_results);
-    }
+      @Override
+      public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
+      {
+          AppPermissions.onRequestPermissionsResult(this, request_code, permissions, grant_results);
+      }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        tvInformation = findViewById(R.id.textViewInformation);
-        tvAppVersion  = findViewById(R.id.textViewAppVersion);
-        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
-        if (MyMainConfiguration.isFirstStart())
-        {
-            MyMainConfiguration.firstStart(new RootChecker());
-        }
+      @Override
+      public void onCreate(Bundle savedInstanceState)
+      {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.main);
+          getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+          tvInformation = findViewById(R.id.textViewInformation);
+          tvAppVersion  = findViewById(R.id.textViewAppVersion);
+          MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
+          if (MyMainConfiguration.isFirstStart())
+          {
+              MyMainConfiguration.firstStart(new RootChecker());
+          }
 
-        // init screen area
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        MyScreen = new Screen(displayMetrics);
+          // init screen area
+          DisplayMetrics displayMetrics = new DisplayMetrics();
+          getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+          MyScreen = new Screen(displayMetrics);
+          MyActivityManager = (ActivityManager)  this.getSystemService(Context.ACTIVITY_SERVICE);
 
-        MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
-        VersionInformation MyVersionInformation = new VersionInformation(this);
-        tvAppVersion.setText("Launcher: " + MyVersionInformation.forLauncher() + " | Player: " + MyVersionInformation.forPlayer() + " | UUUID: " + MyMainConfiguration.getUUID());
+          MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
+          NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
+          VersionInformation MyVersionInformation = new VersionInformation(this);
+          tvAppVersion.setText("Launcher: " + MyVersionInformation.forLauncher() + " | Player: " + MyVersionInformation.forPlayer() + " | UUUID: " + MyMainConfiguration.getUUID());
 
-        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
+          MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
 
-        if (!AppPermissions.hasImportantPermissions(this))
-        {
-            MyAppPermissions.handlePermissions(new ShellExecute(Runtime.getRuntime()));
-        }
+          if (!AppPermissions.hasImportantPermissions(this))
+          {
+              MyAppPermissions.handlePermissions(new ShellExecute(Runtime.getRuntime()));
+          }
 
-        // ATTENTION!
-        // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
-        // respectivetely a restart dramatically! e.g. when you close a player regulary
+          // ATTENTION!
+          // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
+          // respectivetely a restart dramatically! e.g. when you close a player regulary
 
-        // continue only when permissions are granted
-        if (!AppPermissions.hasImportantPermissions(this))
-        {
-            return;
-        }
+          // continue only when permissions are granted
+          if (!AppPermissions.hasImportantPermissions(this))
+          {
+              return;
+          }
 
-        CleanUp MyCleanUp = new CleanUp();
-        MyCleanUp.removePlayerApks(Environment.getExternalStorageDirectory().getAbsolutePath());
-        MyCleanUp.removeXMLFiles(Environment.getExternalStorageDirectory().getAbsolutePath());
+          CleanUp MyCleanUp = new CleanUp();
+          MyCleanUp.removePlayerApks(Environment.getExternalStorageDirectory().getAbsolutePath());
+          MyCleanUp.removeXMLFiles(Environment.getExternalStorageDirectory().getAbsolutePath());
 
-        MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
-                new ComponentName(this, AdminReceiver.class),
-                new ComponentName(this, MainActivity.class),
-                new IntentFilter(Intent.ACTION_MAIN)
-         );
-         MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
-         MyKiosk               = new KioskManager(MyDeviceOwner,
-                                                new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
-                                                new LockTaskManager(this),
-                                                MyMainConfiguration
-        );
+          MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                  new ComponentName(this, AdminReceiver.class),
+                  new ComponentName(this, MainActivity.class),
+                  new IntentFilter(Intent.ACTION_MAIN)
+           );
+           MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
+           MyKiosk               = new KioskManager(MyDeviceOwner,
+                                                  new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
+                                                  this,
+                                                  MyMainConfiguration
+          );
+          if (MyDeviceOwner.isDeviceOwner())
+          {
+              startLockTask();
 
-        if (MyDeviceOwner.isDeviceOwner())
-        {
-            MyDeviceOwner.determinePermittedLockTaskPackages("");
-            hideInformationText();
-            MyReceiverManager = new ReceiverManager(this);
-            MyReceiverManager.registerAllReceiver();
-            initButtonViews();
-            startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
-            checkForInstalledPlayer();
-        }
-        else
-        {
-            if (MyMainConfiguration.isDeviceRooted())
-            {
-                displayInformationText(getString(R.string.root_found_set_device_owner));
-                MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime()));
-            }
-            else
-            {
-                displayInformationText(getString(R.string.no_device_owner));
-            }
-        }
-    }
+              MyDeviceOwner.determinePermittedLockTaskPackages("");
+              hideInformationText();
+              MyReceiverManager = new ReceiverManager(this);
+              MyReceiverManager.registerAllReceiver();
+              initButtonViews();
+              startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
+              checkForInstalledPlayer();
+          }
+          else
+          {
+              if (MyMainConfiguration.isDeviceRooted())
+              {
+                  displayInformationText(getString(R.string.root_found_set_device_owner));
+                  MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime()));
+              }
+              else
+              {
+                  displayInformationText(getString(R.string.no_device_owner));
+              }
+          }
+      }
 
-    @Override
-    protected void onResume()
-    {
-        // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
-        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
-        {
-            MyKiosk.unpin();
-        }
-        super.onResume();
-    }
+      @Override
+      protected void onResume()
+      {
+          // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
+          if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
+              startLockTask();
+
+          NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
+
+          super.onResume();
+      }
 
     @Override
     public void onRestart()
     {
-        super.onRestart();
+        // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
+
         toogleServiceModeVisibility();
+        super.onRestart();
     }
 
     @Override
@@ -209,7 +216,7 @@ public class MainActivity extends Activity
                 MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
         {
             stopPlayerRestart();
-            MyKiosk.unpin(); // just to make it sure
+            stopLockTask();
 
             // start other Launcher Activity
             ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
@@ -289,7 +296,6 @@ public class MainActivity extends Activity
             btAndroidSettings.setVisibility(View.VISIBLE);
         }
         MyKiosk.becomeHomeActivity();
-        NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
     }
 
 
@@ -435,7 +441,6 @@ public class MainActivity extends Activity
         has_player_started     = true;
         MyMainConfiguration.toggleJustBooted(false);
         NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
-        MyKiosk.pin();
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 

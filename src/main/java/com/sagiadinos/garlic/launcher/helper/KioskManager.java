@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
+import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 /**
@@ -33,14 +34,14 @@ public class KioskManager
 {
     private final DeviceOwner          MyDeviceOwner;
     private final HomeLauncherManager  MyLauncher;
-    private final LockTaskManager      MyLockTasks;
+    private final MainActivity         MyMainActivity;
     private final MainConfiguration    MyMainConfiguration;
 
-    public KioskManager(DeviceOwner dvo, HomeLauncherManager hlm, LockTaskManager ltm, MainConfiguration mc)
+    public KioskManager(DeviceOwner dvo, HomeLauncherManager hlm, MainActivity ma, MainConfiguration mc)
     {
         MyDeviceOwner       = dvo;
         MyLauncher          = hlm;
-        MyLockTasks         = ltm;
+        MyMainActivity      = ma;
         MyMainConfiguration = mc;
     }
 
@@ -48,13 +49,13 @@ public class KioskManager
     {
         if (MyDeviceOwner.isLockTaskPermitted())
         {
-            MyLockTasks.startLockTask();
+            MyMainActivity.startLockTask();
         }
     }
 
     public void unpin()
     {
-        MyLockTasks.stopLockTask();
+        MyMainActivity.stopLockTask();
     }
 
     public void toggleServiceMode(boolean value)
