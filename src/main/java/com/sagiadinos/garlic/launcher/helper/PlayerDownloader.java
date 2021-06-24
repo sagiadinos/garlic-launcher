@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.os.Environment;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -52,7 +51,7 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
         DownloadProgressBar = pb;
         tvInformation       = tv;
         MyActivity          = a;
-        apk_path            = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME;
+        apk_path            = a.getExternalCacheDir() + "/" + DOWNLOADED_FILENAME;
     }
 
     @Override
@@ -115,7 +114,7 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
 
     private void deleteOldDownload() throws Exception
     {
-        File old_file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + DOWNLOADED_FILENAME);
+        File old_file = new File(apk_path);
         if (old_file.exists() && !old_file.delete())
         {
             throw new Exception(apk_path + " could not be deleted");

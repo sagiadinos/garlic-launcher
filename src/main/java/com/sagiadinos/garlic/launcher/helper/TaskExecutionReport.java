@@ -1,6 +1,5 @@
 package com.sagiadinos.garlic.launcher.helper;
 
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedWriter;

@@ -22,7 +22,6 @@ package com.sagiadinos.garlic.launcher.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,7 +31,6 @@ import com.sagiadinos.garlic.launcher.helper.CopyHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Objects;
 
 /**
@@ -82,11 +80,9 @@ public class UsbConnectionReceiver extends BroadcastReceiver
             try
             {
                 File source               = createFile(mount_path + "/SMIL");
-                File destination = Environment.getExternalStoragePublicDirectory("garlic-player/cache/SMIL");
-
-               // File destination          = createFile(ctx.getExternalFilesDir(null).getAbsolutePath()
-                        // + "/garlic-player/cache/SMIL");
+                File destination          = ctx.getExternalFilesDir("/SMIL");
                 CopyHandler MyCopyHandler = createCopyHandler();
+                assert destination != null;
                 MyCopyHandler.removeRecursively(destination); // if there is a previous copy
                 MyCopyHandler.copy(source, destination);
 

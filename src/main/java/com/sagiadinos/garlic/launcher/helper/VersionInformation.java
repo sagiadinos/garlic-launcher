@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
+
 public class VersionInformation
 {
     Context ctx;
@@ -15,7 +17,11 @@ public class VersionInformation
 
     public String forLauncher()
     {
-        return determineVersion(DeviceOwner.LAUNCHER_PACKAGE_NAME);
+        String debug = "";
+        if (BuildConfig.DEBUG)
+            debug = "debug";
+
+        return determineVersion(DeviceOwner.LAUNCHER_PACKAGE_NAME) + debug;
     }
 
     public String forPlayer()

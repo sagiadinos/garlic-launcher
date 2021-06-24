@@ -66,6 +66,8 @@ import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
+import java.util.Objects;
+
 public class MainActivity extends Activity
 {
     private boolean        has_second_app_started = false;
@@ -116,7 +118,13 @@ public class MainActivity extends Activity
           MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
           NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
           VersionInformation MyVersionInformation = new VersionInformation(this);
-          tvAppVersion.setText("Launcher: " + MyVersionInformation.forLauncher() + " | Player: " + MyVersionInformation.forPlayer() + " | UUUID: " + MyMainConfiguration.getUUID());
+
+          String versions = "Launcher: " +
+                  MyVersionInformation.forLauncher() +
+                  " | Player: " + MyVersionInformation.forPlayer() +
+                  " | UUUID: " + MyMainConfiguration.getUUID();
+
+          tvAppVersion.setText(versions);
 
           MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
 
@@ -136,15 +144,17 @@ public class MainActivity extends Activity
           }
 
           CleanUp MyCleanUp = new CleanUp();
-          MyCleanUp.removePlayerApks(Environment.getExternalStorageDirectory().getAbsolutePath());
-          MyCleanUp.removeXMLFiles(Environment.getExternalStorageDirectory().getAbsolutePath());
+          String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+          MyCleanUp.removeAll(path);
+          path = Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath().replace("garlic.launcher","garlic.player");
+          MyCleanUp.removeAll(path);
 
           MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                   new ComponentName(this, AdminReceiver.class),
                   new ComponentName(this, MainActivity.class),
                   new IntentFilter(Intent.ACTION_MAIN)
            );
-           MyTaskExecutionReport = new TaskExecutionReport(Environment.getExternalStorageDirectory() + "/garlic-player/logs/");
+           MyTaskExecutionReport = new TaskExecutionReport(getExternalFilesDir("logs").getAbsolutePath());
            MyKiosk               = new KioskManager(MyDeviceOwner,
                                                   new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
                                                   this,
@@ -255,7 +265,7 @@ public class MainActivity extends Activity
             return;
         }
 
-      //  if (!BuildConfig.DEBUG)
+ //       if (!BuildConfig.DEBUG)
         {
             checkForNetwork();
             displayInformationText(getString(R.string.no_garlic_no_network));

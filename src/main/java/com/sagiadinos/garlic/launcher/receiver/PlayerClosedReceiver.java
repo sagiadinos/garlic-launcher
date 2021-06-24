@@ -26,9 +26,9 @@ import android.content.Intent;
 import com.sagiadinos.garlic.launcher.MainActivity;
 
 /**
- * Needed when a Player closed regulary via exit.
- * In this case we start again the user intrupptable countdown
- * Otherwise the the backgroundservice from Player will
+ * Needed when a Player closed regularly via exit.
+ * In this case we start again the user intruptable countdown
+ * Otherwise the the background service from Player will
  * recognise, that the player activity do not run in foreground and
  * start the player again.
  */
@@ -44,8 +44,6 @@ public class PlayerClosedReceiver extends BroadcastReceiver
     {
         MyActivity = act;
     }
-
-
 
     @Override
     public void onReceive(Context context, Intent intent)

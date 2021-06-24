@@ -13,6 +13,12 @@ public class CleanUp
         founded_file_paths = new LinkedList<>();
     }
 
+    public void removeAll(String external_directory)
+    {
+        removePlayerApks(external_directory);
+        removeXMLFiles(external_directory);
+    }
+
     public void removePlayerApks(String external_directory)
     {
         pattern          = "garlic-player.apk";
