@@ -43,7 +43,7 @@ class InstallerTest
         PackageManager PackageManagerMocked = mock(PackageManager.class);
         when(ContextMocked.getPackageManager()).thenReturn(PackageManagerMocked);
 
-        assertTrue(Installer.isGarlicPlayerInstalled(ContextMocked));
+        assertTrue(Installer.isMediaPlayerInstalled(ContextMocked));
         verify(PackageManagerMocked, times(1)).getPackageInfo(DeviceOwner.PLAYER_PACKAGE_NAME, PackageManager.GET_META_DATA);
     }
 

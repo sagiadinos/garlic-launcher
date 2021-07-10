@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.content.pm.ResolveInfo;
 
 import java.io.File;
@@ -51,10 +52,42 @@ public class Installer
         MyPackageInstaller = ctx.getPackageManager().getPackageInstaller();
     }
 
-    public static Boolean isGarlicPlayerInstalled(Context c)
+    public static Boolean isMediaPlayerInstalled(Context c)
     {
         return isPackageInstalled(c, DeviceOwner.PLAYER_PACKAGE_NAME);
     }
+
+    public static Boolean hasPlayerPermissions(Context c)
+    {
+        boolean is_read = false;
+        boolean is_write = false;
+
+        try
+        {
+            PackageManager pm             = c.getPackageManager();
+            PackageInfo pi                = pm.getPackageInfo(DeviceOwner.PLAYER_PACKAGE_NAME, PackageManager.GET_PERMISSIONS);
+            String[] requestedPermissions = pi.requestedPermissions;
+            if(requestedPermissions == null)
+                return false;
+
+            int i = 0;
+            for (String requestedPermission : requestedPermissions)
+            {
+                if (requestedPermission.equals("android.permission.READ_EXTERNAL_STORAGE"))
+                    is_read =  ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0);
+                if (requestedPermission.equals("android.permission.WRITE_EXTERNAL_STORAGE"))
+                    is_write =  ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0);
+                i++;
+            }
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            return false;
+        }
+        return (is_read && is_write);
+    }
+
+
 
     public static ResolveInfo determineOtherLauncherPackagename(PackageManager pm)
     {

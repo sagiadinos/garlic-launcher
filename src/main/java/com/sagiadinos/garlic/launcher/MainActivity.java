@@ -115,7 +115,6 @@ public class MainActivity extends Activity
           MyScreen = new Screen(displayMetrics);
           MyActivityManager = (ActivityManager)  this.getSystemService(Context.ACTIVITY_SERVICE);
 
-          MyMainConfiguration.togglePlayerInstalled(Installer.isGarlicPlayerInstalled(this));
           NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
           VersionInformation MyVersionInformation = new VersionInformation(this);
 
@@ -127,10 +126,19 @@ public class MainActivity extends Activity
           tvAppVersion.setText(versions);
 
           MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
-
           if (!AppPermissions.hasImportantPermissions(this))
           {
               MyAppPermissions.handlePermissions(new ShellExecute(Runtime.getRuntime()));
+          }
+          boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
+          MyMainConfiguration.togglePlayerInstalled(is_player_installed);
+          if (is_player_installed && !Installer.hasPlayerPermissions(this)
+                  && MyAppPermissions.grantPlayerPermissions(new ShellExecute(Runtime.getRuntime())))
+          {
+              DeviceOwner.reboot(
+                      (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                  new ComponentName(this, AdminReceiver.class)
+            );
           }
 
           // ATTENTION!
@@ -259,6 +267,8 @@ public class MainActivity extends Activity
 
     private void checkForInstalledPlayer()
     {
+        if (Installer.hasPlayerPermissions(this))
+
         if (MyMainConfiguration.isPlayerInstalled())
         {
             startGarlicPlayer();

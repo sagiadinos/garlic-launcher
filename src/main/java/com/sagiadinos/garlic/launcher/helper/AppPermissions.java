@@ -75,6 +75,25 @@ public class AppPermissions
         }
     }
 
+    public boolean grantPlayerPermissions(@NotNull ShellExecute MyShellExecute)
+    {
+        if (!MyMainConfiguration.isDeviceRooted())
+            return false;
+
+        String[] permissions = {"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"};
+        String package_name = DeviceOwner.PLAYER_PACKAGE_NAME;
+        error_text = "";
+        for (String perm : permissions)
+        {
+            if (!executeShell(MyShellExecute, package_name, perm))
+            {
+                Log.w(TAG, "Device is rooted, but cannot grant permission "+ perm +" to media player:" + package_name);
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean hasImportantPermissions(Activity ma)
     {
         int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -124,7 +143,7 @@ public class AppPermissions
         error_text = "";
         for (String perm : permissions)
         {
-            if (!executeShell(MyShellExecute, perm))
+            if (!executeShell(MyShellExecute, "com.sagiadinos.garlic.launcher", perm))
             {
                 error_text = "Add Permission: " + perm + " via Shell failed: " + MyShellExecute.getErrorText() + "\n";
                 Log.e(TAG, error_text);
@@ -133,8 +152,8 @@ public class AppPermissions
         }
     }
 
-    private boolean executeShell(@NotNull ShellExecute MyShellExecute, String permission)
+    private boolean executeShell(@NotNull ShellExecute MyShellExecute, String package_name, String permission)
     {
-       return MyShellExecute.executeAsRoot("pm grant com.sagiadinos.garlic.launcher android.permission." + permission);
+       return MyShellExecute.executeAsRoot("pm grant "+ package_name +" android.permission." + permission);
     }
 }
