@@ -1,8 +1,6 @@
 package com.sagiadinos.garlic.launcher.receiver;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -10,12 +8,10 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.configuration.ConfigXMLModel;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.NetworkData;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
-import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.WiFi;
 
