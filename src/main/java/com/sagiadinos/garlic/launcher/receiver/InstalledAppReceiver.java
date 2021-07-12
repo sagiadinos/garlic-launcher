@@ -43,11 +43,11 @@ public class InstalledAppReceiver extends BroadcastReceiver
         }
 
         String s = Objects.requireNonNull(intent.getData()).toString();
-        if (s.equals("package:com.sagiadinos.garlic.launcher"))
+/*        if (s.equals("package:com.sagiadinos.garlic.launcher"))
         {
             return;
         }
-        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
+  */      MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
 
         // On an Update all Actions (REMOVE, ADD and REPLACE)  are triggered.
         // So we must do some preventations, cause it reboot after REMOVE
