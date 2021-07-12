@@ -50,12 +50,12 @@ public class InstalledAppReceiver extends BroadcastReceiver
   */      MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
 
         // On an Update all Actions (REMOVE, ADD and REPLACE)  are triggered.
-        // So we must do some preventations, cause it reboot after REMOVE
+        // So we must preven it reboot after REMOVE
         // And the player disappear and must be download again
 
         // Solution:
         // Check the extras for for Replacing key and in this case ignore REMOVE and ADDED
-        if (intent.getExtras().containsKey(Intent.EXTRA_REPLACING) &&
+        if (Objects.requireNonNull(intent.getExtras()).containsKey(Intent.EXTRA_REPLACING) &&
                 (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
                         intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)
                 )
