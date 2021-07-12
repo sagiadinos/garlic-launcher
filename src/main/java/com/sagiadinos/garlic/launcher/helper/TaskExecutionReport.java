@@ -14,7 +14,7 @@ import java.util.TimeZone;
 
 public class TaskExecutionReport
 {
-    private static File LogFile;
+    private static File LogFile = null;
 
     public TaskExecutionReport(String path)
     {
@@ -36,6 +36,11 @@ public class TaskExecutionReport
             String text = "<task id=\""+task_id+"\">" +
                 "<lastUpdateTime>"+getCurrentIsoDateTime()+"</lastUpdateTime>" +
                 "<state>"+state+"</state></task>";
+
+            // this can happens when Launcher is updated and class is not constructed
+            // then we get a crash
+            if (LogFile == null)
+                return;
 
             BufferedWriter buf = new BufferedWriter(new FileWriter(LogFile, true));
             buf.append(text);

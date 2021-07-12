@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="com.sagiadinos.garlic.launcher"
-          android:versionCode="116"
-          android:versionName="v0.1.0.116">
+          android:versionCode="100"
+          android:versionName="v0.1.0.100">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
