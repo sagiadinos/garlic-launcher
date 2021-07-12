@@ -4,9 +4,6 @@
           package="com.sagiadinos.garlic.launcher"
           android:versionCode="116"
           android:versionName="v0.1.0.116">
-    <permission
-        android:name="com.sagiadinos.permission.api_access"
-        android:protectionLevel="normal" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -21,9 +18,8 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.sagiadinos.permission.api_access" />
 
-<!-- maybe not necessray    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+<!-- maybe not necesary    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.USES_POLICY_FORCE_LOCK" />
 -->
     <application
@@ -86,7 +82,6 @@
         </receiver>
         <receiver
             android:name=".receiver.CommandReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -95,7 +90,6 @@
         </receiver>
         <receiver
             android:name=".receiver.ConfigXMLReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -107,7 +101,6 @@
             android:enabled="true" />
         <receiver
             android:name=".receiver.InstallAppReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -128,12 +121,10 @@
         </receiver>
         <receiver
             android:name=".receiver.PlayerClosedReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true" />
         <receiver
             android:name=".receiver.RebootReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -142,7 +133,6 @@
         </receiver>
         <receiver
             android:name=".receiver.SecondAppReceiver"
-            android:permission="com.sagiadinos.permission.api_access"
             android:enabled="true"
             android:exported="true" />
         <receiver
