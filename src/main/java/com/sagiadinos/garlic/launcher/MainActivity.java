@@ -62,7 +62,6 @@ import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.VersionInformation;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
-import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
@@ -83,7 +82,6 @@ public class MainActivity extends Activity
     private DeviceOwner         MyDeviceOwner          = null;
     private MainConfiguration   MyMainConfiguration = null;
     private KioskManager        MyKiosk               = null;
-    private ReceiverManager     MyReceiverManager = null;
     private TaskExecutionReport MyTaskExecutionReport;
     private AppPermissions      MyAppPermissions;
     private Screen              MyScreen;
@@ -174,8 +172,6 @@ public class MainActivity extends Activity
 
               MyDeviceOwner.determinePermittedLockTaskPackages("");
               hideInformationText();
-              MyReceiverManager = new ReceiverManager(this);
-              MyReceiverManager.registerAllReceiver();
               initButtonViews();
               startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
               checkForInstalledPlayer();
@@ -219,10 +215,6 @@ public class MainActivity extends Activity
     protected void onDestroy()
     {
         // Attention: MyDeviceOwner and dependend classes like MyReceiverManager can be null when access rights are denied
-        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
-        {
-            MyReceiverManager.unregisterAllReceiver();
-        }
         super.onDestroy();
     }
 
