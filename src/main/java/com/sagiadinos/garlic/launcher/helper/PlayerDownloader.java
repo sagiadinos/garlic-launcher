@@ -26,6 +26,7 @@ import android.net.Network;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +59,8 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
     public void onAvailable(@NotNull Network network)
     {
         setInformationText(tvInformation, MyActivity.getString(R.string.download_player_in_progress));
-        startPlayerDownload();
+        if (!BuildConfig.DEBUG)
+            startPlayerDownload();
     }
 
     @Override

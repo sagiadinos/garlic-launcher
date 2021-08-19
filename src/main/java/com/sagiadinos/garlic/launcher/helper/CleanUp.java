@@ -1,37 +1,53 @@
 package com.sagiadinos.garlic.launcher.helper;
 
+import android.os.StatFs;
+
 import java.io.File;
 import java.util.LinkedList;
 
 public class CleanUp
 {
     LinkedList<String> founded_file_paths;
+    DiscSpace          MyDiscSpace;
     String             pattern           = null;
+    String             external_directory;
+    final int          min_free_percent  = 8;
 
-    public CleanUp()
+    public CleanUp(String ext_dir, DiscSpace ds)
     {
+        external_directory = ext_dir;
+        MyDiscSpace        = ds;
         founded_file_paths = new LinkedList<>();
     }
 
-    public void removeAll(String external_directory)
+    public void removeAll()
     {
-        removePlayerApks(external_directory);
-        removeXMLFiles(external_directory);
+        removePlayerApks();
+        removeXMLFiles();
+        removeCache();
     }
 
-    public void removePlayerApks(String external_directory)
+    public void removePlayerApks()
     {
         pattern          = "garlic-player.apk";
-        removeFiles(external_directory);
+        removeFiles();
     }
 
-    public void removeXMLFiles(String external_directory)
+    public void removeXMLFiles()
     {
         pattern          = ".xml";
-        removeFiles(external_directory);
+        removeFiles();
     }
 
-    private void removeFiles(String external_directory)
+    public void removeCache()
+    {
+        if (isMinFreeReached())
+        {
+            deleteRecursive(new File(external_directory + "/garlic-player/cache/"));
+        }
+    }
+
+    private void removeFiles()
     {
         founded_file_paths.clear();
         findFilesInDirectory(new File(external_directory + "/garlic-player/cache/"));
@@ -57,6 +73,19 @@ public class CleanUp
         }
     }
 
+    private void deleteRecursive(File fileOrDirectory)
+    {
+        if (fileOrDirectory.isDirectory())
+        {
+            for (File child : fileOrDirectory.listFiles())
+            {
+                deleteRecursive(child);
+            }
+        }
+
+        fileOrDirectory.delete();
+    }
+
     private void removeFoundedFiles()
     {
         for (String file_path : founded_file_paths)
@@ -74,4 +103,8 @@ public class CleanUp
         }
     }
 
+    private boolean isMinFreeReached()
+    {
+          return (MyDiscSpace.getFreePercent() < min_free_percent);
+    }
 }

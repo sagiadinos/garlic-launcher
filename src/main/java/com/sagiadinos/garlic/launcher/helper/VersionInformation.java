@@ -35,7 +35,7 @@ public class VersionInformation
         try
         {
             PackageInfo pInfo = ctx.getPackageManager().getPackageInfo(package_name, 0);
-            version = pInfo.versionName + "." + pInfo.versionCode;
+            version = pInfo.versionName; // + "." + pInfo.versionCode;
         }
         catch (PackageManager.NameNotFoundException e)
         {
