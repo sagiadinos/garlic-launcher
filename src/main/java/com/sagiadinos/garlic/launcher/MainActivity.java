@@ -176,7 +176,8 @@ public class MainActivity extends Activity
             if (MyMainConfiguration.isDeviceRooted())
             {
                 displayInformationText(getString(R.string.root_found_set_device_owner));
-                MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime()));
+                if (!MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime())))
+                    displayInformationText("Device is rooted, but set device owner failed. If you created a Google account, delete it. Otherwise contact support.");
             }
             else
             {

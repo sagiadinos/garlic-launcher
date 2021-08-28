@@ -70,9 +70,9 @@ class CleanUpTest
         File dir1 = createDirectory("garlic-player.apk.uiuiui");
         File dir2 = createDirectory("dir dir dir");
 
-        CleanUp MyTestClass = new CleanUp();
+        CleanUp MyTestClass = new CleanUp(CLEANUP_TEST_PATH);
 
-        MyTestClass.removePlayerApks(CLEANUP_TEST_PATH);
+        MyTestClass.removePlayerApks();
 
         assertFalse(apk1.exists());
         assertFalse(apk2.exists());
@@ -97,9 +97,9 @@ class CleanUpTest
         File dir1 = createDirectory("config_dir.xml");
         File dir2 = createDirectory("adirdirdir");
 
-        CleanUp MyTestClass = new CleanUp();
+        CleanUp MyTestClass = new CleanUp(CLEANUP_TEST_PATH);
 
-        MyTestClass.removeXMLFiles(CLEANUP_TEST_PATH);
+        MyTestClass.removeXMLFiles();
 
         assertFalse(xml1.exists());
         assertFalse(xml2.exists());
@@ -115,8 +115,8 @@ class CleanUpTest
     void removeFromNotExistingDirectory() throws IOException
     {
         File xml1 = createFile("garlic-player.xml");
-        CleanUp MyTestClass = new CleanUp();
-        MyTestClass.removeXMLFiles("this directory not exists");
+        CleanUp MyTestClass = new CleanUp("this directory not exists");
+        MyTestClass.removeXMLFiles();
         assertTrue(xml1.exists());
     }
 

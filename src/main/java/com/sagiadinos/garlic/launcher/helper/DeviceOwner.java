@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
+import android.util.Log;
 
 
 /**
@@ -42,6 +43,7 @@ import android.os.UserManager;
  */
 public class DeviceOwner
 {
+    private static final String TAG  = "DeviceAdmin";
     private final DevicePolicyManager MyDevicePolicyManager;
     private final ComponentName       MyDeviceAdmin;
     private final ComponentName       MyActivityComponent;
@@ -61,9 +63,15 @@ public class DeviceOwner
     /**
      * This works only on rooted devices
      */
-    public void makeDeviceOwner(ShellExecute MyShellExecute)
+    public boolean makeDeviceOwner(ShellExecute MyShellExecute)
     {
-        MyShellExecute.executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver");
+
+       if (!MyShellExecute.executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"))
+       {
+           Log.e(TAG, MyShellExecute.getErrorText());
+           return false;
+       }
+       return true;
     }
 
     public void activateRestrictions()
