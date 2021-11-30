@@ -11,7 +11,7 @@ public class CleanUp
     DiscSpace          MyDiscSpace;
     String             pattern           = null;
     String             external_directory;
-    final int          min_free_percent  = 8;
+    final int          min_free_percent  = 15;
 
     public CleanUp(String ext_dir, DiscSpace ds)
     {
