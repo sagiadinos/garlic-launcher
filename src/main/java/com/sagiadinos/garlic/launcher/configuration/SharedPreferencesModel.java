@@ -46,10 +46,16 @@ public class SharedPreferencesModel
         return pref.getString(param, null);
     }
 
+    public String getString(String param, String the_default)
+    {
+        return pref.getString(param, the_default);
+    }
+
     public int getInt(String param)
     {
         return pref.getInt(param, 0);
     }
+    public int getInt(String param, int the_default){return pref.getInt(param, the_default);}
 
     public void storeInt(String param, int value)
     {
@@ -83,6 +89,11 @@ public class SharedPreferencesModel
     public boolean getBoolean(String param)
     {
         return pref.getBoolean(param, false);
+    }
+
+    public boolean getBoolean(String param, boolean the_default)
+    {
+        return pref.getBoolean(param, the_default);
     }
 
     private void commit(SharedPreferences.Editor ed) throws GarlicLauncherException

@@ -28,7 +28,7 @@
     android:padding="4dp">
 
     <TextView
-        android:id="@+id/textViewAppVersion"
+        android:id="@+id/tvAppVersion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -43,14 +43,20 @@
         android:orientation="vertical"
         android:layout_marginTop="2dp">
 
-        <TextView
-            android:id="@+id/textViewInformation"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            android:visibility="visible" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvInformation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:visibility="visible" />
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressDownload"

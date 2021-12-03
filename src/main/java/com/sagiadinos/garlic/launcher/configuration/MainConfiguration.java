@@ -29,7 +29,7 @@ import java.util.UUID;
 public class MainConfiguration
 {
     private SharedPreferencesModel Model;
-    private final String DEFAULT_CONTENT_URL = "http://indexes.smil-control.com";
+    private final String DEFAULT_CONTENT_URL = "https://indexes.smil-control.com";
 
     public MainConfiguration(SharedPreferencesModel model)
     {
@@ -81,6 +81,27 @@ public class MainConfiguration
     {
         Model.storeBoolean("no_player_start_delay_after_boot", value);
     }
+
+    public boolean hasDailyReboot()
+    {
+        return Model.getBoolean("has_daily_reboot", true);
+    }
+
+    public void toggleDailyReboot(boolean value)
+    {
+        Model.storeBoolean("has_daily_reboot", value);
+    }
+
+    public String getRebootTime()
+    {
+      return Model.getString("reboot_time", "3:00");
+    }
+
+    public void setRebootTime(String value)
+    {
+        Model.storeString("reboot_time", value);
+    }
+
 
     public boolean hasNoPlayerStartDelayAfterBoot()
     {

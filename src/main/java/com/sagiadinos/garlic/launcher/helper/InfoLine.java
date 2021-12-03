@@ -1,14 +1,11 @@
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Handler;
 import android.widget.TextView;
 
-import com.sagiadinos.garlic.launcher.BuildConfig;
-import com.sagiadinos.garlic.launcher.R;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,29 +16,37 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class InfoLine  extends ConnectivityManager.NetworkCallback
+public class InfoLine extends ConnectivityManager.NetworkCallback
 {
-    private VersionInformation MyVersionInformation;
+    private final VersionInformation MyVersionInformation;
     private MainConfiguration MyMainConfiguration;
     private DiscSpace         MyDiscSpace;
-    private TextView          tvInformation;
+    private TextView tvAppVersion, tvFreeDiscSpace, tvIP;
     private Activity          MyActivity;
     private Runnable          runnable;
 
-    public InfoLine(Activity a, VersionInformation myVersionInformation, MainConfiguration myMainConfiguration, DiscSpace myDiscSpace, TextView tvInformation)
+    public InfoLine(Activity a,
+                    VersionInformation myVersionInformation,
+                    MainConfiguration myMainConfiguration,
+                    DiscSpace myDiscSpace,
+                    TextView tvAppVersion,
+                    TextView tvFreeDiscSpace,
+                    TextView tvIP)
     {
         MyVersionInformation = myVersionInformation;
-        MyMainConfiguration = myMainConfiguration;
-        MyDiscSpace         = myDiscSpace;
-        MyActivity          = a;
-        this.tvInformation = tvInformation;
+        MyMainConfiguration  = myMainConfiguration;
+        MyDiscSpace          = myDiscSpace;
+        MyActivity           = a;
+        this.tvAppVersion    = tvAppVersion;
+        this.tvFreeDiscSpace = tvFreeDiscSpace;
+        this.tvIP            = tvIP;
     }
 
     @Override
     public void onAvailable(@NotNull Network network)
     {
         Handler handler = new Handler();
-        displayPartialInformation();
+        displayAppInformation();
 
         runnable = new Runnable()
         {
@@ -51,7 +56,7 @@ public class InfoLine  extends ConnectivityManager.NetworkCallback
                 if (ip == null)
                     handler.postDelayed(runnable, 2000);
                 else
-                    setInformationText(tvInformation, getFullInformation());
+                    setIPText(ip);
             }
 
         };
@@ -61,54 +66,59 @@ public class InfoLine  extends ConnectivityManager.NetworkCallback
     @Override
     public void onLost(@NotNull Network network)
     {
-        displayPartialInformation();
+        setIPText("");
     }
 
-    public String getFullInformation()
+    public void displayAppInformation()
     {
-        return getPartialInformation() + getIP();
-    }
-
-    public String getPartialInformation()
-    {
-        return getVersionInformation() + getFreeDiscSpaceInPercent();
-    }
-
-    public void displayPartialInformation()
-    {
-        setInformationText(tvInformation, getPartialInformation());
-    }
-
-
-    public String getVersionInformation()
-    {
-        return "Launcher: " +
+        final String value = "Launcher: " +
                 MyVersionInformation.forLauncher() +
                 " | Player: " + MyVersionInformation.forPlayer() +
                 " | UUUID: " + MyMainConfiguration.getUUID();
+
+        MyActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                tvAppVersion.setText(value);
+            }
+        });
     }
 
-    public String getIP()
+    public void refreshFreeDiscSpace()
     {
-        return " | IP: " + getLocalIpAddress();
+        MyDiscSpace.refresh();
+        final String value =" | Free: " + MyDiscSpace.getFreePercent()  +" %";
+
+        MyActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                tvFreeDiscSpace.setText(value);
+            }
+        });
     }
 
 
-    public String getFreeDiscSpaceInPercent()
-    {
-        return " | Free: " + MyDiscSpace.getFreePercent()  +" %";
-    }
 
-    private void setInformationText(final TextView text, final String value)
+    private void setIPText(final String ip)
     {
+        if (ip.isEmpty())
+            return;
+
+        final String value =" | IP: " + ip;
+
         MyActivity.runOnUiThread(new Runnable()
         {
             @Override
             public void run() {
-                text.setText(value);
+                tvIP.setText(value);
             }
         });
     }
+
 
     public static String getLocalIpAddress()
     {

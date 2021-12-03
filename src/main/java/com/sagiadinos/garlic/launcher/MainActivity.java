@@ -22,6 +22,7 @@ package com.sagiadinos.garlic.launcher;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -47,6 +48,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.helper.AlarmHandler;
 import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.DiscSpace;
 import com.sagiadinos.garlic.launcher.helper.InfoLine;
@@ -65,11 +67,13 @@ import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.VersionInformation;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
+import com.sagiadinos.garlic.launcher.receiver.CommandReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
 import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class MainActivity extends Activity
@@ -82,6 +86,8 @@ public class MainActivity extends Activity
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
     private TextView       tvAppVersion    = null;
+    private TextView       tvFreeDiscSpace = null;
+    private TextView       tvIP    = null;
 
     private CountDownTimer      PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
@@ -93,6 +99,8 @@ public class MainActivity extends Activity
     private Screen              MyScreen;
     private ActivityManager     MyActivityManager;
     private DiscSpace           MyDiscSpace  = null;
+    private InfoLine            MyInfoLine   = null;
+    private AlarmHandler        MyAlarmHandler = null;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -106,8 +114,7 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        tvInformation = findViewById(R.id.textViewInformation);
-        tvAppVersion  = findViewById(R.id.textViewAppVersion);
+        tvInformation    = findViewById(R.id.tvInformation);
         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
         if (MyMainConfiguration.isFirstStart())
         {
@@ -190,11 +197,14 @@ public class MainActivity extends Activity
       @Override
     protected void onResume()
     {
-        // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
+        handleDailyReboot();
+        // Attention: MyDeviceOwner and dependent classes like MyKiosk can be null when access rights are denied
         if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
         startLockTask();
 
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
+        if (MyInfoLine != null)
+            MyInfoLine.refreshFreeDiscSpace();
 
         super.onResume();
     }
@@ -202,8 +212,7 @@ public class MainActivity extends Activity
     @Override
     public void onRestart()
     {
-        // Attention: MyDeviceOwner and dependend classes like MyKiosk can be null when access rights are denied
-
+        // Attention: MyDeviceOwner and dependent classes like MyKiosk can be null when access rights are denied
         toogleServiceModeVisibility();
         super.onRestart();
     }
@@ -211,7 +220,7 @@ public class MainActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        // Attention: MyDeviceOwner and dependend classes like MyReceiverManager can be null when access rights are denied
+        // Attention: MyDeviceOwner and dependent classes like MyReceiverManager can be null when access rights are denied
         if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
         {
             MyReceiverManager.unregisterAllReceiver();
@@ -247,18 +256,43 @@ public class MainActivity extends Activity
         return super.onTouchEvent(event);
     }
 
+    private void handleDailyReboot()
+    {
+        if (MyAlarmHandler == null)
+            MyAlarmHandler = new AlarmHandler(this);
+
+        String reboot_time = MyMainConfiguration.getRebootTime();
+        // go only further if something changed
+        // first when on, second when off
+        if ((MyMainConfiguration.hasDailyReboot() && MyAlarmHandler.isAlarmActive() && MyAlarmHandler.getAlarmTime().equals(reboot_time)) ||
+                (!MyMainConfiguration.hasDailyReboot() && !MyAlarmHandler.isAlarmActive()))
+            return;
+
+        if (MyAlarmHandler.isAlarmActive())
+            MyAlarmHandler.cancelAlarm();
+
+        if (MyMainConfiguration.hasDailyReboot())
+        {
+            MyAlarmHandler.setBroadcastRebootCommand(new Intent(this, CommandReceiver.class));
+            MyAlarmHandler.activateExactAlarm(Calendar.getInstance(), reboot_time);
+        }
+    }
+
     private void checkForNetWork()
     {
+        tvAppVersion     = findViewById(R.id.tvAppVersion);
+        tvFreeDiscSpace  = findViewById(R.id.tvFreeDiscSpace);
+        tvIP             = findViewById(R.id.tvIP);
+
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         VersionInformation MyVersionInformation = new VersionInformation(this);
-        InfoLine MyInfoLine = new InfoLine(this, MyVersionInformation, MyMainConfiguration, MyDiscSpace, tvAppVersion);
-
+        MyInfoLine = new InfoLine(this, MyVersionInformation, MyMainConfiguration, MyDiscSpace, tvAppVersion, tvFreeDiscSpace, tvIP);
+        MyInfoLine.displayAppInformation();
+        MyInfoLine.refreshFreeDiscSpace();
         assert connectivityManager != null;
         connectivityManager.registerDefaultNetworkCallback(MyInfoLine);
 
-        MyInfoLine.displayPartialInformation();
     }
-
 
     private void checkForPlayerDownload()
     {
@@ -318,7 +352,6 @@ public class MainActivity extends Activity
         }
         MyKiosk.becomeHomeActivity();
     }
-
 
     public boolean hasSecondAppStarted()
     {
@@ -516,8 +549,7 @@ public class MainActivity extends Activity
         {
             if (MyDiscSpace == null) // because we need it only one time
             {
-                MyDiscSpace  = new DiscSpace(new StatFs(path));
-                MyDiscSpace.determineFreeSpace();
+                MyDiscSpace  = new DiscSpace(new StatFs(path), path);
             }
             CleanUp MyCleanUp = new CleanUp(path, MyDiscSpace);
             MyCleanUp.removeAll();

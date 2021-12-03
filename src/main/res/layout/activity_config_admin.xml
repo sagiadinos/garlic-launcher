@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -25,7 +26,7 @@
     
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:background="@android:drawable/screen_background_dark_transparent"
         android:orientation="vertical"
         android:padding="20dp">
@@ -58,7 +59,7 @@
                 android:id="@+id/editServicePassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:accessibilityTraversalAfter="@id/cbActiveServicePassword"
                 android:ems="10"
                 android:hint="@string/service_password"
@@ -66,25 +67,6 @@
                 android:visibility="visible" />
     
         </LinearLayout>
-    
-        <TextView
-            android:id="@+id/textViewNoGarlicInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Content Url of the Smil-Index"
-            android:textColor="#333333"
-            android:textSize="14sp" />
-    
-        <EditText
-            android:id="@+id/editContentUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textUri"
-            android:text="http://"
-            android:textColor="#333333" />
-    
         <CheckBox
             android:id="@+id/cbNoPlayerStartDelayAfterBoot"
             android:layout_width="match_parent"
@@ -93,31 +75,86 @@
             android:focusable="true"
             android:text="@string/no_player_start_delay_after_booting"
             android:textColor="#FFFFFF" />
-    
+
+
         <TextView
-            android:id="@+id/labelStartPlayerDelay"
+            android:id="@+id/editPlayerStartDelay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/start_delay_text"
             android:ems="10"
-            android:labelFor="@id/editPlayerStartDelay"
-            android:text="@string/start_delay_for_player_in_s" />
-    
-        <NumberPicker
-            android:id="@+id/editPlayerStartDelay"
-            android:layout_width="wrap_content"
+            android:textSize="16sp"
+            android:onClick="onClickPlayerStartDelay"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
-    
-        <TextView
-            android:id="@+id/textViewInformation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:visibility="invisible" />
-    
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewNoGarlicInfo"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/content_url"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/editContentUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:ems="10"
+                android:inputType="textUri"
+                android:text=""
+                android:textColor="#333333" />
+        </LinearLayout>
+
+        <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbToggleDailyReboot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="toggleDailyReboot"
+                android:text="@string/toggle_daily_reboot"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/editRebootTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:paddingVertical="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="onClickRebootTime"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+
+            <TextView
+                android:id="@+id/textViewInformation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:visibility="invisible" />
+    </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -87,8 +87,6 @@ public class Installer
         return (is_read && is_write);
     }
 
-
-
     public static ResolveInfo determineOtherLauncherPackagename(PackageManager pm)
     {
         Intent i = new Intent(Intent.ACTION_MAIN);
@@ -178,7 +176,7 @@ public class Installer
         // to commit without re-creating MainActivity
         PendingIntent pi = PendingIntent.getBroadcast(ctx, session_id, new Intent("com.sagiadinos.garlic.launcher.ACTION_UPDATE"), 0);
         session.commit(pi.getIntentSender());
-   //   session.close();
+        session.close();
     }
 
     public void uninstall(String package_name)

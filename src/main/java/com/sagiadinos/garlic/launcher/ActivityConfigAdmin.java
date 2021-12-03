@@ -21,6 +21,7 @@ package com.sagiadinos.garlic.launcher;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,10 +32,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.dialogs.NumberPickerDialog;
+import com.sagiadinos.garlic.launcher.dialogs.TimePickerDlg;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
@@ -43,18 +48,24 @@ import com.sagiadinos.garlic.launcher.services.HUD;
 
 import java.util.Objects;
 
-public class ActivityConfigAdmin extends Activity
+public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValueChangeListener, TimePickerDialog.OnTimeSetListener
 {
     TextView tvInformation;
-    NumberPicker editPlayerStartDelay;
+    TextView editPlayerStartDelay;
     CheckBox cbOwnBackButton;
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
+    CheckBox cbToggleDailyReboot;
+    TextView editRebootTime;
+    LinearLayout loRebootDays;
     EditText editServicePassword;
     EditText editContentUrl;
     Boolean  is_password_changed = false;
     MainConfiguration MyMainConfiguration;
     AppPermissions MyAppPermissions;
+    int player_delay = 5;
+    String reboot_time = "3:00";
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,17 +79,22 @@ public class ActivityConfigAdmin extends Activity
         tvInformation            = findViewById(R.id.textViewInformation);
         editContentUrl           = findViewById(R.id.editContentUrl);
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
+        cbToggleDailyReboot      = findViewById(R.id.cbToggleDailyReboot);
+        editRebootTime           = findViewById(R.id.editRebootTime);
 
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
-        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
-        editPlayerStartDelay.setMaxValue(99);
-        editPlayerStartDelay.setMinValue(5);
+        MyAppPermissions         = new AppPermissions(this, MyMainConfiguration);
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());
-        editPlayerStartDelay.setValue(MyMainConfiguration.getPlayerStartDelay());
+        player_delay             = MyMainConfiguration.getPlayerStartDelay();
+
+        String str = String.format(getString(R.string.start_delay_text), String.valueOf(player_delay));
+
+        editPlayerStartDelay.setText(str);
+
         cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
         cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
         prepareOptionsVisibility();
-    }
+   }
 
     public void saveAndClose(View view)
     {
@@ -89,6 +105,7 @@ public class ActivityConfigAdmin extends Activity
             checkServicePassword();
             toggleOwnBackButton();
             storeNewPlayerStartDelay();
+            storeDailyReboot();
             MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
             MyMainConfiguration.storeSmilIndex(editContentUrl.getText().toString().trim());
             finish();
@@ -98,7 +115,6 @@ public class ActivityConfigAdmin extends Activity
         {
             displayErrorText(Objects.requireNonNull(e.getMessage()));
         }
-
     }
 
     public void closeActivity(View view)
@@ -124,22 +140,48 @@ public class ActivityConfigAdmin extends Activity
         prepareVisibilityOfEditServicePassword(cbActiveServicePassword.isChecked());
     }
 
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+    {
+        reboot_time = hourOfDay + ":" + String.format("%02d", minute);
+        String str = String.format(getString(R.string.reboot_time), reboot_time);
+        editRebootTime.setText(str);
+    }
+
+
+    public void onClickRebootTime(View view)
+    {
+        TimePickerDlg newFragment = new TimePickerDlg();
+        newFragment.show(getFragmentManager(), "time picker");
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i1)
+    {
+        player_delay = i;
+    }
+
+    public void onClickPlayerStartDelay(View view)
+    {
+        NumberPickerDialog newFragment = new NumberPickerDialog();
+        newFragment.setValueChangeListener(this);
+        newFragment.show(getFragmentManager(), "number picker");
+    }
+
     private void storeNewPlayerStartDelay()
     {
-        int count = editPlayerStartDelay.getValue();
-
-        if (count < 5)
+        if (player_delay < 5)
         {
-            count = 5;
+            player_delay = 5;
         }
-        MyMainConfiguration.storePlayerStartDelay(count);
+        MyMainConfiguration.storePlayerStartDelay(player_delay);
     }
 
     private void prepareOptionsVisibility()
     {
         prepareVisibilityOfBackButtonOption();
         prepareVisibilityOfServicePasswordOption();
-
+        prepareVisibilityOfDailyRebootOption();
     }
 
     private void prepareVisibilityOfBackButtonOption()
@@ -208,6 +250,55 @@ public class ActivityConfigAdmin extends Activity
         {
             MyMainConfiguration.setServicePassword(password, new PasswordHasher());
         }
+    }
+
+    public void toggleDailyReboot(View view)
+    {
+        handleDailyRebootOptionVisibility(cbToggleDailyReboot.isChecked());
+    }
+
+    private void prepareVisibilityOfDailyRebootOption()
+    {
+        boolean bo = MyMainConfiguration.hasDailyReboot();
+        cbToggleDailyReboot.setChecked(bo);
+        handleDailyRebootOptionVisibility(bo);
+    }
+
+    private void handleDailyRebootOptionVisibility(boolean bo)
+    {
+        if (bo)
+        {
+            makeDailyRebootOptionVisible();
+        }
+        else
+        {
+            makeDailyRebootOptionInVisible();
+        }
+    }
+
+    private void makeDailyRebootOptionVisible()
+    {
+        String str = String.format(getString(R.string.reboot_time),  MyMainConfiguration.getRebootTime());
+        editRebootTime.setText(str);
+
+        editRebootTime.setVisibility(View.VISIBLE);
+    }
+
+    private void makeDailyRebootOptionInVisible()
+    {
+        editRebootTime.setVisibility(View.GONE);
+        loRebootDays.setVisibility(View.GONE);
+    }
+
+    private void storeDailyReboot()
+    {
+        boolean bo = cbToggleDailyReboot.isChecked();
+        MyMainConfiguration.toggleDailyReboot(bo);
+        if (!bo)
+            return;
+
+        MyMainConfiguration.setRebootTime(reboot_time);
+
     }
 
     private void displayErrorText(String error_text)

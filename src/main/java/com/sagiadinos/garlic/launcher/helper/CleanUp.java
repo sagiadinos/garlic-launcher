@@ -1,7 +1,5 @@
 package com.sagiadinos.garlic.launcher.helper;
 
-import android.os.StatFs;
-
 import java.io.File;
 import java.util.LinkedList;
 
