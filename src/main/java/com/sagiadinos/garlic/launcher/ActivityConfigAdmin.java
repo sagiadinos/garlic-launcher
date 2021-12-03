@@ -57,7 +57,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     CheckBox cbActiveServicePassword;
     CheckBox cbToggleDailyReboot;
     TextView editRebootTime;
-    LinearLayout loRebootDays;
     EditText editServicePassword;
     EditText editContentUrl;
     Boolean  is_password_changed = false;
@@ -287,7 +286,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     private void makeDailyRebootOptionInVisible()
     {
         editRebootTime.setVisibility(View.GONE);
-        loRebootDays.setVisibility(View.GONE);
     }
 
     private void storeDailyReboot()
