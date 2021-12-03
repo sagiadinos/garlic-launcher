@@ -31,7 +31,7 @@ public class AlarmHandler
     public void setBroadcastRebootCommand(Intent intent)
     {
        intent.setAction("com.sagiadinos.garlic.launcher");
-       intent.putExtra("command", "reboot1");
+       intent.putExtra("command", "reboot");
        MyPendingIntent = PendingIntent.getBroadcast(MyContext, 0, intent, 0);
     }
 
