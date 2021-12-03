@@ -31,7 +31,7 @@ public class AlarmHandler
     public void setBroadcastRebootCommand(Intent intent)
     {
        intent.setAction("com.sagiadinos.garlic.launcher");
-       intent.putExtra("command", "reboot");
+       intent.putExtra("command", "reboot1");
        MyPendingIntent = PendingIntent.getBroadcast(MyContext, 0, intent, 0);
     }
 
@@ -76,11 +76,16 @@ public class AlarmHandler
 
         int hour   = Integer.parseInt(time_data[0]);
         int minute = Integer.parseInt(time_data[1]);
-        MyCalendar.setTimeInMillis(System.currentTimeMillis());
+        long current = System.currentTimeMillis();
+        MyCalendar.setTimeInMillis(current);
         MyCalendar.set(Calendar.HOUR_OF_DAY, hour);
         MyCalendar.set(Calendar.MINUTE, minute);
         MyCalendar.set(Calendar.SECOND, 0);
         MyCalendar.set(Calendar.MILLISECOND, 0);
+
+        if (current >= MyCalendar.getTimeInMillis())
+            MyCalendar.add(Calendar.HOUR_OF_DAY, 24);
+
     }
 
 }
