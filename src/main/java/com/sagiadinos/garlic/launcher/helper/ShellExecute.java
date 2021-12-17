@@ -28,7 +28,7 @@ public class ShellExecute
     public boolean executeAsUser(String cmd)
     {
         command = cmd;
-        return execute("");
+        return execute( "sh\n");
     }
 
     public String getErrorText()

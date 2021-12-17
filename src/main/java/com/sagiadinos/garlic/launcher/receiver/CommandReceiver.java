@@ -5,13 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.PowerManager;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
-import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 
-import java.io.File;
 
 public class CommandReceiver extends BroadcastReceiver
 {
@@ -45,15 +45,38 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOff()
     {
-        ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
-        MyShellExecute.executeAsRoot("input keyevent 26");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        {
+            DeviceOwner.setScreenBrightnessZero(
+                    (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
+                    new ComponentName(MyContext, AdminReceiver.class)
+            );
+        }
+        else
+        {
+            DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
+        }
     }
 
     private void setScreenOn()
     {
-        ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
-        MyShellExecute.executeAsRoot("input keyevent KEYCODE_WAKEUP");
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        {
+            DeviceOwner.setScreenBrightnessFull(
+                    (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
+                    new ComponentName(MyContext, AdminReceiver.class)
+            );
+        }
+        else
+        {
+            PowerManager powerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                    PowerManager.ON_AFTER_RELEASE, "appname::WakeLock");
+            //acquire will turn on the display
+            wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
+        }
+     }
 
     private void reboot()
     {

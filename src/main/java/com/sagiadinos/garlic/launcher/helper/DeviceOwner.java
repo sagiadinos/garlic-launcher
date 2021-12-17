@@ -21,9 +21,12 @@ package com.sagiadinos.garlic.launcher.helper;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.util.Log;
 
 
@@ -113,19 +116,24 @@ public class DeviceOwner
         return MyDevicePolicyManager.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME);
     }
 
-    public void lockNow()
+    public static void lockNow(DevicePolicyManager dpm)
     {
-        if (isAdminActive())
+        dpm.lockNow();
+    }
+
+    public static void setScreenBrightnessZero(DevicePolicyManager dpm, ComponentName da)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
-            MyDevicePolicyManager.lockNow();
+            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS, "0");
         }
     }
 
-    public static void lock(DevicePolicyManager dpm, ComponentName da)
+    public static void setScreenBrightnessFull(DevicePolicyManager dpm, ComponentName da)
     {
-        if (dpm != null && dpm.isAdminActive(da))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
-            dpm.lockNow();
+            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS, "255");
         }
     }
 
