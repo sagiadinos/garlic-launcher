@@ -45,7 +45,7 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOff()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+  /*      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
             DeviceOwner.setScreenBrightnessZero(
                     (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
@@ -56,11 +56,12 @@ public class CommandReceiver extends BroadcastReceiver
         {
             DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
         }
+*/        DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
     }
 
     private void setScreenOn()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+/*        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
             DeviceOwner.setScreenBrightnessFull(
                     (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
@@ -69,13 +70,13 @@ public class CommandReceiver extends BroadcastReceiver
         }
         else
         {
-            PowerManager powerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
+*/            PowerManager powerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
             PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                     PowerManager.ACQUIRE_CAUSES_WAKEUP |
                     PowerManager.ON_AFTER_RELEASE, "appname::WakeLock");
             //acquire will turn on the display
             wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
-        }
+  //      }
      }
 
     private void reboot()
