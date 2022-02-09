@@ -21,7 +21,6 @@ package com.sagiadinos.garlic.launcher.configuration;
 
 import android.annotation.SuppressLint;
 
-import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
 
 import java.util.UUID;

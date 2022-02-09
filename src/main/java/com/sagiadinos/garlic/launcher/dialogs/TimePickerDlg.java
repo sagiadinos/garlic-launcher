@@ -1,10 +1,8 @@
 package com.sagiadinos.garlic.launcher.dialogs;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 
