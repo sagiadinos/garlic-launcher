@@ -89,7 +89,7 @@ public class InfoLine extends ConnectivityManager.NetworkCallback
     public void refreshFreeDiscSpace()
     {
         MyDiscSpace.refresh();
-        final String value =" | Free: " + MyDiscSpace.getFreePercent()  +" %";
+        final String value ="Free: " + MyDiscSpace.getFreePercent()  +" %";
 
         MyActivity.runOnUiThread(new Runnable()
         {
