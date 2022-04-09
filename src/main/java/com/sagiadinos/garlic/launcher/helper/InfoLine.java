@@ -74,7 +74,7 @@ public class InfoLine extends ConnectivityManager.NetworkCallback
         final String value = "Launcher: " +
                 MyVersionInformation.forLauncher() +
                 " | Player: " + MyVersionInformation.forPlayer() +
-                " | UUUID: " + MyMainConfiguration.getUUID();
+                " | UUID: " + MyMainConfiguration.getUUID();
 
         MyActivity.runOnUiThread(new Runnable()
         {
