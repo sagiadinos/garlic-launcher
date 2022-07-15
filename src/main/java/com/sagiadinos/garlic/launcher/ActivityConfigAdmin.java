@@ -48,15 +48,13 @@ import com.sagiadinos.garlic.launcher.services.HUD;
 
 import java.util.Objects;
 
-public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValueChangeListener, TimePickerDialog.OnTimeSetListener
+public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValueChangeListener
 {
     TextView tvInformation;
     TextView editPlayerStartDelay;
     CheckBox cbOwnBackButton;
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
-    CheckBox cbToggleDailyReboot;
-    TextView editRebootTime;
     EditText editServicePassword;
     EditText editContentUrl;
     Boolean  is_password_changed = false;
@@ -78,8 +76,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         tvInformation            = findViewById(R.id.textViewInformation);
         editContentUrl           = findViewById(R.id.editContentUrl);
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
-        cbToggleDailyReboot      = findViewById(R.id.cbToggleDailyReboot);
-        editRebootTime           = findViewById(R.id.editRebootTime);
 
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
         MyAppPermissions         = new AppPermissions(this, MyMainConfiguration);
@@ -104,7 +100,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
             checkServicePassword();
             toggleOwnBackButton();
             storeNewPlayerStartDelay();
-            storeDailyReboot();
             MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
             MyMainConfiguration.storeSmilIndex(editContentUrl.getText().toString().trim());
             finish();
@@ -139,20 +134,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         prepareVisibilityOfEditServicePassword(cbActiveServicePassword.isChecked());
     }
 
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-    {
-        reboot_time = hourOfDay + ":" + String.format("%02d", minute);
-        String str = String.format(getString(R.string.reboot_time), reboot_time);
-        editRebootTime.setText(str);
-    }
-
-
-    public void onClickRebootTime(View view)
-    {
-        TimePickerDlg newFragment = new TimePickerDlg();
-        newFragment.show(getFragmentManager(), "time picker");
-    }
 
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1)
@@ -180,7 +161,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     {
         prepareVisibilityOfBackButtonOption();
         prepareVisibilityOfServicePasswordOption();
-        prepareVisibilityOfDailyRebootOption();
     }
 
     private void prepareVisibilityOfBackButtonOption()
@@ -249,54 +229,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         {
             MyMainConfiguration.setServicePassword(password, new PasswordHasher());
         }
-    }
-
-    public void toggleDailyReboot(View view)
-    {
-        handleDailyRebootOptionVisibility(cbToggleDailyReboot.isChecked());
-    }
-
-    private void prepareVisibilityOfDailyRebootOption()
-    {
-        boolean bo = MyMainConfiguration.hasDailyReboot();
-        cbToggleDailyReboot.setChecked(bo);
-        handleDailyRebootOptionVisibility(bo);
-    }
-
-    private void handleDailyRebootOptionVisibility(boolean bo)
-    {
-        if (bo)
-        {
-            makeDailyRebootOptionVisible();
-        }
-        else
-        {
-            makeDailyRebootOptionInVisible();
-        }
-    }
-
-    private void makeDailyRebootOptionVisible()
-    {
-        String str = String.format(getString(R.string.reboot_time),  MyMainConfiguration.getRebootTime());
-        editRebootTime.setText(str);
-
-        editRebootTime.setVisibility(View.VISIBLE);
-    }
-
-    private void makeDailyRebootOptionInVisible()
-    {
-        editRebootTime.setVisibility(View.GONE);
-    }
-
-    private void storeDailyReboot()
-    {
-        boolean bo = cbToggleDailyReboot.isChecked();
-        MyMainConfiguration.toggleDailyReboot(bo);
-        if (!bo)
-            return;
-
-        MyMainConfiguration.setRebootTime(reboot_time);
-
     }
 
     private void displayErrorText(String error_text)
