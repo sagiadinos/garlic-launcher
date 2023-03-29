@@ -68,6 +68,15 @@
     
         </LinearLayout>
         <CheckBox
+            android:id="@+id/cbRebootAfterInstall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/reboot_after_install"
+            android:textColor="#FFFFFF" />
+
+        <CheckBox
             android:id="@+id/cbNoPlayerStartDelayAfterBoot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

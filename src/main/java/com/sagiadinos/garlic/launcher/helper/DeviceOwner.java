@@ -37,10 +37,9 @@ import android.util.Log;
  *  set device owner with
  *  adb shell dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
  *
- *  for removing
+ *  for removing. Only debug version
  *  adb shell dpm remove-active-admin com.sagiadinos.garlic.launcher/.receiver.AdminReceiver
  *
- * or if root deviced
  * adb shell  "su -c 'am broadcast -a android.intent.action.MASTER_CLEAR'"
  *
  */

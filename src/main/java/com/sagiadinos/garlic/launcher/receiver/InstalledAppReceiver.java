@@ -43,16 +43,7 @@ public class InstalledAppReceiver extends BroadcastReceiver
         }
 
         String s = Objects.requireNonNull(intent.getData()).toString();
-        // this obsolete, but let it here for a while
-        // maybe it is better to reboot here
-  /*      if (s.equals("package:com.sagiadinos.garlic.launcher"))
-        {
-            DeviceOwner.reboot(
-                    (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                    new ComponentName(context, AdminReceiver.class));
-            return;
-        }
-   */     MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(context));
 
         // On an Update all Actions (REMOVE, ADD and REPLACE)  are triggered.
         // So we must preven it reboot after REMOVE
@@ -74,14 +65,14 @@ public class InstalledAppReceiver extends BroadcastReceiver
             tooglePlayerInstalled(isPlayerInstalled(intent));
         }
 
-        if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
+        if (MyMainConfiguration.hasRebootAfterInstall() && (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) ||
                 intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED) ||
-                intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)
+                intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED))
             )
         {
             Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
             i.putExtra("command", "reboot");
-            i.putExtra("task_id", "first_player_download");
+            i.putExtra("task_id", "app_installed");
             context.sendBroadcast(i);
         }
     }

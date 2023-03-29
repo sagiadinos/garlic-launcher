@@ -53,6 +53,7 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     TextView tvInformation;
     TextView editPlayerStartDelay;
     CheckBox cbOwnBackButton;
+    CheckBox cbRebootAfterInstall;
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
     EditText editServicePassword;
@@ -86,6 +87,8 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
 
         editPlayerStartDelay.setText(str);
 
+        cbRebootAfterInstall          = findViewById(R.id.cbRebootAfterInstall);
+        cbRebootAfterInstall.setChecked(MyMainConfiguration.hasRebootAfterInstall());
         cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
         cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
         prepareOptionsVisibility();
@@ -100,6 +103,7 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
             checkServicePassword();
             toggleOwnBackButton();
             storeNewPlayerStartDelay();
+            MyMainConfiguration.toogleRebootAfterInstall(cbRebootAfterInstall.isChecked());
             MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
             MyMainConfiguration.storeSmilIndex(editContentUrl.getText().toString().trim());
             finish();

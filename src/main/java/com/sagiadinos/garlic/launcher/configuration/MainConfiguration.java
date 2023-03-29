@@ -81,6 +81,16 @@ public class MainConfiguration
         Model.storeBoolean("no_player_start_delay_after_boot", value);
     }
 
+    public void toogleRebootAfterInstall(boolean value)
+    {
+        Model.storeBoolean("reboot_after_install", value);
+    }
+
+    public boolean hasRebootAfterInstall()
+    {
+        return Model.getBoolean("reboot_after_install", true);
+    }
+
     public boolean hasDailyReboot()
     {
         return Model.getBoolean("has_daily_reboot", true);
