@@ -50,6 +50,9 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOff()
     {
+        if (!MyMainConfiguration.useDeviceStandby())
+            return;
+
         // Fallback for some crappy asian images
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && MyMainConfiguration.isDeviceRooted())
         {
@@ -59,8 +62,7 @@ public class CommandReceiver extends BroadcastReceiver
         }
 
   /*     for later revisions
-            lets test currently how powermanager works on all root/non-root versions
-            ToDo before releasing: Save the brightness values come from CMS
+            Todo: test how powermanager works on all root/non-root versions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
             DeviceOwner.setScreenBrightnessZero(
@@ -77,6 +79,9 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOn()
     {
+        if (!MyMainConfiguration.useDeviceStandby())
+            return;
+
         // Fallback for some crappy asian images
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && MyMainConfiguration.isDeviceRooted())
         {
@@ -86,8 +91,7 @@ public class CommandReceiver extends BroadcastReceiver
         }
 
   /*     for later revisions
-            lets test currently how powermanager works on all root/non-root versions
-            ToDo before releasing: Save the brightness values come from CMS
+            Todo: test how powermanager works on all root/non-root versions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
             DeviceOwner.setScreenBrightnessFull(

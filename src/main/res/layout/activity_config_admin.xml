@@ -77,6 +77,15 @@
             android:textColor="#FFFFFF" />
 
         <CheckBox
+            android:id="@+id/cbUseDeviceStandby"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Use device standby"
+            android:textColor="#FFFFFF" />
+
+        <CheckBox
             android:id="@+id/cbNoPlayerStartDelayAfterBoot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +93,6 @@
             android:focusable="true"
             android:text="@string/no_player_start_delay_after_booting"
             android:textColor="#FFFFFF" />
-
 
         <TextView
             android:id="@+id/editPlayerStartDelay"

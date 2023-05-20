@@ -147,10 +147,21 @@ public class MainConfiguration
         Model.storeBoolean("active_service_password", value);
     }
 
+    public boolean useDeviceStandby()
+    {
+        return Model.getBoolean("use_device_standby");
+    }
+
+    public void toggleUseDeviceStandby(boolean value)
+    {
+        Model.storeBoolean("use_device_standby", value);
+    }
+
     public boolean hasActiveServicePassword()
     {
         return Model.getBoolean("active_service_password");
     }
+
 
     public boolean isStrictKioskModeActive()
     {
