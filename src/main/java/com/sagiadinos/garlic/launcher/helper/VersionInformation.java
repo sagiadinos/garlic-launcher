@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
 
+
 public class VersionInformation
 {
     Context ctx;

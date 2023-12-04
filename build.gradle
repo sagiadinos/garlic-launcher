@@ -1,10 +1,10 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:8.2.0'
     }
 }
 
@@ -12,18 +12,19 @@ apply plugin: 'com.android.application'
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 android {
-    compileSdkVersion 28
+    namespace "com.sagiadinos.garlic.launcher"
+    compileSdk 33
     sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/Utilis'] } }
     defaultConfig {
         applicationId "com.sagiadinos.garlic.launcher"
         minSdkVersion 25
     }
     signingConfigs {
-        // For signating keystore.properties includes the credentials
+        // For singing keystore.properties includes the credentials
         // but is not uploaded in git
         if (project.rootProject.file('keystore.properties').exists()) {
             release {
@@ -39,6 +40,9 @@ android {
             }
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             if (project.rootProject.file('keystore.properties').exists()) {
@@ -49,7 +53,8 @@ android {
             testCoverageEnabled = true
         }
     }
-   flavorDimensions "brandings"
+
+    flavorDimensions = ["brandings"]
     productFlavors {
         GarlicLauncher {
             dimension "brandings"
@@ -64,12 +69,12 @@ android {
                 ]
         }
     }
- }
+}
 
 dependencies {
-    implementation 'org.jetbrains:annotations-java5:15.0'
-    testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
-    testImplementation 'org.mockito:mockito-core:3.7.7'
+    implementation 'org.jetbrains:annotations-java5:24.1.0'
+    testImplementation('org.junit.jupiter:junit-jupiter:5.10.1')
+    testImplementation 'org.mockito:mockito-core:5.8.0'
     implementation 'com.android.support:support-annotations:28.0.0'
 }
 
