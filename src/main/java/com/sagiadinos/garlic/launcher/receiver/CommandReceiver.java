@@ -1,5 +1,7 @@
 package com.sagiadinos.garlic.launcher.receiver;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -21,7 +23,7 @@ public class CommandReceiver extends BroadcastReceiver
     Intent MyIntent;
     Context MyContext;
     MainConfiguration MyMainConfiguration;
-
+    private PowerManager.WakeLock MyWakeLock;
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -53,27 +55,17 @@ public class CommandReceiver extends BroadcastReceiver
         if (!MyMainConfiguration.useDeviceStandby())
             return;
 
-        // Fallback for some crappy asian images
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && MyMainConfiguration.isDeviceRooted())
+        PowerManager MyPowerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
+        MyWakeLock = MyPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Launcher:WakeLockTag");
+        MyWakeLock.acquire(2*24*60*60*1000L /*2 Days*/);
+
+/*        if (MyMainConfiguration.isDeviceRooted())
         {
             ShellExecute MyShellExecute = new ShellExecute(Runtime.getRuntime());
             MyShellExecute.executeAsRoot("input keyevent 26");
-            return;
         }
-
-  /*     for later revisions
-            Todo: test how powermanager works on all root/non-root versions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        {
-            DeviceOwner.setScreenBrightnessZero(
-                    (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                    new ComponentName(MyContext, AdminReceiver.class)
-            );
-        }
-        else
-        {
-*/            DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
-//        }
+*/
+        DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
 
     }
 
@@ -83,31 +75,21 @@ public class CommandReceiver extends BroadcastReceiver
             return;
 
         // Fallback for some crappy asian images
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && MyMainConfiguration.isDeviceRooted())
+        if (MyMainConfiguration.isDeviceRooted())
         {
             ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
             MyShellExecute.executeAsRoot("input keyevent KEYCODE_WAKEUP");
-            return;
+        }
+//        else
+        {
+            AlarmManager alarmManager = (AlarmManager) MyContext.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InForegroundReceiver");
+            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            PendingIntent alarmIntent = PendingIntent.getBroadcast(MyContext, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            long triggerTime = System.currentTimeMillis() + 1000; // set alarm for 1 second
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, alarmIntent);
         }
 
-  /*     for later revisions
-            Todo: test how powermanager works on all root/non-root versions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        {
-            DeviceOwner.setScreenBrightnessFull(
-                    (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
-                    new ComponentName(MyContext, AdminReceiver.class)
-            );
-        }
-        else
-        {
-*/            PowerManager powerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                    PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                    PowerManager.ON_AFTER_RELEASE, "appname::WakeLock");
-            //acquire will turn on the display
-            wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
-  //      }
      }
 
     private void reboot()
