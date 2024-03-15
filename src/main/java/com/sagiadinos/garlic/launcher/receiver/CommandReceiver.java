@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
 
+import com.chrisitiansen.ChrisitiansenApi;
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
@@ -59,12 +60,14 @@ public class CommandReceiver extends BroadcastReceiver
         MyWakeLock = MyPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Launcher:WakeLockTag");
         MyWakeLock.acquire(2*24*60*60*1000L /*2 Days*/);
 
-/*        if (MyMainConfiguration.isDeviceRooted())
+        // Workaround for a crappy Android
+        String device_name = android.os.Build.MODEL;
+        if (device_name.startsWith("BT-") && MyMainConfiguration.isDeviceRooted())
         {
-            ShellExecute MyShellExecute = new ShellExecute(Runtime.getRuntime());
-            MyShellExecute.executeAsRoot("input keyevent 26");
+            ChrisitiansenApi.sleep(MyContext);
+            return;
         }
-*/
+
         DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
 
     }
@@ -74,13 +77,20 @@ public class CommandReceiver extends BroadcastReceiver
         if (!MyMainConfiguration.useDeviceStandby())
             return;
 
-        // Fallback for some crappy asian images
+        // Workaround for a crappy Android
+        String device_name = android.os.Build.MODEL;
+        if (device_name.startsWith("BT-") && MyMainConfiguration.isDeviceRooted())
+        {
+            ChrisitiansenApi.wakeup(MyContext);
+            return;
+        }
+
         if (MyMainConfiguration.isDeviceRooted())
         {
             ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
             MyShellExecute.executeAsRoot("input keyevent KEYCODE_WAKEUP");
         }
-//        else
+        else
         {
             AlarmManager alarmManager = (AlarmManager) MyContext.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent("com.sagiadinos.garlic.launcher.receiver.InForegroundReceiver");
