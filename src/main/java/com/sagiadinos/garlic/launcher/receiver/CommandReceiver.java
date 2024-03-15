@@ -56,9 +56,12 @@ public class CommandReceiver extends BroadcastReceiver
         if (!MyMainConfiguration.useDeviceStandby())
             return;
 
+        ChrisitiansenApi.sleep(MyContext);
+/*
+
         PowerManager MyPowerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
         MyWakeLock = MyPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Launcher:WakeLockTag");
-        MyWakeLock.acquire(2*24*60*60*1000L /*2 Days*/);
+        MyWakeLock.acquire(2*24*60*60*1000L); // 2 days
 
         // Workaround for a crappy Android
         String device_name = android.os.Build.MODEL;
@@ -69,7 +72,7 @@ public class CommandReceiver extends BroadcastReceiver
         }
 
         DeviceOwner.lockNow((DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE));
-
+*/
     }
 
     private void setScreenOn()
@@ -77,8 +80,11 @@ public class CommandReceiver extends BroadcastReceiver
         if (!MyMainConfiguration.useDeviceStandby())
             return;
 
+
+        ChrisitiansenApi.wakeup(MyContext);
+
         // Workaround for a crappy Android
-        String device_name = android.os.Build.MODEL;
+/*        String device_name = android.os.Build.MODEL;
         if (device_name.startsWith("BT-") && MyMainConfiguration.isDeviceRooted())
         {
             ChrisitiansenApi.wakeup(MyContext);
@@ -99,7 +105,7 @@ public class CommandReceiver extends BroadcastReceiver
             long triggerTime = System.currentTimeMillis() + 1000; // set alarm for 1 second
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, alarmIntent);
         }
-
+*/
      }
 
     private void reboot()
