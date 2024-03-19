@@ -59,4 +59,6 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
     <string name="reboot_after_install">Reboot after install</string>
+    <string name="toggle_daily_reboot">Daily reboot (Experimental)</string>
+    <string name="reboot_time"> &lt; %s</string>
 </resources>

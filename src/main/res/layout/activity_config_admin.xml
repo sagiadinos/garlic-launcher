@@ -135,7 +135,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-<!--
+
             <CheckBox
                 android:id="@+id/cbToggleDailyReboot"
                 android:layout_width="match_parent"
@@ -159,7 +159,6 @@
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
--->
 
             <TextView
                 android:id="@+id/textViewInformation"

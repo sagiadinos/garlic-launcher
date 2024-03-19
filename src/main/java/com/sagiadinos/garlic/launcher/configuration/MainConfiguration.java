@@ -93,7 +93,7 @@ public class MainConfiguration
 
     public boolean hasDailyReboot()
     {
-        return Model.getBoolean("has_daily_reboot", true);
+        return Model.getBoolean("has_daily_reboot", false);
     }
 
     public void toggleDailyReboot(boolean value)
@@ -110,7 +110,6 @@ public class MainConfiguration
     {
         Model.storeString("reboot_time", value);
     }
-
 
     public boolean hasNoPlayerStartDelayAfterBoot()
     {

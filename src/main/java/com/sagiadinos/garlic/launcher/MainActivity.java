@@ -47,6 +47,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.helper.AlarmHandler;
 import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.DiscSpace;
 import com.sagiadinos.garlic.launcher.helper.InfoLine;
@@ -66,10 +67,12 @@ import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.VersionInformation;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
+import com.sagiadinos.garlic.launcher.receiver.CommandReceiver;
 import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class MainActivity extends Activity
@@ -96,6 +99,7 @@ public class MainActivity extends Activity
     private ActivityManager     MyActivityManager;
     private DiscSpace           MyDiscSpace  = null;
     private InfoLine            MyInfoLine   = null;
+    private AlarmHandler        MyAlarmHandler = null;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -192,10 +196,10 @@ public class MainActivity extends Activity
       @Override
     protected void onResume()
     {
-      //  handleDailyReboot();
+        handleDailyReboot();
         // Attention: MyDeviceOwner and dependent classes like MyKiosk can be null when access rights are denied
         if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
-        startLockTask();
+            startLockTask();
 
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
         if (MyInfoLine != null)
@@ -249,6 +253,28 @@ public class MainActivity extends Activity
         }
 
         return super.onTouchEvent(event);
+    }
+
+    private void handleDailyReboot()
+    {
+        if (MyAlarmHandler == null)
+            MyAlarmHandler = new AlarmHandler(this);
+
+        String reboot_time = MyMainConfiguration.getRebootTime();
+        // go only further if something changed
+        // first when on, second when off
+        if ((MyMainConfiguration.hasDailyReboot() && MyAlarmHandler.isAlarmActive() && MyAlarmHandler.getAlarmTime().equals(reboot_time)) ||
+                (!MyMainConfiguration.hasDailyReboot() && !MyAlarmHandler.isAlarmActive()))
+            return;
+
+        if (MyAlarmHandler.isAlarmActive())
+            MyAlarmHandler.cancelAlarm();
+
+        if (MyMainConfiguration.hasDailyReboot())
+        {
+            MyAlarmHandler.setBroadcastRebootCommand(new Intent(this, CommandReceiver.class));
+            MyAlarmHandler.activateExactAlarm(Calendar.getInstance(), reboot_time);
+        }
     }
 
     private void checkForNetWork()
