@@ -1,5 +1,7 @@
 package com.sagiadinos.garlic.launcher.helper;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
+
 import java.io.File;
 
 public class RootChecker
@@ -47,12 +49,16 @@ public class RootChecker
      */
     private void checkForRoot()
     {
-        is_rooted  = (detectTestKeys() || checkForBinary("su") || checkForBinary("busybox"));
+        is_rooted  = (checkForBinary("su") || checkForBinary("busybox"));
         is_checked = true;
     }
 
     private boolean detectTestKeys()
     {
+        // as Android Studio Emulator images have a test-keys - string in kernel
+        if (BuildConfig.DEBUG)
+            return false;
+
         String buildTags = android.os.Build.TAGS;
         return buildTags != null && buildTags.contains("test-keys");
     }

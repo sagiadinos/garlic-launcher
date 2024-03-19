@@ -295,13 +295,16 @@ public class MainActivity extends Activity
 
     private void checkForPlayerDownload()
     {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        ProgressBar DownloadProgressBar = findViewById(R.id.progressDownload);
-        DownloadProgressBar.setVisibility(View.VISIBLE);
-        DownloadProgressBar.setProgress(0);
+        if (!BuildConfig.DEBUG)
+        {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            ProgressBar DownloadProgressBar = findViewById(R.id.progressDownload);
+            DownloadProgressBar.setVisibility(View.VISIBLE);
+            DownloadProgressBar.setProgress(0);
 
-        assert connectivityManager != null;
-        connectivityManager.registerDefaultNetworkCallback(new PlayerDownloader(this, DownloadProgressBar, tvInformation));
+            assert connectivityManager != null;
+            connectivityManager.registerDefaultNetworkCallback(new PlayerDownloader(this, DownloadProgressBar, tvInformation));
+        }
     }
 
     private void checkForInstalledPlayer()

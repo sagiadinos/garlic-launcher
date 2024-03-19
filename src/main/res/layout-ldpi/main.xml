@@ -55,6 +55,7 @@
                 android:gravity="center_horizontal"
                 android:textAlignment="center"
                 android:textSize="14sp"
+                android:lines="2"
                 android:visibility="visible" />
         </LinearLayout>
 

@@ -82,7 +82,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
         cbToggleDailyReboot      = findViewById(R.id.cbToggleDailyReboot);
         editRebootTime           = findViewById(R.id.editRebootTime);
-
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
         MyAppPermissions         = new AppPermissions(this, MyMainConfiguration);
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());

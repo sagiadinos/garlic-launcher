@@ -71,7 +71,7 @@ public class InfoLine extends ConnectivityManager.NetworkCallback
 
     public void displayAppInformation()
     {
-        final String value = "Model: " + android.os.Build.MODEL + " | Launcher: " +
+        final String value = "Model: " + android.os.Build.MODEL + " \n Launcher: " +
                 MyVersionInformation.forLauncher() +
                 " | Player: " + MyVersionInformation.forPlayer() +
                 " | UUID: " + MyMainConfiguration.getUUID();
