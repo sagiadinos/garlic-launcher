@@ -80,19 +80,35 @@
             android:text="@string/reboot_after_install"
             android:textColor="#FFFFFF" />
 
-        <CheckBox
-            android:id="@+id/cbUseDeviceStandby"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="Use device standby"
-            android:textColor="#FFFFFF" />
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/editStandbyMode"
+                android:layout_width="117dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:ems="10"
+                android:focusable="true"
+                android:onClick="onClickPlayerStartDelay"
+                android:paddingLeft="11dp"
+                android:text="@string/standby_mode"
+                android:textColor="#FFFFFF" />
+
+            <Spinner
+                android:id="@+id/spinnerStandbyMode"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:spinnerMode="dropdown"
+                tools:ignore="SmallSp" />
+        </LinearLayout>
         <CheckBox
             android:id="@+id/cbNoPlayerStartDelayAfterBoot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="11dp"
             android:clickable="true"
             android:focusable="true"
             android:text="@string/no_player_start_delay_after_booting"

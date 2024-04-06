@@ -61,4 +61,5 @@
     <string name="reboot_after_install">Reboot after install</string>
     <string name="toggle_daily_reboot">Daily reboot (Experimental): </string>
     <string name="reboot_time">&lt; %s</string>
+    <string name="standby_mode">Standby Mode:</string>
 </resources>

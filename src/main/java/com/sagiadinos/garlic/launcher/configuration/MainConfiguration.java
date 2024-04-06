@@ -29,7 +29,11 @@ public class MainConfiguration
 {
     private SharedPreferencesModel Model;
     private final String DEFAULT_CONTENT_URL = "https://indexes.smil-control.com";
-
+    public enum STANDBY_MODE {
+        none,
+        partially,
+        deep
+    }
     public MainConfiguration(SharedPreferencesModel model)
     {
         this.Model = model;
@@ -41,6 +45,20 @@ public class MainConfiguration
         Model.storeString("uuid", UUID.randomUUID().toString());
         storeSmilIndex(DEFAULT_CONTENT_URL);
         setIsDeviceRooted(MyRootChecker.isDeviceRooted());
+    }
+
+    public void convertValues()
+    {
+        // we delete use_device_standby and replace it with something better
+        if (Model.hasParameter("use_device_standby"))
+        {
+            boolean is_standby = Model.getBoolean("use_device_standby");
+            if (is_standby)
+                setStandbyMode(STANDBY_MODE.partially.toString());
+            else
+                setStandbyMode(STANDBY_MODE.none.toString());
+            Model.removeParameter("use_device_standby");
+        }
     }
 
     public boolean isFirstStart()
@@ -146,14 +164,14 @@ public class MainConfiguration
         Model.storeBoolean("active_service_password", value);
     }
 
-    public boolean useDeviceStandby()
+    public String getStandbyMode()
     {
-        return Model.getBoolean("use_device_standby");
+        return Model.getString("standby_mode");
     }
 
-    public void toggleUseDeviceStandby(boolean value)
+    public void setStandbyMode(String value)
     {
-        Model.storeBoolean("use_device_standby", value);
+        Model.storeString("standby_mode", value);
     }
 
     public boolean hasActiveServicePassword()

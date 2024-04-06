@@ -119,6 +119,7 @@ public class MainActivity extends Activity
         {
             MyMainConfiguration.firstStart(new RootChecker());
         }
+        MyMainConfiguration.convertValues();
 
         // init screen area
         DisplayMetrics displayMetrics = new DisplayMetrics();

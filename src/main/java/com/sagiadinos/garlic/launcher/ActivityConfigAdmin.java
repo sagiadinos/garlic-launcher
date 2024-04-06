@@ -30,9 +30,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -45,6 +47,9 @@ import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValueChangeListener, TimePickerDialog.OnTimeSetListener
@@ -55,8 +60,8 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     CheckBox cbRebootAfterInstall;
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
-    CheckBox cbUsedeviceStandby;
     CheckBox cbToggleDailyReboot;
+    Spinner  viewStandbyMode;
     TextView editRebootTime;
     EditText editServicePassword;
     EditText editContentUrl;
@@ -65,7 +70,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     AppPermissions MyAppPermissions;
     int player_delay = 5;
     String reboot_time = "3:00";
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,16 +77,25 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_config_admin);
+        MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
         cbOwnBackButton          = findViewById(R.id.cbOwnBackButton);
         cbActiveServicePassword  = findViewById(R.id.cbActiveServicePassword);
-        cbUsedeviceStandby       = findViewById(R.id.cbUseDeviceStandby);
         editServicePassword      = findViewById(R.id.editServicePassword);
         tvInformation            = findViewById(R.id.textViewInformation);
         editContentUrl           = findViewById(R.id.editContentUrl);
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
         cbToggleDailyReboot      = findViewById(R.id.cbToggleDailyReboot);
+        viewStandbyMode          = findViewById(R.id.spinnerStandbyMode);
+        List<String> items = new ArrayList<String>();
+        for (MainConfiguration.STANDBY_MODE mode : MainConfiguration.STANDBY_MODE.values())
+        {
+            items.add(mode.toString());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        viewStandbyMode.setAdapter(adapter);
+        viewStandbyMode.setSelection(adapter.getPosition(MyMainConfiguration.getStandbyMode()));
+
         editRebootTime           = findViewById(R.id.editRebootTime);
-        MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(this));
         MyAppPermissions         = new AppPermissions(this, MyMainConfiguration);
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());
         player_delay             = MyMainConfiguration.getPlayerStartDelay();
@@ -95,7 +108,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         cbRebootAfterInstall.setChecked(MyMainConfiguration.hasRebootAfterInstall());
         cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
         cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
-        cbUsedeviceStandby.setChecked(MyMainConfiguration.useDeviceStandby());
         prepareOptionsVisibility();
    }
 
@@ -111,7 +123,8 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
             storeDailyReboot();
             MyMainConfiguration.toogleRebootAfterInstall(cbRebootAfterInstall.isChecked());
             MyMainConfiguration.toggleNoPlayerStartDelayAfterBoot(cbNoPlayerStartDelayAfterBoot.isChecked());
-            MyMainConfiguration.toggleUseDeviceStandby(cbUsedeviceStandby.isChecked());
+
+            MyMainConfiguration.setStandbyMode(viewStandbyMode.getSelectedItem().toString());
             MyMainConfiguration.storeSmilIndex(editContentUrl.getText().toString().trim());
             finish();
 

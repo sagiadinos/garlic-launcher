@@ -9,10 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
+import android.widget.BaseAdapter;
 
 import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
+import com.sagiadinos.garlic.launcher.deepstandby.BaseStandby;
+import com.sagiadinos.garlic.launcher.deepstandby.StandbyFactory;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
@@ -37,6 +40,8 @@ public class CommandReceiver extends BroadcastReceiver
         MyMainConfiguration      = new MainConfiguration(new SharedPreferencesModel(MyContext));
 
         String command = MyIntent.getStringExtra("command");
+        if (command == null)
+            return;
 
         switch (command)
         {
@@ -52,8 +57,21 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOff()
     {
-        if (!MyMainConfiguration.useDeviceStandby())
+        String standby_mode =MyMainConfiguration.getStandbyMode();
+
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.none.toString()))
             return;
+
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.deep.toString()))
+        {
+            StandbyFactory MyStandByFactory = new StandbyFactory(MyMainConfiguration, MyContext);
+            BaseStandby MyDeepStandBy =  MyStandByFactory.determinePlayerModel();
+            if (MyDeepStandBy == null)
+                return;
+            MyDeepStandBy.setSecondsToWakeUp(600);
+            MyDeepStandBy.executeStandby();
+            return;
+        }
 
         PowerManager MyPowerManager = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
         MyWakeLock = MyPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Launcher:WakeLockTag");
@@ -64,7 +82,12 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOn()
     {
-        if (!MyMainConfiguration.useDeviceStandby())
+        String standby_mode =MyMainConfiguration.getStandbyMode();
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.none.toString()))
+            return;
+
+        // Normally this should not happen, but to get sure
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.deep.toString()))
             return;
 
         if (MyMainConfiguration.isDeviceRooted())

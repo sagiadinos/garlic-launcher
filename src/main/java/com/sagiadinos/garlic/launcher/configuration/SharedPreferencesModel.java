@@ -21,6 +21,11 @@ public class SharedPreferencesModel
         return pref.contains(key);
     }
 
+    public void removeParameter(String key)
+    {
+        pref.edit().remove(key).commit();
+    }
+
     public void storeString(String param, String value)
     {
         try
@@ -70,7 +75,6 @@ public class SharedPreferencesModel
             error_text = e.getMessage();
         }
     }
-
 
     public void storeBoolean(String param, boolean value)
     {
