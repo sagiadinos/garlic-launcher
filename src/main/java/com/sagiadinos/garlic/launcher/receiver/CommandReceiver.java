@@ -59,7 +59,7 @@ public class CommandReceiver extends BroadcastReceiver
     {
         String standby_mode =MyMainConfiguration.getStandbyMode();
 
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.none.toString()))
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.no_standby.toString()))
             return;
 
         if (standby_mode.equals(MainConfiguration.STANDBY_MODE.deep.toString()))
@@ -83,7 +83,7 @@ public class CommandReceiver extends BroadcastReceiver
     private void setScreenOn()
     {
         String standby_mode =MyMainConfiguration.getStandbyMode();
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.none.toString()))
+        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.no_standby.toString()))
             return;
 
         // Normally this should not happen, but to get sure

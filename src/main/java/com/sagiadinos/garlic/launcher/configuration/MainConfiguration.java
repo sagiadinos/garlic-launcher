@@ -30,7 +30,7 @@ public class MainConfiguration
     private SharedPreferencesModel Model;
     private final String DEFAULT_CONTENT_URL = "https://indexes.smil-control.com";
     public enum STANDBY_MODE {
-        none,
+        no_standby,
         partially,
         deep
     }
@@ -56,7 +56,7 @@ public class MainConfiguration
             if (is_standby)
                 setStandbyMode(STANDBY_MODE.partially.toString());
             else
-                setStandbyMode(STANDBY_MODE.none.toString());
+                setStandbyMode(STANDBY_MODE.no_standby.toString());
             Model.removeParameter("use_device_standby");
         }
     }
