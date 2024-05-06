@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
+import com.sagiadinos.garlic.launcher.BuildConfig;
 import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
@@ -47,6 +48,9 @@ public class KioskManager
 
     public void pin()
     {
+        if (BuildConfig.DEBUG) // to get rid of this annoying Couldn't terminate previous instance  shit
+            return;
+
         if (MyDeviceOwner.isLockTaskPermitted())
         {
             MyMainActivity.startLockTask();
@@ -75,13 +79,13 @@ public class KioskManager
 
     public void becomeHomeActivity()
     {
-        if (checkforDeviceRights())
+        if (checkForDeviceRights())
         {
             MyLauncher.becomeHomeActivity(MyDeviceOwner);
         }
     }
 
-    private boolean checkforDeviceRights()
+    private boolean checkForDeviceRights()
     {
         if (!MyDeviceOwner.isAdminActive())
         {

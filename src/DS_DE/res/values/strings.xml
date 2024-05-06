@@ -48,7 +48,7 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="no_player_start_delay_after_booting">No Player Start Delay after Booting</string>
+    <string name="no_player_start_delay_after_booting">No player start delay after booting</string>
     <string name="start_delay_text">&lt; %ss Player start delay</string>
     <string name="content_url">Content Url</string>
     <string name="monday">Monday</string>
@@ -58,6 +58,8 @@
     <string name="friday">Friday</string>
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
-    <string name="toggle_daily_reboot">Daily reboot</string>
+    <string name="reboot_after_install">Reboot after install</string>
+    <string name="toggle_daily_reboot">Daily reboot: </string>
     <string name="reboot_time">&lt; %s</string>
+    <string name="standby_mode">Standby Mode:</string>
 </resources>

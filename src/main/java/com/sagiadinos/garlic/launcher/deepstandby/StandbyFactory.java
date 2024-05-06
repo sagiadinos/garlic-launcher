@@ -16,7 +16,7 @@ public class StandbyFactory
         MyCtx = myCtx;
     }
 
-    public BaseStandby determinePlayerModel()
+    public AbstractBaseStandby determinePlayerModel()
     {
         String device_name = android.os.Build.MODEL;
         if (device_name.startsWith("BT-") && MyMainConfiguration.isDeviceRooted())

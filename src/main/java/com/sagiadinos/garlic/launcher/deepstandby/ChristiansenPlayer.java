@@ -7,18 +7,19 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import java.util.Calendar;
 
-public class ChristiansenPlayer extends BaseStandby implements StandByInterface
+public class ChristiansenPlayer extends AbstractBaseStandby
 {
-    int seconds_to_wake_up = 3600;
+    final int min_wakeup_seconds = 241;
+    int wakeup_seconds = min_wakeup_seconds;
     public ChristiansenPlayer(MainConfiguration myMainConfiguration, Context myCtx)
     {
         super(myMainConfiguration, myCtx);
     }
 
     @Override
-    public void setSecondsToWakeUp(int seconds)
+    public void setSecondsToWakup(int seconds)
     {
-        seconds_to_wake_up = seconds;
+        wakeup_seconds = Math.max(seconds, min_wakeup_seconds);
     }
 
     @Override
@@ -28,14 +29,15 @@ public class ChristiansenPlayer extends BaseStandby implements StandByInterface
         setPowerOnTime();
     }
 
-    public void setPowerOffTime()
+    private void setPowerOffTime()
     {
         Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, 121); // we need to shutdown a minute ahead
         String SET_POWEROFF_ACTION = "rk.android.turnofftime.action";
         Intent intent_powerOff = new Intent(SET_POWEROFF_ACTION);
-        intent_powerOff.putExtra("offHour", calendar.get(Calendar.HOUR_OF_DAY));
-        intent_powerOff.putExtra("offMin", calendar.get(Calendar.MINUTE));
-        intent_powerOff.putExtra("offWeek", calendar.get(Calendar.DAY_OF_WEEK));
+        intent_powerOff.putExtra("offHour", calendar.get(Calendar.HOUR_OF_DAY)+"");
+        intent_powerOff.putExtra("offMin", calendar.get(Calendar.MINUTE)+"");
+        intent_powerOff.putExtra("offWeek", calendar.get(Calendar.DAY_OF_WEEK)+"");
         intent_powerOff.putExtra("enable", true);
         MyCtx.sendBroadcast(intent_powerOff);
     }
@@ -43,13 +45,13 @@ public class ChristiansenPlayer extends BaseStandby implements StandByInterface
     private void setPowerOnTime()
     {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, seconds_to_wake_up);
+        calendar.add(Calendar.SECOND, wakeup_seconds);
 
         String SET_POWERON_ACTION = "rk.android.turnontime.action";
         Intent intent_powerOn = new Intent(SET_POWERON_ACTION);
-        intent_powerOn.putExtra("turnonhour", calendar.get(Calendar.HOUR_OF_DAY));
-        intent_powerOn.putExtra("turnonmin", calendar.get(Calendar.MINUTE));
-        intent_powerOn.putExtra("onWeek", calendar.get(Calendar.DAY_OF_WEEK));
+        intent_powerOn.putExtra("turnonhour", calendar.get(Calendar.HOUR_OF_DAY)+"");
+        intent_powerOn.putExtra("turnonmin", calendar.get(Calendar.MINUTE)+"");
+        intent_powerOn.putExtra("onWeek", calendar.get(Calendar.DAY_OF_WEEK)+"");
         intent_powerOn.putExtra("turnonenable", true);
         MyCtx.sendBroadcast(intent_powerOn);
     }

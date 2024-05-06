@@ -36,14 +36,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ConfigXMLModel
 {
     private NetworkData MyNetworkData;
     private MainConfiguration MyMainConfiguration;
-    private String volume = "";
-    private String brightness = "";
+    private int volume = 100;
+    private int brightness = 100;
+    private String standby_mode = "";
+    private Set<String> reboot_days;
+    private String reboot_time = "";
 
     public ConfigXMLModel(NetworkData myNetworkData, MainConfiguration myMainConfiguration)
     {
@@ -51,14 +58,30 @@ public class ConfigXMLModel
         this.MyMainConfiguration = myMainConfiguration;
     }
 
-    public String getVolume()
+    public int getVolume()
     {
         return volume;
     }
 
-    public String getBrightness()
+    public int getBrightness()
     {
         return brightness;
+    }
+
+    public String getStandbyMode()
+    {
+        return standby_mode;
+    }
+
+    public Set<String> getRebootDays()
+    {
+
+        return reboot_days;
+    }
+
+    public String getRebootTime()
+    {
+        return reboot_time;
     }
 
     public String readConfigXml(File config_xml) throws IOException
@@ -169,11 +192,26 @@ public class ConfigXMLModel
                 MyNetworkData.setEthernetDomain(xpp.getAttributeValue(null, "value"));
                 break;
             case "audio.soundLevel":
+            case "volume":
             case "hardware.audioOut.0.masterSoundLevel":
-                volume = xpp.getAttributeValue(null, "value");
+                String s = xpp.getAttributeValue(null, "value").replaceAll("%", "");
+                volume = Integer.parseInt(s);
                 break;
             case "display.brightness":
-                brightness = xpp.getAttributeValue(null, "value");
+            case "brightness":
+                String str = xpp.getAttributeValue(null, "value").replaceAll("%", "");
+                brightness = Integer.parseInt(str);
+                break;
+            case "standby_mode":
+                standby_mode = xpp.getAttributeValue(null, "value");
+                break;
+            case "schedule.reboot.time":
+                reboot_time = xpp.getAttributeValue(null, "value");
+                break;
+            case "schedule.reboot.days":
+                String[] tmp = xpp.getAttributeValue(null, "value").toLowerCase().trim().split(" ");
+                reboot_days = new HashSet<>();
+                reboot_days.addAll(Arrays.asList(tmp));
                 break;
             case "net.ethernet.dnsServers":
                 MyNetworkData.setEthernetDNS(xpp.getAttributeValue(null, "value"));

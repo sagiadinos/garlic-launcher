@@ -32,9 +32,16 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:paddingVertical="20dp"
-        android:paddingHorizontal="10dp"
-        >
-    
+        android:paddingHorizontal="10dp">
+
+        <TextView
+            android:id="@+id/textViewInformation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ems="10"
+            android:textColor="#FFFFFF" />
+
         <CheckBox
             android:id="@+id/cbOwnBackButton"
             android:layout_width="match_parent"
@@ -152,41 +159,110 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/cbToggleDailyReboot"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="toggleDailyReboot"
-                android:text="@string/toggle_daily_reboot"
-                android:textColor="#FFFFFF" />
-
-            <TextView
-                android:id="@+id/editRebootTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:paddingVertical="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="onClickRebootTime"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textViewInformation"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:visibility="invisible" />
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbToggleDailyReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="toggleDailyReboot"
+                    android:text="@string/toggle_daily_reboot"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/editRebootTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="10dp"
+                    android:paddingVertical="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="onClickRebootTime"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+                </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loDailyRebootDays"
+                android:paddingStart="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                tools:ignore="RtlSymmetry">
+
+                <CheckBox
+                    android:id="@+id/cbToggleMondayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/monday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleTuesdayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/tuesday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleWednesdayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/wednesday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleThursdayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/thursday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleFridayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/friday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleSaturdayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/saturday"
+                    android:textColor="#FFFFFF" />
+                <CheckBox
+                    android:id="@+id/cbToggleSundayReboot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/sunday"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

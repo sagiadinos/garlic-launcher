@@ -21,11 +21,11 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
@@ -47,7 +47,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
-import com.sagiadinos.garlic.launcher.helper.AlarmHandler;
+import com.sagiadinos.garlic.launcher.deepstandby.AbstractBaseStandby;
+import com.sagiadinos.garlic.launcher.deepstandby.StandbyFactory;
+import com.sagiadinos.garlic.launcher.alarms.RebootHandler;
 import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.DiscSpace;
 import com.sagiadinos.garlic.launcher.helper.InfoLine;
@@ -72,7 +74,6 @@ import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Objects;
 
 public class MainActivity extends Activity
@@ -80,26 +81,20 @@ public class MainActivity extends Activity
     private boolean        has_second_app_started = false;
     private boolean        has_player_started     = false;
     private boolean        is_countdown_running   = false;
-
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
-    private TextView       tvAppVersion    = null;
-    private TextView       tvFreeDiscSpace = null;
-    private TextView       tvIP    = null;
-
     private CountDownTimer      PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
     private MainConfiguration   MyMainConfiguration = null;
     private KioskManager        MyKiosk               = null;
     private ReceiverManager     MyReceiverManager = null;
-    private TaskExecutionReport MyTaskExecutionReport;
-    private AppPermissions      MyAppPermissions;
+   // private TaskExecutionReport MyTaskExecutionReport;
     private Screen              MyScreen;
     private ActivityManager     MyActivityManager;
     private DiscSpace           MyDiscSpace  = null;
     private InfoLine            MyInfoLine   = null;
-    private AlarmHandler        MyAlarmHandler = null;
+    private RebootHandler MyAlarmHandler = null;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -111,14 +106,15 @@ public class MainActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        tvInformation    = findViewById(R.id.tvInformation);
+        tvInformation       = findViewById(R.id.tvInformation);
         MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(this));
+
         if (MyMainConfiguration.isFirstStart())
-        {
             MyMainConfiguration.firstStart(new RootChecker());
-        }
+
         MyMainConfiguration.convertValues();
 
         // init screen area
@@ -126,14 +122,14 @@ public class MainActivity extends Activity
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         MyScreen = new Screen(displayMetrics);
         MyActivityManager = (ActivityManager)  this.getSystemService(Context.ACTIVITY_SERVICE);
-
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
 
-        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
-        if (!AppPermissions.hasImportantPermissions(this))
+        AppPermissions MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
+        if (!AppPermissions.hasBasePermissions(this))
         {
-            MyAppPermissions.handlePermissions(new ShellExecute(Runtime.getRuntime()));
+            MyAppPermissions.handleBasePermissions(new ShellExecute(Runtime.getRuntime()));
         }
+
         boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
         MyMainConfiguration.togglePlayerInstalled(is_player_installed);
         if (is_player_installed && !Installer.hasPlayerPermissions(this)
@@ -144,32 +140,33 @@ public class MainActivity extends Activity
                 new ComponentName(this, AdminReceiver.class)
           );
         }
-         // ATTENTION!
+        // ATTENTION!
         // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
-        // respectivetely a restart dramatically! e.g. when you close a player regulary
+        // respectively a restart dramatically! e.g. when you close a player regular
         // continue only when permissions are granted
-        if (!AppPermissions.hasImportantPermissions(this))
+        if (AppPermissions.hasBasePermissions(this))
         {
-            return;
+            MyAppPermissions.requestInstallPermission();
+            cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
+            cleanUp(Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath().replace("garlic.launcher","garlic.player"));
         }
-        cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
-        cleanUp(Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath().replace("garlic.launcher","garlic.player"));
 
          MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                 new ComponentName(this, AdminReceiver.class),
                 new ComponentName(this, MainActivity.class),
                 new IntentFilter(Intent.ACTION_MAIN)
          );
-         MyTaskExecutionReport = new TaskExecutionReport(getExternalFilesDir("logs").getAbsolutePath());
-         MyKiosk               = new KioskManager(MyDeviceOwner,
-                                                  new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
-                                                  this,
-                                                  MyMainConfiguration
-        );
+
         if (MyDeviceOwner.isDeviceOwner())
         {
-            startLockTask();
+            // MyTaskExecutionReport = new TaskExecutionReport(Objects.requireNonNull(getExternalFilesDir("logs")).getAbsolutePath());
+            MyKiosk = new KioskManager(MyDeviceOwner,
+                    new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
+                    this,
+                    MyMainConfiguration
+            );
 
+            MyKiosk.pin();
             MyDeviceOwner.determinePermittedLockTaskPackages("");
             hideInformationText();
             MyReceiverManager = new ReceiverManager(this);
@@ -177,6 +174,7 @@ public class MainActivity extends Activity
             initButtonViews();
             startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
             checkForInstalledPlayer();
+            checkForNetWork();
         }
         else
         {
@@ -191,29 +189,30 @@ public class MainActivity extends Activity
                 displayInformationText(getString(R.string.no_device_owner));
             }
         }
-        checkForNetWork();
     }
 
       @Override
     protected void onResume()
     {
-        handleDailyReboot();
-        // Attention: MyDeviceOwner and dependent classes like MyKiosk can be null when access rights are denied
-        if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
-            startLockTask();
+        if (MyDeviceOwner.isDeviceOwner())
+        {
+            handleDailyReboot();
+            if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
+                MyKiosk.pin();
 
-        NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
-        if (MyInfoLine != null)
-            MyInfoLine.refreshFreeDiscSpace();
-
+            NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
+            if (MyInfoLine != null)
+                MyInfoLine.refreshFreeDiscSpace();
+        }
         super.onResume();
     }
 
     @Override
     public void onRestart()
     {
-        // Attention: MyDeviceOwner and dependent classes like MyKiosk can be null when access rights are denied
-        toogleServiceModeVisibility();
+        if (MyDeviceOwner.isDeviceOwner())
+            toogleServiceModeVisibility();
+
         super.onRestart();
     }
 
@@ -231,6 +230,9 @@ public class MainActivity extends Activity
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        if (!MyDeviceOwner.isDeviceOwner())
+            return super.onTouchEvent(event);
+
         if (!MyKiosk.isStrictKioskModeActive() &&
                 event.getActionMasked() == MotionEvent.ACTION_DOWN &&
                 MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
@@ -259,30 +261,36 @@ public class MainActivity extends Activity
     private void handleDailyReboot()
     {
         if (MyAlarmHandler == null)
-            MyAlarmHandler = new AlarmHandler(this);
+            MyAlarmHandler = new RebootHandler((AlarmManager) getSystemService(Context.ALARM_SERVICE), MyMainConfiguration, new Intent(this, CommandReceiver.class), this);
 
-        String reboot_time = MyMainConfiguration.getRebootTime();
-        // go only further if something changed
-        // first when on, second when off
-        if ((MyMainConfiguration.hasDailyReboot() && MyAlarmHandler.isAlarmActive() && MyAlarmHandler.getAlarmTime().equals(reboot_time)) ||
-                (!MyMainConfiguration.hasDailyReboot() && !MyAlarmHandler.isAlarmActive()))
+        // proceed if an current alarm  has changed
+        if (MyMainConfiguration.hasDailyReboot() && MyAlarmHandler.isAlarmActive() && !MyAlarmHandler.hasChanged(MyMainConfiguration))
             return;
 
-        if (MyAlarmHandler.isAlarmActive())
-            MyAlarmHandler.cancelAlarm();
+        // proceed if an alarm is set new
+        if (!MyMainConfiguration.hasDailyReboot() && !MyAlarmHandler.isAlarmActive())
+            return;
 
-        if (MyMainConfiguration.hasDailyReboot())
-        {
-            MyAlarmHandler.setBroadcastRebootCommand(new Intent(this, CommandReceiver.class));
-            MyAlarmHandler.activateExactAlarm(Calendar.getInstance(), reboot_time);
-        }
+        // delete previous alarms
+        if (MyAlarmHandler.isAlarmActive())
+            MyAlarmHandler.cancelAllAlarms();
+
+        // proceed if an alarm should be set
+        if (!MyMainConfiguration.hasDailyReboot())
+            return;
+
+        MyAlarmHandler.activateAllAlarms();
+
     }
 
     private void checkForNetWork()
     {
-        tvAppVersion     = findViewById(R.id.tvAppVersion);
-        tvFreeDiscSpace  = findViewById(R.id.tvFreeDiscSpace);
-        tvIP             = findViewById(R.id.tvIP);
+        TextView tvAppVersion = findViewById(R.id.tvAppVersion);
+        TextView tvFreeDiscSpace = findViewById(R.id.tvFreeDiscSpace);
+        TextView tvIP = findViewById(R.id.tvIP);
+
+        tvIP.setVisibility(View.VISIBLE);
+        tvFreeDiscSpace.setVisibility(View.VISIBLE);
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         VersionInformation MyVersionInformation = new VersionInformation(this);
@@ -291,7 +299,6 @@ public class MainActivity extends Activity
         MyInfoLine.refreshFreeDiscSpace();
         assert connectivityManager != null;
         connectivityManager.registerDefaultNetworkCallback(MyInfoLine);
-
     }
 
     private void checkForPlayerDownload()
@@ -324,6 +331,13 @@ public class MainActivity extends Activity
     {
         btToggleServiceMode  = findViewById(R.id.btToggleServiceMode);
         btStartPlayer        = findViewById(R.id.btStartPlayer);
+
+        if (BuildConfig.DEBUG)
+        {
+            Button btForTest = findViewById(R.id.btForTest);
+            btForTest.setVisibility(View.VISIBLE);
+        }
+
         Button btAdminConfiguration = findViewById(R.id.btAdminConfiguration);
         Button btAndroidSettings    = findViewById(R.id.btAndroidSettings);
 
@@ -376,43 +390,40 @@ public class MainActivity extends Activity
         final EditText input = new EditText(this);
         alert.setView(input);
 
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        alert.setPositiveButton("Ok", (dialog, whichButton) ->
         {
-            public void onClick(DialogInterface dialog, int whichButton)
+            String value = input.getText().toString();
+            if (value.isEmpty())
             {
-                String value = input.getText().toString();
-                if (value.isEmpty())
-                {
-                    startGarlicPlayerDelayed();
-                    return;
-                }
+                startGarlicPlayerDelayed();
+                return;
+            }
 
-                // we need temporary for testing an alternative for those one who forget passwords
-                // so we get maybe the device UUID via
-                // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                // or set something own
-                // String alt_password = "heidewitzka";
+            // we need temporary for testing an alternative for those one who forget passwords
+            // so we get maybe the device UUID via
+            // String alt_password = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            // or set something own
+            // String alt_password = "heidewitzka";
 
-                if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher())/* || value.equals(alt_password)*/)
+            if (MyMainConfiguration.compareServicePassword(value, new PasswordHasher())/* || value.equals(alt_password)*/)
+            {
+                if (MyKiosk.isStrictKioskModeActive())
                 {
-                    if (MyKiosk.isStrictKioskModeActive())
-                    {
-                        MyKiosk.toggleServiceMode(true);
-                        btToggleServiceMode.setText(R.string.enter_strict_mode);
-                        MyDeviceOwner.deactivateRestrictions();
-                    }
-                    else
-                    {
-                        MyKiosk.toggleServiceMode(false);
-                        btToggleServiceMode.setText(R.string.enter_service_mode);
-                        MyDeviceOwner.activateRestrictions();
-                    }
-                    recreate();
+                    MyKiosk.toggleServiceMode(true);
+                    btToggleServiceMode.setText(R.string.enter_strict_mode);
+                    MyDeviceOwner.deactivateRestrictions();
                 }
                 else
                 {
-                    startGarlicPlayerDelayed();
+                    MyKiosk.toggleServiceMode(false);
+                    btToggleServiceMode.setText(R.string.enter_service_mode);
+                    MyDeviceOwner.activateRestrictions();
                 }
+                recreate();
+            }
+            else
+            {
+                startGarlicPlayerDelayed();
             }
         });
         alert.show();
@@ -446,7 +457,7 @@ public class MainActivity extends Activity
         }
 
         int start_delay = MyMainConfiguration.getPlayerStartDelay();
-        PlayerCountDown      = new CountDownTimer(start_delay * 1000, 1000)
+        PlayerCountDown      = new CountDownTimer(start_delay * 1000L, 1000)
         {
             public void onTick(long millisUntilFinished)
             {
@@ -463,6 +474,15 @@ public class MainActivity extends Activity
             }
 
         }.start();
+    }
+
+    public void handleTestButton(View view)
+    {
+        StandbyFactory MyStandByFactory = new StandbyFactory(MyMainConfiguration, this);
+        AbstractBaseStandby MyDeepStandBy =  MyStandByFactory.determinePlayerModel();
+        if (MyDeepStandBy == null)
+            return;
+        MyDeepStandBy.executeStandby();
     }
 
     public void handleGarlicPlayerStartTimer(View view)

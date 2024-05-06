@@ -118,5 +118,13 @@
             android:textSize="16sp"
             android:visibility="visible" />
     </LinearLayout>
-
+    <Button
+        android:id="@+id/btForTest"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleTestButton"
+        android:text="Test (DeepStandBy)"
+        android:textSize="16sp"
+        android:visibility="gone" />
 </LinearLayout>

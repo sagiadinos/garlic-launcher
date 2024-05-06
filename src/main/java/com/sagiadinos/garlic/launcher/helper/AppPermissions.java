@@ -23,26 +23,28 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import org.jetbrains.annotations.NotNull;
 
 /**
- *  capsulate the permissions
+ *  capsule permissions
  */
 public class AppPermissions
 {
     private static final int REQUEST_PERMISSIONS = 1;
-    private static final String[] PERMISSIONS_LIST = {
+    private static final String[] BASE_PERMISSIONS_LIST = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    };
-    private static final String TAG = "AppPermissions";
+    };    private static final String TAG = "AppPermissions";
 
     private String error_text;
 
@@ -63,7 +65,7 @@ public class AppPermissions
             if (grant_results.length > 0)
             {
                 // Validate the permissions result
-                if (hasImportantPermissions(ma))
+                if (hasBasePermissions(ma))
                 {
                     ma.recreate();
                 }
@@ -94,28 +96,51 @@ public class AppPermissions
         return true;
     }
 
-    public static boolean hasImportantPermissions(Activity ma)
+    public static boolean hasBasePermissions(Activity ma)
     {
         int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissions != PackageManager.PERMISSION_GRANTED)
-        {
             return false;
-        }
+
         permissions = ma.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         return permissions == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void handlePermissions(ShellExecute MyShellExecute)
+    public void handleBasePermissions(ShellExecute MyShellExecute)
     {
         if (MyMainConfiguration.isDeviceRooted())
         {
-            requestPermissionsbyShell(MyShellExecute);
+            requestPermissionsByShell(MyShellExecute);
         }
         else
         {
-            requestPermissions();
+            requestBasePermissions();
         }
     }
+
+    public void requestInstallPermission()
+    {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+            return;
+
+        if(!Environment.isExternalStorageManager())
+        {
+            try
+            {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                Uri uri = Uri.fromParts("package", MyActivity.getPackageName(), null);
+                intent.setData(uri);
+                MyActivity.startActivityForResult(intent, 100); // MANAGE_EXTERNAL_STORAGE_REQUEST_CODE
+            }
+            catch (Exception ex)
+            {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                MyActivity.startActivity(intent);
+            }
+        }
+    }
+
 
     public String getErrorText()
     {
@@ -132,14 +157,19 @@ public class AppPermissions
         return Settings.canDrawOverlays(MyActivity);
     }
 
-    private void requestPermissions()
+    private void requestBasePermissions()
     {
-        MyActivity.requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
+        MyActivity.requestPermissions(BASE_PERMISSIONS_LIST, REQUEST_PERMISSIONS);
     }
 
-    private void requestPermissionsbyShell(ShellExecute MyShellExecute)
+    private void requestPermissionsByShell(ShellExecute MyShellExecute)
     {
-        String[] permissions = {"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW"};
+        String[] permissions;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+            permissions = new String[]{"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW"};
+        else
+            permissions = new String[]{"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW", "MANAGE_EXTERNAL_STORAGE"};
+
         error_text = "";
         for (String perm : permissions)
         {

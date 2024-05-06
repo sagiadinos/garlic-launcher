@@ -21,7 +21,7 @@ public class InfoLine extends ConnectivityManager.NetworkCallback
     private final VersionInformation MyVersionInformation;
     private MainConfiguration MyMainConfiguration;
     private DiscSpace         MyDiscSpace;
-    private TextView tvAppVersion, tvFreeDiscSpace, tvIP;
+    private TextView          tvAppVersion, tvFreeDiscSpace, tvIP;
     private Activity          MyActivity;
     private Runnable          runnable;
 

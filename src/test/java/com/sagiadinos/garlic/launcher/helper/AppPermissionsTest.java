@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -122,7 +121,7 @@ class AppPermissionsTest
         when(MainConfigurationMocked.isDeviceRooted()).thenReturn(true);
         when(ShellExecuteMocked.executeAsRoot(anyString())).thenReturn(true);
 
-        MyTestClass.handlePermissions(TextViewMocked, ShellExecuteMocked);
+        MyTestClass.handleBasePermissions(TextViewMocked, ShellExecuteMocked);
 
         verify(ShellExecuteMocked, times(3)).executeAsRoot(anyString());
         verify(ShellExecuteMocked, never()).getErrorText();
@@ -140,7 +139,7 @@ class AppPermissionsTest
         when(ShellExecuteMocked.executeAsRoot(anyString())).thenReturn(false);
         when(ShellExecuteMocked.getErrorText()).thenReturn("error");
 
-        MyTestClass.handlePermissions(TextViewMocked, ShellExecuteMocked);
+        MyTestClass.handleBasePermissions(TextViewMocked, ShellExecuteMocked);
 
         verify(ShellExecuteMocked, times(1)).executeAsRoot(anyString());
         verify(ShellExecuteMocked, times(1)).getErrorText();
@@ -162,7 +161,7 @@ class AppPermissionsTest
         when(MainConfigurationMocked.isDeviceRooted()).thenReturn(false);
         when(ShellExecuteMocked.executeAsRoot(anyString())).thenReturn(false);
 
-        MyTestClass.handlePermissions(TextViewMocked, ShellExecuteMocked);
+        MyTestClass.handleBasePermissions(TextViewMocked, ShellExecuteMocked);
 
         verify(ShellExecuteMocked, never()).executeAsRoot(anyString());
         verify(MainActivityMocked, times(1)).requestPermissions(PERMISSIONS_LIST, REQUEST_PERMISSIONS);
