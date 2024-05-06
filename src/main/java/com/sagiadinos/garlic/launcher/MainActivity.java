@@ -87,6 +87,7 @@ public class MainActivity extends Activity
     private CountDownTimer      PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
     private MainConfiguration   MyMainConfiguration = null;
+    private AppPermissions      MyAppPermissions;
     private KioskManager        MyKiosk               = null;
     private ReceiverManager     MyReceiverManager = null;
    // private TaskExecutionReport MyTaskExecutionReport;
@@ -124,22 +125,32 @@ public class MainActivity extends Activity
         MyActivityManager = (ActivityManager)  this.getSystemService(Context.ACTIVITY_SERVICE);
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
 
-        AppPermissions MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
+        MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                new ComponentName(this, AdminReceiver.class),
+                new ComponentName(this, MainActivity.class),
+                new IntentFilter(Intent.ACTION_MAIN)
+        );
+        // if not Device Ownder
+        if (!MyDeviceOwner.isDeviceOwner() && MyMainConfiguration.isDeviceRooted())
+        {
+            displayInformationText(getString(R.string.root_found_set_device_owner));
+            if (!MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime())))
+                displayInformationText("Device is rooted, but set device owner failed. If you created a Google account, delete it. Otherwise contact support.");
+        }
+
+        if (!MyDeviceOwner.isDeviceOwner())
+        {
+            displayInformationText(getString(R.string.no_device_owner));
+            return;
+        }
+
+        // From here it is Device Owner check Permissions
+        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
         if (!AppPermissions.hasBasePermissions(this))
         {
             MyAppPermissions.handleBasePermissions(new ShellExecute(Runtime.getRuntime()));
         }
 
-        boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
-        MyMainConfiguration.togglePlayerInstalled(is_player_installed);
-        if (is_player_installed && !Installer.hasPlayerPermissions(this)
-                  && MyAppPermissions.grantPlayerPermissions(new ShellExecute(Runtime.getRuntime())))
-        {
-            DeviceOwner.reboot(
-                    (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
-                new ComponentName(this, AdminReceiver.class)
-          );
-        }
         // ATTENTION!
         // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
         // respectively a restart dramatically! e.g. when you close a player regular
@@ -150,51 +161,45 @@ public class MainActivity extends Activity
             cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
             cleanUp(Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath().replace("garlic.launcher","garlic.player"));
         }
-
-         MyDeviceOwner = new DeviceOwner((DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
-                new ComponentName(this, AdminReceiver.class),
-                new ComponentName(this, MainActivity.class),
-                new IntentFilter(Intent.ACTION_MAIN)
-         );
-
-        if (MyDeviceOwner.isDeviceOwner())
-        {
-            // MyTaskExecutionReport = new TaskExecutionReport(Objects.requireNonNull(getExternalFilesDir("logs")).getAbsolutePath());
-            MyKiosk = new KioskManager(MyDeviceOwner,
-                    new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
-                    this,
-                    MyMainConfiguration
-            );
-
-            MyKiosk.pin();
-            MyDeviceOwner.determinePermittedLockTaskPackages("");
-            hideInformationText();
-            MyReceiverManager = new ReceiverManager(this);
-            MyReceiverManager.registerAllReceiver();
-            initButtonViews();
-            startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
-            checkForInstalledPlayer();
-            checkForNetWork();
-        }
         else
         {
-            if (MyMainConfiguration.isDeviceRooted())
-            {
-                displayInformationText(getString(R.string.root_found_set_device_owner));
-                if (!MyDeviceOwner.makeDeviceOwner(new ShellExecute(Runtime.getRuntime())))
-                    displayInformationText("Device is rooted, but set device owner failed. If you created a Google account, delete it. Otherwise contact support.");
-            }
-            else
-            {
-                displayInformationText(getString(R.string.no_device_owner));
-            }
+            displayInformationText(getString(R.string.no_basic_permissions));
+            return;
         }
+
+        boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
+        MyMainConfiguration.togglePlayerInstalled(is_player_installed);
+        if (is_player_installed && !Installer.hasPlayerPermissions(this)
+                && MyAppPermissions.grantPlayerPermissions(new ShellExecute(Runtime.getRuntime())))
+        {
+            DeviceOwner.reboot(
+                    (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
+                    new ComponentName(this, AdminReceiver.class)
+            );
+        }
+
+        // MyTaskExecutionReport = new TaskExecutionReport(Objects.requireNonNull(getExternalFilesDir("logs")).getAbsolutePath());
+        MyKiosk = new KioskManager(MyDeviceOwner,
+                new HomeLauncherManager(this, new Intent(Intent.ACTION_MAIN)),
+                this,
+                MyMainConfiguration
+        );
+
+        MyKiosk.pin();
+        MyDeviceOwner.determinePermittedLockTaskPackages("");
+        hideInformationText();
+        MyReceiverManager = new ReceiverManager(this);
+        MyReceiverManager.registerAllReceiver();
+        initButtonViews();
+        startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
+        checkForInstalledPlayer();
+        checkForNetWork();
     }
 
       @Override
     protected void onResume()
     {
-        if (MyDeviceOwner.isDeviceOwner())
+        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
         {
             handleDailyReboot();
             if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
@@ -210,7 +215,7 @@ public class MainActivity extends Activity
     @Override
     public void onRestart()
     {
-        if (MyDeviceOwner.isDeviceOwner())
+        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
             toogleServiceModeVisibility();
 
         super.onRestart();
@@ -220,7 +225,7 @@ public class MainActivity extends Activity
     protected void onDestroy()
     {
         // Attention: MyDeviceOwner and dependent classes like MyReceiverManager can be null when access rights are denied
-        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner())
+        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
         {
             MyReceiverManager.unregisterAllReceiver();
         }
@@ -230,7 +235,7 @@ public class MainActivity extends Activity
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        if (!MyDeviceOwner.isDeviceOwner())
+        if (!MyDeviceOwner.isDeviceOwner() || !AppPermissions.hasBasePermissions(this))
             return super.onTouchEvent(event);
 
         if (!MyKiosk.isStrictKioskModeActive() &&

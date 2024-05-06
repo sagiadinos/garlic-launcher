@@ -69,10 +69,6 @@ public class AppPermissions
                 {
                     ma.recreate();
                 }
-                else
-                {
-                    ma.finish();
-                }
             }
         }
     }

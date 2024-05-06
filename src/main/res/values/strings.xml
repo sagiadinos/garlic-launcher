@@ -34,7 +34,8 @@
     <string name="config_wifi">Set WiFi</string>
     <string name="android_settings">Android Settings</string>
     <string name="set_content_url">Set Content Url</string>
-    <string name="no_device_owner">This app must be set as device owner to work</string>
+    <string name="no_device_owner">The launcher must be set as device owner to work</string>
+    <string name="no_basic_permissions">The launcher misses essential permissions</string>
     <string name="save_and_close">Save &amp; Close</string>
     <string name="own_back_button">Own Back Button</string>
     <string name="strict_kiosk_use">Strict kiosk use</string>
