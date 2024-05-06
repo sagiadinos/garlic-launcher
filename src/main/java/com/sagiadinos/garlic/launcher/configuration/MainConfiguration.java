@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class MainConfiguration
@@ -119,14 +120,64 @@ public class MainConfiguration
         Model.storeBoolean("has_daily_reboot", value);
     }
 
+    public void storeVolume(int value)
+    {
+        Model.storeInt("volume", value);
+    }
+
+    public int getVolume()
+    {
+        return Model.getInt("volume", 100);
+    }
+
+    public void storeBrightness(int value)
+    {
+        Model.storeInt("brightness", value);
+    }
+
+    public int getBrightness()
+    {
+        return Model.getInt("volume", 100);
+    }
+
+    public void storeRebootDays(Set<String> value)
+    {
+        Model.storeStringSet("reboot_days", value);
+    }
+
+    public Set<String> getRebootDays()
+    {
+        return Model.getStringSet("reboot_days");
+    }
+
+    public void storeActiveRebootDays(Set<String> value)
+    {
+        Model.storeStringSet("active_reboot_days", value);
+    }
+
+    public Set<String> getActiveRebootDays()
+    {
+        return Model.getStringSet("active_reboot_days");
+    }
+
     public String getRebootTime()
     {
       return Model.getString("reboot_time", "3:00");
     }
 
-    public void setRebootTime(String value)
+    public String getActiveRebootTime()
+    {
+        return Model.getString("active_reboot_time", "3:00");
+    }
+
+    public void storeRebootTime(String value)
     {
         Model.storeString("reboot_time", value);
+    }
+
+    public void storeActiveRebootTime(String value)
+    {
+        Model.storeString("active_reboot_time", value);
     }
 
     public boolean hasNoPlayerStartDelayAfterBoot()

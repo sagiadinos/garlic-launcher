@@ -34,7 +34,8 @@
     <string name="config_wifi">Set WiFi</string>
     <string name="android_settings">Android Settings</string>
     <string name="set_content_url">Set Content Url</string>
-    <string name="no_device_owner">This app must be set as device owner to work</string>
+    <string name="no_device_owner">The launcher must be set as device owner to work</string>
+    <string name="no_basic_permissions">The launcher misses essential permissions</string>
     <string name="save_and_close">Save &amp; Close</string>
     <string name="own_back_button">Own Back Button</string>
     <string name="strict_kiosk_use">Strict kiosk use</string>
@@ -59,7 +60,9 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
     <string name="reboot_after_install">Reboot after install</string>
-    <string name="toggle_daily_reboot">Daily reboot (Experimental): </string>
+    <string name="toggle_daily_reboot">Daily reboot: </string>
     <string name="reboot_time">&lt; %s</string>
     <string name="standby_mode">Standby Mode:</string>
+    <string name="discspace">DiscSpace</string>
+    <string name="ip">IP</string>
 </resources>

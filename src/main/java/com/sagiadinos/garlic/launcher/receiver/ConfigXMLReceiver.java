@@ -21,17 +21,21 @@ import java.util.Objects;
 
 public class ConfigXMLReceiver extends BroadcastReceiver
 {
-    Context ctx;
+    Context MyContext;
     NetworkData MyNetWorkData = null;
+    MainConfiguration MyMainConfiguration;
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        ctx = context;
         if (intent == null || intent.getAction() == null)
         {
             return;
         }
+
+        MyContext           = context;
+        MyMainConfiguration = new MainConfiguration(new SharedPreferencesModel(MyContext));
+
 
         File config_xml = new File(Objects.requireNonNull(intent.getStringExtra("config_path")));
         String task_id = "";
@@ -45,7 +49,7 @@ public class ConfigXMLReceiver extends BroadcastReceiver
             Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
             i.putExtra("command", "reboot");
             i.putExtra("task_id", task_id);
-            ctx.sendBroadcast(i);
+            MyContext.sendBroadcast(i);
         }
         else
         {
@@ -61,7 +65,7 @@ public class ConfigXMLReceiver extends BroadcastReceiver
         {
             // parse configFile first for Wifi content Url etc...
             MyNetWorkData                   = new NetworkData();
-            ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new MainConfiguration(new SharedPreferencesModel(ctx)));
+            ConfigXMLModel MyConfigXMLModel = new ConfigXMLModel(MyNetWorkData, new MainConfiguration(new SharedPreferencesModel(MyContext)));
             MyConfigXMLModel.parseConfigXml(MyConfigXMLModel.readConfigXml(file));
 
             if (!MyNetWorkData.getWifiSSID().isEmpty())
@@ -69,21 +73,12 @@ public class ConfigXMLReceiver extends BroadcastReceiver
                 configWiFi();
             }
 
-            if (MyConfigXMLModel.getVolume().contains("%"))
-            {
-                configAudioVolume(MyConfigXMLModel.getVolume());
-            }
-            // Todo: set time zone
+            MyMainConfiguration.storeRebootTime(MyConfigXMLModel.getRebootTime());
+            MyMainConfiguration.storeRebootDays(MyConfigXMLModel.getRebootDays());
+            MyMainConfiguration.storeVolume(MyConfigXMLModel.getVolume());
+            MyMainConfiguration.storeBrightness(MyConfigXMLModel.getBrightness());
 
-            // Todo: find a way to check if system app
-            // this works only when system app
-/*            if (MyConfigXMLModel.getBrightness().contains("%"))
-            {
-              //  int brightness = (int) (255f * convertPercent(MyConfigXMLModel.getBrightness()));
-               // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-               // Settings.System.putInt(ctx.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, brightness);
-            }
-*/
+
             ret = true;
         }
         catch (IOException e)
@@ -95,23 +90,9 @@ public class ConfigXMLReceiver extends BroadcastReceiver
 
     private void configWiFi()
     {
-        WiFi MyWiFi = new WiFi((WifiManager) ctx.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
+        WiFi MyWiFi = new WiFi((WifiManager) MyContext.getSystemService(Context.WIFI_SERVICE), new WifiConfiguration());
         MyWiFi.prepareConnection(MyNetWorkData);
         MyWiFi.connectToNetwork();
-    }
-
-    private void configAudioVolume(String percent)
-    {
-        AudioManager audio = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        assert audio != null;
-        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        int volume = (int) (maxVolume * convertPercent(percent));
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-    }
-
-    private float convertPercent(String value)
-    {
-        return Float.parseFloat(value.substring(0, value.length()-1)) / 100f;
     }
 
 }

@@ -17,7 +17,7 @@ repositories {
 
 android {
     namespace "com.sagiadinos.garlic.launcher"
-    compileSdk 33
+    compileSdk 34
     sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/Utilis'] } }
     defaultConfig {
         applicationId "com.sagiadinos.garlic.launcher"
@@ -69,12 +69,13 @@ android {
                 ]
         }
     }
+    compileSdkVersion 33
 }
 
 dependencies {
     implementation 'org.jetbrains:annotations-java5:24.1.0'
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.1')
-    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation('org.junit.jupiter:junit-jupiter:5.10.2')
+    testImplementation 'org.mockito:mockito-core:5.11.0'
     implementation 'com.android.support:support-annotations:28.0.0'
 }
 

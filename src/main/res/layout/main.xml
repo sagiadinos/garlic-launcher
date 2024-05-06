@@ -41,7 +41,6 @@
         android:id="@+id/tvAppVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="normal information"
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:textSize="14sp"
@@ -58,8 +57,9 @@
                 android:id="@+id/tvFreeDiscSpace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DiscSpace"
+                android:text="@string/discspace"
                 android:textSize="14sp"
+                android:visibility="gone"
                  />
 
             <TextView
@@ -67,7 +67,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:text="IP"
+                android:text="@string/ip"
+                android:visibility="gone"
                 />
     </LinearLayout>
 
@@ -130,5 +131,15 @@
             android:visibility="gone" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btForTest"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleTestButton"
+        android:text="Test (DeepStandBy)"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
 </LinearLayout>

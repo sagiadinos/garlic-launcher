@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class SharedPreferencesModel
 {
     private SharedPreferences pref;
@@ -75,6 +78,26 @@ public class SharedPreferencesModel
             error_text = e.getMessage();
         }
     }
+
+    public void storeStringSet(String param, Set<String> value)
+    {
+        try
+        {
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putStringSet(param, value);
+            commit(ed);
+        }
+        catch (GarlicLauncherException e)
+        {
+            error_text = e.getMessage();
+        }
+    }
+
+    public Set<String> getStringSet(String param)
+    {
+        return pref.getStringSet(param, new HashSet<>());
+    }
+
 
     public void storeBoolean(String param, boolean value)
     {

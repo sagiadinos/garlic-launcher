@@ -19,6 +19,7 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
+import android.Manifest;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,6 +29,8 @@ import android.os.Build;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Log;
+
+import com.sagiadinos.garlic.launcher.BuildConfig;
 
 
 /**
@@ -100,6 +103,16 @@ public class DeviceOwner
         MyDevicePolicyManager.clearUserRestriction(MyDeviceAdmin, UserManager.DISALLOW_FUN);
     }
 
+    public boolean grandPermissions(String permission)
+    {
+         return MyDevicePolicyManager.setPermissionGrantState(
+                MyDeviceAdmin,
+                LAUNCHER_PACKAGE_NAME,
+                permission,
+                DevicePolicyManager.PERMISSION_GRANT_STATE_GRANTED
+         );
+    }
+
     public boolean isLockTaskPermitted()
     {
         return MyDevicePolicyManager.isLockTaskPermitted(LAUNCHER_PACKAGE_NAME);
@@ -120,19 +133,13 @@ public class DeviceOwner
         dpm.lockNow();
     }
 
-    public static void setScreenBrightnessZero(DevicePolicyManager dpm, ComponentName da)
+    public static void setScreenBrightness(DevicePolicyManager dpm, ComponentName da, int value)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
-            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS, "0");
-        }
-    }
-
-    public static void setScreenBrightnessFull(DevicePolicyManager dpm, ComponentName da)
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        {
-            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS, "255");
+            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                    String.valueOf(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL));
+            dpm.setSystemSetting(da, Settings.System.SCREEN_BRIGHTNESS, String.valueOf(value));
         }
     }
 

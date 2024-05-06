@@ -4,26 +4,19 @@ import android.content.Context;
 
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
-public class BaseStandby implements StandByInterface
+public abstract class AbstractBaseStandby
 {
     protected MainConfiguration MyMainConfiguration;
     protected Context  MyCtx;
 
 
-
-    public BaseStandby(MainConfiguration myMainConfiguration, Context myCtx)
+    public AbstractBaseStandby(MainConfiguration myMainConfiguration, Context myCtx)
     {
         MyMainConfiguration = myMainConfiguration;
         MyCtx = myCtx;
     }
 
-    @Override
-    public void setSecondsToWakeUp(int seconds) {
+    public abstract void setSecondsToWakup(int seconds);
 
-    }
-
-    @Override
-    public void executeStandby() {
-
-    }
+    public abstract void executeStandby();
 }

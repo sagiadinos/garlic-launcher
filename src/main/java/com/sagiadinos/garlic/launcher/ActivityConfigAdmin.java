@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -48,9 +49,10 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValueChangeListener, TimePickerDialog.OnTimeSetListener
 {
@@ -61,6 +63,14 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
     CheckBox cbNoPlayerStartDelayAfterBoot;
     CheckBox cbActiveServicePassword;
     CheckBox cbToggleDailyReboot;
+    CheckBox cbToggleMondayReboot;
+    CheckBox cbToggleTuesdayReboot;
+    CheckBox cbToggleWednesdayReboot;
+    CheckBox cbToggleThursdayReboot;
+    CheckBox cbToggleFridayReboot;
+    CheckBox cbToggleSaturdayReboot;
+    CheckBox cbToggleSundayReboot;
+
     Spinner  viewStandbyMode;
     TextView editRebootTime;
     EditText editServicePassword;
@@ -85,6 +95,14 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         editContentUrl           = findViewById(R.id.editContentUrl);
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
         cbToggleDailyReboot      = findViewById(R.id.cbToggleDailyReboot);
+        cbToggleMondayReboot     = findViewById(R.id.cbToggleMondayReboot);
+        cbToggleTuesdayReboot    = findViewById(R.id.cbToggleTuesdayReboot);
+        cbToggleWednesdayReboot  = findViewById(R.id.cbToggleWednesdayReboot);
+        cbToggleThursdayReboot   = findViewById(R.id.cbToggleThursdayReboot);
+        cbToggleFridayReboot     = findViewById(R.id.cbToggleFridayReboot);
+        cbToggleSaturdayReboot   = findViewById(R.id.cbToggleSaturdayReboot);
+        cbToggleSundayReboot     = findViewById(R.id.cbToggleSundayReboot);
+
         viewStandbyMode          = findViewById(R.id.spinnerStandbyMode);
         List<String> items = new ArrayList<String>();
         for (MainConfiguration.STANDBY_MODE mode : MainConfiguration.STANDBY_MODE.values())
@@ -108,6 +126,7 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         cbRebootAfterInstall.setChecked(MyMainConfiguration.hasRebootAfterInstall());
         cbNoPlayerStartDelayAfterBoot = findViewById(R.id.cbNoPlayerStartDelayAfterBoot);
         cbNoPlayerStartDelayAfterBoot.setChecked(MyMainConfiguration.hasNoPlayerStartDelayAfterBoot());
+
         prepareOptionsVisibility();
    }
 
@@ -164,7 +183,7 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         reboot_time = hourOfDay + ":" + String.format("%02d", minute);
         String str = String.format(getString(R.string.reboot_time), reboot_time);
         editRebootTime.setText(str);
-        MyMainConfiguration.setRebootTime(reboot_time);
+        MyMainConfiguration.storeRebootTime(reboot_time);
     }
 
 
@@ -214,20 +233,81 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
 
     private void makeDailyRebootOptionVisible()
     {
+        editRebootTime.setVisibility(View.VISIBLE);
         String str = String.format(getString(R.string.reboot_time),  MyMainConfiguration.getRebootTime());
         editRebootTime.setText(str);
 
-        editRebootTime.setVisibility(View.VISIBLE);
+        Set<String> reboot_days = MyMainConfiguration.getRebootDays();
+        cbToggleMondayReboot.setVisibility(View.VISIBLE);
+        cbToggleTuesdayReboot.setVisibility(View.VISIBLE);
+        cbToggleWednesdayReboot.setVisibility(View.VISIBLE);
+        cbToggleThursdayReboot.setVisibility(View.VISIBLE);
+        cbToggleFridayReboot.setVisibility(View.VISIBLE);
+        cbToggleSaturdayReboot.setVisibility(View.VISIBLE);
+        cbToggleSundayReboot.setVisibility(View.VISIBLE);
+
+        cbToggleMondayReboot.setChecked(false);
+        cbToggleTuesdayReboot.setChecked(false);
+        cbToggleWednesdayReboot.setChecked(false);
+        cbToggleThursdayReboot.setChecked(false);
+        cbToggleFridayReboot.setChecked(false);
+        cbToggleSaturdayReboot.setChecked(false);
+        cbToggleSundayReboot.setChecked(false);
+        for (String element : reboot_days)
+        {
+            if (element.equals("1"))
+                cbToggleMondayReboot.setChecked(true);
+            if (element.equals("2"))
+                cbToggleTuesdayReboot.setChecked(true);
+            if (element.equals("3"))
+                cbToggleWednesdayReboot.setChecked(true);
+            if (element.equals("4"))
+                cbToggleThursdayReboot.setChecked(true);
+            if (element.equals("5"))
+                cbToggleFridayReboot.setChecked(true);
+            if (element.equals("6"))
+                cbToggleSaturdayReboot.setChecked(true);
+            if (element.equals("7"))
+                cbToggleSundayReboot.setChecked(true);
+        }
     }
 
     private void makeDailyRebootOptionInVisible()
     {
         editRebootTime.setVisibility(View.GONE);
+        cbToggleMondayReboot.setVisibility(View.GONE);
+        cbToggleTuesdayReboot.setVisibility(View.GONE);
+        cbToggleWednesdayReboot.setVisibility(View.GONE);
+        cbToggleThursdayReboot.setVisibility(View.GONE);
+        cbToggleFridayReboot.setVisibility(View.GONE);
+        cbToggleSaturdayReboot.setVisibility(View.GONE);
+        cbToggleSundayReboot.setVisibility(View.GONE);
     }
 
     private void storeDailyReboot()
     {
-        MyMainConfiguration.toggleDailyReboot(cbToggleDailyReboot.isChecked());
+        boolean is_reboot = cbToggleDailyReboot.isChecked();
+        Set<String> selectedDays = new HashSet<>();
+        if (is_reboot)
+        {
+            if (cbToggleMondayReboot.isChecked())
+                selectedDays.add("1");
+            if (cbToggleTuesdayReboot.isChecked())
+                selectedDays.add("2");
+            if (cbToggleWednesdayReboot.isChecked())
+                selectedDays.add("3");
+            if (cbToggleThursdayReboot.isChecked())
+                selectedDays.add("4");
+            if (cbToggleFridayReboot.isChecked())
+                selectedDays.add("5");
+            if (cbToggleSaturdayReboot.isChecked())
+                selectedDays.add("6");
+            if (cbToggleSundayReboot.isChecked())
+                selectedDays.add("7");
+        }
+
+        MyMainConfiguration.toggleDailyReboot(is_reboot);
+        MyMainConfiguration.storeRebootDays(selectedDays);
     }
 
     private void storeNewPlayerStartDelay()
