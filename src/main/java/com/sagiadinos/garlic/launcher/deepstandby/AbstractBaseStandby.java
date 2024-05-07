@@ -6,9 +6,11 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 public abstract class AbstractBaseStandby
 {
+    final int min_wakeup_seconds = 900;
+    int wakeup_seconds = min_wakeup_seconds;
+
     protected MainConfiguration MyMainConfiguration;
     protected Context  MyCtx;
-
 
     public AbstractBaseStandby(MainConfiguration myMainConfiguration, Context myCtx)
     {
@@ -16,7 +18,10 @@ public abstract class AbstractBaseStandby
         MyCtx = myCtx;
     }
 
-    public abstract void setSecondsToWakup(int seconds);
+    public void setSecondsToWakup(int seconds)
+    {
+        wakeup_seconds = Math.max(seconds, min_wakeup_seconds);
+    }
 
     public abstract void executeStandby();
 }

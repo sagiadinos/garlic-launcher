@@ -217,7 +217,7 @@ public class MainConfiguration
 
     public String getStandbyMode()
     {
-        return Model.getString("standby_mode");
+        return Model.getString("standby_mode", STANDBY_MODE.no_standby.toString());
     }
 
     public void setStandbyMode(String value)

@@ -9,17 +9,9 @@ import java.util.Calendar;
 
 public class ChristiansenPlayer extends AbstractBaseStandby
 {
-    final int min_wakeup_seconds = 241;
-    int wakeup_seconds = min_wakeup_seconds;
     public ChristiansenPlayer(MainConfiguration myMainConfiguration, Context myCtx)
     {
         super(myMainConfiguration, myCtx);
-    }
-
-    @Override
-    public void setSecondsToWakup(int seconds)
-    {
-        wakeup_seconds = Math.max(seconds, min_wakeup_seconds);
     }
 
     @Override

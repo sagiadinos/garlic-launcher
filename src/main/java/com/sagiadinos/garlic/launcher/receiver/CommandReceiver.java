@@ -57,7 +57,7 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOff()
     {
-        String standby_mode =MyMainConfiguration.getStandbyMode();
+        String standby_mode = MyMainConfiguration.getStandbyMode();
 
         if (standby_mode.equals(MainConfiguration.STANDBY_MODE.no_standby.toString()))
             return;

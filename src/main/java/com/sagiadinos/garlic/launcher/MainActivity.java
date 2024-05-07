@@ -483,11 +483,10 @@ public class MainActivity extends Activity
 
     public void handleTestButton(View view)
     {
-        StandbyFactory MyStandByFactory = new StandbyFactory(MyMainConfiguration, this);
-        AbstractBaseStandby MyDeepStandBy =  MyStandByFactory.determinePlayerModel();
-        if (MyDeepStandBy == null)
-            return;
-        MyDeepStandBy.executeStandby();
+        Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
+        i.putExtra("command", "screen_off");
+        i.putExtra("task_id", "app_installed");
+        sendBroadcast(i);
     }
 
     public void handleGarlicPlayerStartTimer(View view)
