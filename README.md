@@ -23,6 +23,7 @@ One solution is to root Android, but rooted devices are a potential security ris
 - Watchdog service checks if garlic-player is running
 - OS reboots
 - set screen off/on
+- set deep standby in supported devices
 - Support remote software updates with garlic player
 - Software updates via USB-Stick/SD-Card
 - Configuration via USB-Stick/SD-Card

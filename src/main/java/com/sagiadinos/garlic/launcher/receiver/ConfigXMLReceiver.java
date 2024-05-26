@@ -73,8 +73,6 @@ public class ConfigXMLReceiver extends BroadcastReceiver
                 configWiFi();
             }
 
-            MyMainConfiguration.storeRebootTime(MyConfigXMLModel.getRebootTime());
-            MyMainConfiguration.storeRebootDays(MyConfigXMLModel.getRebootDays());
             MyMainConfiguration.storeVolume(MyConfigXMLModel.getVolume());
             MyMainConfiguration.storeBrightness(MyConfigXMLModel.getBrightness());
 

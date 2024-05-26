@@ -18,9 +18,6 @@ import com.sagiadinos.garlic.launcher.helper.DeviceOwner;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 
-import java.util.Objects;
-
-
 public class CommandReceiver extends BroadcastReceiver
 {
     Intent MyIntent;
@@ -51,35 +48,14 @@ public class CommandReceiver extends BroadcastReceiver
                 break;
             case "screen_on": setScreenOn();
                 break;
+            case "deep_standby": setDeepStandBy();
+                break;
 
         }
     }
 
     private void setScreenOff()
     {
-        String standby_mode = MyMainConfiguration.getStandbyMode();
-
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.no_standby.toString()))
-            return;
-
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.deep.toString()))
-        {
-            // ToDo: Refactor this in a method
-            StandbyFactory MyStandByFactory   = new StandbyFactory(MyMainConfiguration, MyContext);
-            AbstractBaseStandby MyDeepStandBy =  MyStandByFactory.determinePlayerModel();
-            if (MyDeepStandBy == null)
-                return;
-
-            String            tmp = MyIntent.getStringExtra("seconds_to_wakeup");
-            if (tmp != null)
-                MyDeepStandBy.setSecondsToWakup(Integer.parseInt(tmp));
-            else
-                MyDeepStandBy.setSecondsToWakup(0);
-
-            MyDeepStandBy.executeStandby();
-            return;
-        }
-
         PowerManager MyPowerManager      = (PowerManager) MyContext.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock myWakeLock = MyPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Launcher:WakeLockTag");
         myWakeLock.acquire(2*24*60*60*1000L); // 2 days
@@ -89,14 +65,6 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void setScreenOn()
     {
-        String standby_mode =MyMainConfiguration.getStandbyMode();
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.no_standby.toString()))
-            return;
-
-        // Normally this should not happen, but to get sure
-        if (standby_mode.equals(MainConfiguration.STANDBY_MODE.deep.toString()))
-            return;
-
         if (MyMainConfiguration.isDeviceRooted())
         {
             ShellExecute MyShellExecute =  new ShellExecute(Runtime.getRuntime());
@@ -112,7 +80,24 @@ public class CommandReceiver extends BroadcastReceiver
             long triggerTime = System.currentTimeMillis() + 10000; // set alarm for 10 second
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, alarmIntent);
         }
+     }
 
+     private void setDeepStandBy()
+     {
+         String            test = MyIntent.getStringExtra("seconds_to_wakeup");
+         // ToDo: Refactor this in a method
+         StandbyFactory MyStandByFactory   = new StandbyFactory(MyMainConfiguration, MyContext);
+         AbstractBaseStandby MyDeepStandBy =  MyStandByFactory.determinePlayerModel();
+         if (MyDeepStandBy == null)
+             return;
+
+         String            tmp = MyIntent.getStringExtra("seconds_to_wakeup");
+         if (tmp != null)
+             MyDeepStandBy.setSecondsToWakup(Integer.parseInt(tmp));
+         else
+             MyDeepStandBy.setSecondsToWakup(0);
+
+         MyDeepStandBy.executeStandby();
      }
 
     private void reboot()
@@ -129,8 +114,6 @@ public class CommandReceiver extends BroadcastReceiver
                     (DevicePolicyManager) MyContext.getSystemService(Context.DEVICE_POLICY_SERVICE),
                     new ComponentName(MyContext, AdminReceiver.class)
             );
-
-
         }
     }
 }

@@ -50,16 +50,6 @@ public class MainConfiguration
 
     public void convertValues()
     {
-        // we delete use_device_standby and replace it with something better
-        if (Model.hasParameter("use_device_standby"))
-        {
-            boolean is_standby = Model.getBoolean("use_device_standby");
-            if (is_standby)
-                setStandbyMode(STANDBY_MODE.partially.toString());
-            else
-                setStandbyMode(STANDBY_MODE.no_standby.toString());
-            Model.removeParameter("use_device_standby");
-        }
     }
 
     public boolean isFirstStart()
@@ -110,16 +100,6 @@ public class MainConfiguration
         return Model.getBoolean("reboot_after_install", true);
     }
 
-    public boolean hasDailyReboot()
-    {
-        return Model.getBoolean("has_daily_reboot", false);
-    }
-
-    public void toggleDailyReboot(boolean value)
-    {
-        Model.storeBoolean("has_daily_reboot", value);
-    }
-
     public void storeVolume(int value)
     {
         Model.storeInt("volume", value);
@@ -138,46 +118,6 @@ public class MainConfiguration
     public int getBrightness()
     {
         return Model.getInt("volume", 100);
-    }
-
-    public void storeRebootDays(Set<String> value)
-    {
-        Model.storeStringSet("reboot_days", value);
-    }
-
-    public Set<String> getRebootDays()
-    {
-        return Model.getStringSet("reboot_days");
-    }
-
-    public void storeActiveRebootDays(Set<String> value)
-    {
-        Model.storeStringSet("active_reboot_days", value);
-    }
-
-    public Set<String> getActiveRebootDays()
-    {
-        return Model.getStringSet("active_reboot_days");
-    }
-
-    public String getRebootTime()
-    {
-      return Model.getString("reboot_time", "3:00");
-    }
-
-    public String getActiveRebootTime()
-    {
-        return Model.getString("active_reboot_time", "3:00");
-    }
-
-    public void storeRebootTime(String value)
-    {
-        Model.storeString("reboot_time", value);
-    }
-
-    public void storeActiveRebootTime(String value)
-    {
-        Model.storeString("active_reboot_time", value);
     }
 
     public boolean hasNoPlayerStartDelayAfterBoot()
@@ -215,21 +155,10 @@ public class MainConfiguration
         Model.storeBoolean("active_service_password", value);
     }
 
-    public String getStandbyMode()
-    {
-        return Model.getString("standby_mode", STANDBY_MODE.no_standby.toString());
-    }
-
-    public void setStandbyMode(String value)
-    {
-        Model.storeString("standby_mode", value);
-    }
-
     public boolean hasActiveServicePassword()
     {
         return Model.getBoolean("active_service_password");
     }
-
 
     public boolean isStrictKioskModeActive()
     {

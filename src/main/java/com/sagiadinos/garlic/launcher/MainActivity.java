@@ -21,7 +21,6 @@ package com.sagiadinos.garlic.launcher;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -47,9 +46,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
-import com.sagiadinos.garlic.launcher.deepstandby.AbstractBaseStandby;
-import com.sagiadinos.garlic.launcher.deepstandby.StandbyFactory;
-import com.sagiadinos.garlic.launcher.alarms.RebootHandler;
 import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.DiscSpace;
 import com.sagiadinos.garlic.launcher.helper.InfoLine;
@@ -65,11 +61,9 @@ import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.RootChecker;
 import com.sagiadinos.garlic.launcher.helper.Screen;
 import com.sagiadinos.garlic.launcher.helper.ShellExecute;
-import com.sagiadinos.garlic.launcher.helper.TaskExecutionReport;
 import com.sagiadinos.garlic.launcher.helper.VersionInformation;
 import com.sagiadinos.garlic.launcher.receiver.AdminReceiver;
 import com.sagiadinos.garlic.launcher.receiver.ReceiverManager;
-import com.sagiadinos.garlic.launcher.receiver.CommandReceiver;
 import com.sagiadinos.garlic.launcher.services.HUD;
 import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
@@ -95,7 +89,6 @@ public class MainActivity extends Activity
     private ActivityManager     MyActivityManager;
     private DiscSpace           MyDiscSpace  = null;
     private InfoLine            MyInfoLine   = null;
-    private RebootHandler MyAlarmHandler = null;
 
     @Override
     public void onRequestPermissionsResult(int request_code, @NonNull String[] permissions, @NonNull int[] grant_results)
@@ -201,7 +194,6 @@ public class MainActivity extends Activity
     {
         if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
         {
-            handleDailyReboot();
             if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
                 MyKiosk.pin();
 
@@ -261,31 +253,6 @@ public class MainActivity extends Activity
         }
 
         return super.onTouchEvent(event);
-    }
-
-    private void handleDailyReboot()
-    {
-        if (MyAlarmHandler == null)
-            MyAlarmHandler = new RebootHandler((AlarmManager) getSystemService(Context.ALARM_SERVICE), MyMainConfiguration, new Intent(this, CommandReceiver.class), this);
-
-        // proceed if an current alarm  has changed
-        if (MyMainConfiguration.hasDailyReboot() && MyAlarmHandler.isAlarmActive() && !MyAlarmHandler.hasChanged(MyMainConfiguration))
-            return;
-
-        // proceed if an alarm is set new
-        if (!MyMainConfiguration.hasDailyReboot() && !MyAlarmHandler.isAlarmActive())
-            return;
-
-        // delete previous alarms
-        if (MyAlarmHandler.isAlarmActive())
-            MyAlarmHandler.cancelAllAlarms();
-
-        // proceed if an alarm should be set
-        if (!MyMainConfiguration.hasDailyReboot())
-            return;
-
-        MyAlarmHandler.activateAllAlarms();
-
     }
 
     private void checkForNetWork()
