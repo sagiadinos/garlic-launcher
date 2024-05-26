@@ -23,12 +23,12 @@ One solution is to root Android, but rooted devices are a potential security ris
 - Watchdog service checks if garlic-player is running
 - OS reboots
 - set screen off/on
-- set deep standby in supported devices
+- deep standby for supported devices
 - Support remote software updates with garlic player
 - Software updates via USB-Stick/SD-Card
 - Configuration via USB-Stick/SD-Card
 - A second app can be opened
-- Tiny and resource efficient. The signed apk is under 50KB
+- Tiny and resource efficient. The signed apk is less than 80KB
 - automatic player download when network is active
 - Custom back button as overlay for some rooted images (explanation down)
 - Strict Kiosk Mode. (explanation down)
