@@ -37,7 +37,7 @@ public class ChristiansenPlayer extends AbstractBaseStandby
     private void setPowerOnTime()
     {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, wakeup_seconds);
+        calendar.add(Calendar.SECOND, wakeup_seconds + 10); // to prevent round errors
 
         String SET_POWERON_ACTION = "rk.android.turnontime.action";
         Intent intent_powerOn = new Intent(SET_POWERON_ACTION);

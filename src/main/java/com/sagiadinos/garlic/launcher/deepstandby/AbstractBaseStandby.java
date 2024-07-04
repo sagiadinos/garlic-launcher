@@ -6,7 +6,7 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 public abstract class AbstractBaseStandby
 {
-    final int min_wakeup_seconds = 900;
+    final int min_wakeup_seconds = 600;
     int wakeup_seconds = min_wakeup_seconds;
 
     protected MainConfiguration MyMainConfiguration;
