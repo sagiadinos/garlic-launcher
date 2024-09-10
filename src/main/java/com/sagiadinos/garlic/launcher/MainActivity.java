@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
@@ -137,33 +138,33 @@ public class MainActivity extends Activity
             return;
         }
 
-        // From here it is Device Owner check Permissions
-        MyAppPermissions = new AppPermissions(this, MyMainConfiguration);
-        if (!AppPermissions.hasBasePermissions(this))
-        {
-            MyAppPermissions.handleBasePermissions(new ShellExecute(Runtime.getRuntime()));
-        }
+        // at this point we are Device Owner, so, check permissions
+        MyAppPermissions = new AppPermissions(this, MyMainConfiguration, new ShellExecute(Runtime.getRuntime()));
+        if (!AppPermissions.hasAllPermissions(this))
+            MyAppPermissions.handleAllPermissions();
+
 
         // ATTENTION!
         // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
         // respectively a restart dramatically! e.g. when you close a player regular
         // continue only when permissions are granted
-        if (AppPermissions.hasBasePermissions(this))
+
+// temporary
+/*       if (AppPermissions.hasAllPermissions(this))
         {
-            MyAppPermissions.requestInstallPermission();
-            cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
+ */           cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
             cleanUp(Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath().replace("garlic.launcher","garlic.player"));
-        }
+ /*       }
         else
         {
             displayInformationText(getString(R.string.no_basic_permissions));
             return;
         }
-
+*/
         boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
         MyMainConfiguration.togglePlayerInstalled(is_player_installed);
         if (is_player_installed && !Installer.hasPlayerPermissions(this)
-                && MyAppPermissions.grantPlayerPermissions(new ShellExecute(Runtime.getRuntime())))
+                && MyAppPermissions.grantPlayerPermissions())
         {
             DeviceOwner.reboot(
                     (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
@@ -192,7 +193,7 @@ public class MainActivity extends Activity
       @Override
     protected void onResume()
     {
-        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
+        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasAllPermissions(this))
         {
             if (MyActivityManager.getLockTaskModeState() == ActivityManager.LOCK_TASK_MODE_NONE)
                 MyKiosk.pin();
@@ -207,7 +208,7 @@ public class MainActivity extends Activity
     @Override
     public void onRestart()
     {
-        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
+        if (MyDeviceOwner.isDeviceOwner() && AppPermissions.hasAllPermissions(this))
             toogleServiceModeVisibility();
 
         super.onRestart();
@@ -217,7 +218,7 @@ public class MainActivity extends Activity
     protected void onDestroy()
     {
         // Attention: MyDeviceOwner and dependent classes like MyReceiverManager can be null when access rights are denied
-        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner() && AppPermissions.hasBasePermissions(this))
+        if (MyDeviceOwner != null && MyDeviceOwner.isDeviceOwner() && AppPermissions.hasAllPermissions(this))
         {
             MyReceiverManager.unregisterAllReceiver();
         }
@@ -227,11 +228,11 @@ public class MainActivity extends Activity
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        if (!MyDeviceOwner.isDeviceOwner() || !AppPermissions.hasBasePermissions(this))
+        if (!MyDeviceOwner.isDeviceOwner() ||
+                (MyKiosk != null && MyKiosk.isStrictKioskModeActive()) /* || !AppPermissions.hasAllPermissions(this)*/)
             return super.onTouchEvent(event);
 
-        if (!MyKiosk.isStrictKioskModeActive() &&
-                event.getActionMasked() == MotionEvent.ACTION_DOWN &&
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN &&
                 MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
         {
             stopPlayerRestart();
@@ -521,7 +522,9 @@ public class MainActivity extends Activity
         {
             PlayerCountDown.cancel();
         }
-        btStartPlayer.setText(R.string.play);
+        // prevent crash if exit launcher without rights
+        if (btStartPlayer != null)
+            btStartPlayer.setText(R.string.play);
     }
 
     private void toogleServiceModeVisibility()

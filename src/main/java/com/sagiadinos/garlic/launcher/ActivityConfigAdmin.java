@@ -41,11 +41,11 @@ import android.widget.TimePicker;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.dialogs.NumberPickerDialog;
-import com.sagiadinos.garlic.launcher.dialogs.TimePickerDlg;
 import com.sagiadinos.garlic.launcher.helper.AppPermissions;
 import com.sagiadinos.garlic.launcher.helper.GarlicLauncherException;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
+import com.sagiadinos.garlic.launcher.helper.ShellExecute;
 import com.sagiadinos.garlic.launcher.services.HUD;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
             items.add(mode.toString());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        MyAppPermissions         = new AppPermissions(this, MyMainConfiguration);
+        MyAppPermissions         = new AppPermissions(this, MyMainConfiguration, new ShellExecute(Runtime.getRuntime()));
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());
         player_delay             = MyMainConfiguration.getPlayerStartDelay();
 

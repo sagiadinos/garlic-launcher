@@ -35,6 +35,8 @@ import com.sagiadinos.garlic.launcher.configuration.MainConfiguration;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  *  capsule permissions
  */
@@ -44,17 +46,20 @@ public class AppPermissions
     private static final String[] BASE_PERMISSIONS_LIST = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    };    private static final String TAG = "AppPermissions";
+    };
+    private static final String TAG = "AppPermissions";
 
     private String error_text;
 
     Activity MyActivity;
     MainConfiguration MyMainConfiguration;
+    ShellExecute  MyShellExecute;
 
-    public AppPermissions(Activity ma, MainConfiguration mc)
+    public AppPermissions(Activity ma, MainConfiguration mc, ShellExecute se)
     {
-        MyActivity = ma;
+        MyActivity          = ma;
         MyMainConfiguration = mc;
+        MyShellExecute      = se;
         error_text = "";
     }
 
@@ -64,8 +69,7 @@ public class AppPermissions
         {
             if (grant_results.length > 0)
             {
-                // Validate the permissions result
-                if (hasBasePermissions(ma))
+                if (hasAllPermissions(ma))
                 {
                     ma.recreate();
                 }
@@ -73,7 +77,45 @@ public class AppPermissions
         }
     }
 
-    public boolean grantPlayerPermissions(@NotNull ShellExecute MyShellExecute)
+    public static boolean hasAllPermissions(Activity ma)
+    {
+        if (!hasManifestPermission(ma, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            return false;
+
+        if (!hasManifestPermission(ma, Manifest.permission.READ_EXTERNAL_STORAGE))
+            return false;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+            return true;
+
+        if (!ma.getPackageManager().canRequestPackageInstalls())
+            return false;
+
+        return hasManifestPermission(ma, Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+    }
+
+    public void handleAllPermissions()
+    {
+        if (!hasManifestPermission(MyActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            handleOnePermission("WRITE_EXTERNAL_STORAGE");
+
+        if (!hasManifestPermission(MyActivity, Manifest.permission.READ_EXTERNAL_STORAGE))
+            handleOnePermission("READ_EXTERNAL_STORAGE");
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+            return;
+
+       // if (!hasManifestPermission(MyActivity, Manifest.permission.REQUEST_INSTALL_PACKAGES))
+          if (!MyActivity.getPackageManager().canRequestPackageInstalls())
+                handleOnePermission("REQUEST_INSTALL_PACKAGES");
+
+        if (!hasManifestPermission(MyActivity, Manifest.permission.MANAGE_EXTERNAL_STORAGE))
+            handleOnePermission("MANAGE_EXTERNAL_STORAGE");
+
+    }
+
+
+    public boolean grantPlayerPermissions()
     {
         if (!MyMainConfiguration.isDeviceRooted())
             return false;
@@ -81,45 +123,95 @@ public class AppPermissions
         String[] permissions = {"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"};
         String package_name = DeviceOwner.PLAYER_PACKAGE_NAME;
         error_text = "";
-        for (String perm : permissions)
+        for (String permission : permissions)
         {
-            if (!executeShell(MyShellExecute, package_name, perm))
+            if (!MyShellExecute.executeAsRoot("pm grant "+ DeviceOwner.PLAYER_PACKAGE_NAME +" android.permission." + permission))
             {
-                Log.w(TAG, "Device is rooted, but cannot grant permission "+ perm +" to media player:" + package_name);
+                Log.w(TAG, "Device is rooted, but cannot grant permission "+ permission +" to media player:" + package_name);
                 return false;
             }
         }
         return true;
     }
 
-    public static boolean hasBasePermissions(Activity ma)
-    {
-        int permissions = ma.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissions != PackageManager.PERMISSION_GRANTED)
-            return false;
-
-        permissions = ma.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        return permissions == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public void handleBasePermissions(ShellExecute MyShellExecute)
+    public void handleOnePermission(String permission)
     {
         if (MyMainConfiguration.isDeviceRooted())
         {
-            requestPermissionsByShell(MyShellExecute);
+            requestPermissionByShell(permission);
         }
         else
         {
-            requestBasePermissions();
+            requestPermissionByUser(permission);
+        }
+
+    }
+
+    public String getErrorText()
+    {
+        return error_text;
+    }
+
+    private void requestPermissionByShell(String permission)
+    {
+        error_text     = "";
+        boolean result = false;
+        switch (permission)
+        {
+            case "READ_EXTERNAL_STORAGE":
+            case "WRITE_EXTERNAL_STORAGE":
+            case "SYSTEM_ALERT_WINDOW":
+                result = MyShellExecute.executeAsRoot("pm grant "+ DeviceOwner.LAUNCHER_PACKAGE_NAME +" android.permission." + permission);
+                break;
+            case "REQUEST_INSTALL_PACKAGES":
+            case "MANAGE_EXTERNAL_STORAGE":
+               result = MyShellExecute.executeAsRoot("appops set --uid " + DeviceOwner.LAUNCHER_PACKAGE_NAME + " " + permission + " allow");
+               break;
+            default:
+                break;
+        }
+
+        if (!result)
+        {
+            error_text = "Add Permission: " + permission + " via Shell failed: " + MyShellExecute.getErrorText() + "\n";
+            Log.e(TAG, error_text);
         }
     }
 
-    public void requestInstallPermission()
+    private void requestPermissionByUser(String permission)
+    {
+        switch (permission)
+        {
+            case "READ_EXTERNAL_STORAGE":
+            case "WRITE_EXTERNAL_STORAGE":
+                requestBasePermissions();
+            break;
+            case "REQUEST_INSTALL_PACKAGES":
+                break;
+            case "MANAGE_EXTERNAL_STORAGE":
+                requestInstallPermissions();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public boolean verifyOverlayPermissions(Intent intent)
+    {
+        // Check for overlay permission. If not enabled, request for it.
+        if (MyMainConfiguration.isDeviceRooted() && !Settings.canDrawOverlays(MyActivity))
+        {
+            MyActivity.startActivityForResult(intent, 12);
+        }
+        return Settings.canDrawOverlays(MyActivity);
+    }
+
+    private void requestInstallPermissions()
     {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             return;
 
-        if(!Environment.isExternalStorageManager())
+     //   if(!Environment.isExternalStorageManager())
         {
             try
             {
@@ -137,49 +229,13 @@ public class AppPermissions
         }
     }
 
-
-    public String getErrorText()
+    private static boolean hasManifestPermission(Activity ma, String permission)
     {
-        return error_text;
-    }
-
-    public boolean verifyOverlayPermissions(Intent intent)
-    {
-        // Check for overlay permission. If not enabled, request for it.
-        if (MyMainConfiguration.isDeviceRooted() && !Settings.canDrawOverlays(MyActivity))
-        {
-            MyActivity.startActivityForResult(intent, 12);
-        }
-        return Settings.canDrawOverlays(MyActivity);
+        return  (ma.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
     }
 
     private void requestBasePermissions()
     {
         MyActivity.requestPermissions(BASE_PERMISSIONS_LIST, REQUEST_PERMISSIONS);
-    }
-
-    private void requestPermissionsByShell(ShellExecute MyShellExecute)
-    {
-        String[] permissions;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-            permissions = new String[]{"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW"};
-        else
-            permissions = new String[]{"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "SYSTEM_ALERT_WINDOW", "MANAGE_EXTERNAL_STORAGE"};
-
-        error_text = "";
-        for (String perm : permissions)
-        {
-            if (!executeShell(MyShellExecute, "com.sagiadinos.garlic.launcher", perm))
-            {
-                error_text = "Add Permission: " + perm + " via Shell failed: " + MyShellExecute.getErrorText() + "\n";
-                Log.e(TAG, error_text);
-                return;
-            }
-        }
-    }
-
-    private boolean executeShell(@NotNull ShellExecute MyShellExecute, String package_name, String permission)
-    {
-       return MyShellExecute.executeAsRoot("pm grant "+ package_name +" android.permission." + permission);
     }
 }

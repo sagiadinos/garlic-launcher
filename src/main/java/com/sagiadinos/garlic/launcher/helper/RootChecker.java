@@ -56,9 +56,9 @@ public class RootChecker
     private boolean detectTestKeys()
     {
         // as Android Studio Emulator images have a test-keys - string in kernel
-        if (BuildConfig.DEBUG)
+      /*  if (BuildConfig.DEBUG)
             return false;
-
+*/
         String buildTags = android.os.Build.TAGS;
         return buildTags != null && buildTags.contains("test-keys");
     }
