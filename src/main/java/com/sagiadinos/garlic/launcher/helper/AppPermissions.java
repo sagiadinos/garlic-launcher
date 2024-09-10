@@ -85,13 +85,18 @@ public class AppPermissions
         if (!hasManifestPermission(ma, Manifest.permission.READ_EXTERNAL_STORAGE))
             return false;
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            return true;
+
+        // Will return always false, when  minSdkVersion < 26
+        // https://developer.android.com/reference/android/content/pm/PackageManager.html#canRequestPackageInstalls()
+        if (!ma.getPackageManager().canRequestPackageInstalls()) // REQUEST_INSTALL_PACKAGES
+            return false;
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             return true;
 
-        if (!ma.getPackageManager().canRequestPackageInstalls())
-            return false;
-
-        return hasManifestPermission(ma, Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        return Environment.isExternalStorageManager(); // MANAGE_EXTERNAL_STORAGE
     }
 
     public void handleAllPermissions()
@@ -102,15 +107,19 @@ public class AppPermissions
         if (!hasManifestPermission(MyActivity, Manifest.permission.READ_EXTERNAL_STORAGE))
             handleOnePermission("READ_EXTERNAL_STORAGE");
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            return;
+
+        // Will return always false, when  minSdkVersion < 26
+        // https://developer.android.com/reference/android/content/pm/PackageManager.html#canRequestPackageInstalls()
+        if (!MyActivity.getPackageManager().canRequestPackageInstalls()) // REQUEST_INSTALL_PACKAGES
+            handleOnePermission("REQUEST_INSTALL_PACKAGES");
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             return;
 
-       // if (!hasManifestPermission(MyActivity, Manifest.permission.REQUEST_INSTALL_PACKAGES))
-          if (!MyActivity.getPackageManager().canRequestPackageInstalls())
-                handleOnePermission("REQUEST_INSTALL_PACKAGES");
-
-        if (!hasManifestPermission(MyActivity, Manifest.permission.MANAGE_EXTERNAL_STORAGE))
-            handleOnePermission("MANAGE_EXTERNAL_STORAGE");
+         if (!Environment.isExternalStorageManager()) // MANAGE_EXTERNAL_STORAGE
+                handleOnePermission("MANAGE_EXTERNAL_STORAGE");
 
     }
 
@@ -211,21 +220,18 @@ public class AppPermissions
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             return;
 
-     //   if(!Environment.isExternalStorageManager())
+        try
         {
-            try
-            {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                Uri uri = Uri.fromParts("package", MyActivity.getPackageName(), null);
-                intent.setData(uri);
-                MyActivity.startActivityForResult(intent, 100); // MANAGE_EXTERNAL_STORAGE_REQUEST_CODE
-            }
-            catch (Exception ex)
-            {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                MyActivity.startActivity(intent);
-            }
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package", MyActivity.getPackageName(), null);
+            intent.setData(uri);
+            MyActivity.startActivityForResult(intent, 100); // MANAGE_EXTERNAL_STORAGE_REQUEST_CODE
+        }
+        catch (Exception ex)
+        {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            MyActivity.startActivity(intent);
         }
     }
 

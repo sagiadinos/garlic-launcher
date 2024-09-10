@@ -143,13 +143,15 @@ public class MainActivity extends Activity
         if (!AppPermissions.hasAllPermissions(this))
             MyAppPermissions.handleAllPermissions();
 
-
         // ATTENTION!
         // Do not insert the rows below in a onStart -method, cause it will slow down an back to app
         // respectively a restart dramatically! e.g. when you close a player regular
         // continue only when permissions are granted
 
-// temporary
+// temporary getPackageManager().canRequestPackageInstalls() in AppPermissions.hasAllPermissions() always
+// returns false as we target Minimum API 25. Even in Android >= 8. With minimum API 26 in build.gradle it works as expected
+// Google make a big shit hole of Android
+
 /*       if (AppPermissions.hasAllPermissions(this))
         {
  */           cleanUp(Environment.getExternalStorageDirectory().getAbsolutePath());
@@ -161,6 +163,8 @@ public class MainActivity extends Activity
             return;
         }
 */
+
+
         boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
         MyMainConfiguration.togglePlayerInstalled(is_player_installed);
         if (is_player_installed && !Installer.hasPlayerPermissions(this)
