@@ -42,12 +42,12 @@ Garlic-launcher is tested also with Android 9 on a non-rooted consumer Tablet.
 
 ## Binary Download
 
-You can download latest signed build from our CI [here](https://garlic-player.com/downloads/ci-builds/latest_android_launcher.apk)
+You can download latest signed build from the [CI-Server](https://garlic-player.com/downloads/ci-builds/latest_android_launcher.apk)
 
 ## Installation
 
-[Installation-Guide](https://github.com/sagiadinos/garlic-launcher/wiki/Installation)
+[Installation-Guide](https://garlic-player.com/garlic-launcher/docs/installation/)
 
 ## Configuration
 
-[Settings-Guide](https://github.com/sagiadinos/garlic-launcher/wiki/Launcher_Settings)
+[Settings-Guide](https://garlic-player.com/garlic-launcher/docs/settings/)
