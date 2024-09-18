@@ -102,7 +102,7 @@ public class CommandReceiver extends BroadcastReceiver
 
     private void reboot()
     {
-       /* String task_id = "";
+        String task_id = "";
         if (MyIntent.getStringExtra("task_id") != null)
         {
             task_id = MyIntent.getStringExtra("task_id");
@@ -116,6 +116,6 @@ public class CommandReceiver extends BroadcastReceiver
             );
         }
 
-        */
+
     }
 }
