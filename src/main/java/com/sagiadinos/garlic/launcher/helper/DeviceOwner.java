@@ -145,12 +145,11 @@ public class DeviceOwner
 
     public static void reboot(DevicePolicyManager dpm, ComponentName da)
     {
-     /*   if (dpm != null && dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME))
+        if (dpm != null && dpm.isDeviceOwnerApp(LAUNCHER_PACKAGE_NAME))
         {
             dpm.reboot(da);
         }
 
-      */
     }
 
     public void addPersistentPreferredActivity()
