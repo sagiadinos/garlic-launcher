@@ -18,7 +18,7 @@ public class Screen
         display_height   = MyDisplayMetrics.heightPixels;
         display_width    = MyDisplayMetrics.widthPixels;
 
-        activate_x       = (int) (display_height * area_factor);
+        activate_y       = (int) (display_height * area_factor);
         activate_x       = (int) (display_width  * area_factor);
     }
 

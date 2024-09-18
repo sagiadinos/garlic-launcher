@@ -163,18 +163,16 @@ public class MainActivity extends Activity
             return;
         }
 */
-
-
         boolean is_player_installed = Installer.isMediaPlayerInstalled(this);
         MyMainConfiguration.togglePlayerInstalled(is_player_installed);
         if (is_player_installed && !Installer.hasPlayerPermissions(this)
                 && MyAppPermissions.grantPlayerPermissions())
         {
-            DeviceOwner.reboot(
+         /*   DeviceOwner.reboot(
                     (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE),
                     new ComponentName(this, AdminReceiver.class)
             );
-        }
+        */}
 
         // MyTaskExecutionReport = new TaskExecutionReport(Objects.requireNonNull(getExternalFilesDir("logs")).getAbsolutePath());
         MyKiosk = new KioskManager(MyDeviceOwner,

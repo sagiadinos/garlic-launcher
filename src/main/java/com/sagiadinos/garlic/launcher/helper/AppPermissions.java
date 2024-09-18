@@ -130,13 +130,12 @@ public class AppPermissions
             return false;
 
         String[] permissions = {"READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"};
-        String package_name = DeviceOwner.PLAYER_PACKAGE_NAME;
         error_text = "";
         for (String permission : permissions)
         {
             if (!MyShellExecute.executeAsRoot("pm grant "+ DeviceOwner.PLAYER_PACKAGE_NAME +" android.permission." + permission))
             {
-                Log.w(TAG, "Device is rooted, but cannot grant permission "+ permission +" to media player:" + package_name);
+                Log.w(TAG, "Device is rooted, but cannot grant permission "+ permission +" to media player:" + DeviceOwner.PLAYER_PACKAGE_NAME);
                 return false;
             }
         }
