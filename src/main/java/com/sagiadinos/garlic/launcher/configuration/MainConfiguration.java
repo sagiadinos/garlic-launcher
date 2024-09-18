@@ -97,7 +97,7 @@ public class MainConfiguration
 
     public boolean hasRebootAfterInstall()
     {
-        return Model.getBoolean("reboot_after_install", true);
+        return Model.getBoolean("reboot_after_install", false);
     }
 
     public void storeVolume(int value)
