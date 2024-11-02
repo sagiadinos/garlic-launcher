@@ -94,7 +94,6 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         player_delay             = MyMainConfiguration.getPlayerStartDelay();
 
         String str = String.format(getString(R.string.start_delay_text), String.valueOf(player_delay));
-
         editPlayerStartDelay.setText(str);
 
         cbRebootAfterInstall          = findViewById(R.id.cbRebootAfterInstall);
@@ -150,19 +149,21 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         prepareVisibilityOfEditServicePassword(cbActiveServicePassword.isChecked());
     }
 
-
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1)
     {
         player_delay = i;
+        String str = String.format(getString(R.string.start_delay_text), String.valueOf(i));
+        editPlayerStartDelay.setText(str);
     }
 
     public void onClickPlayerStartDelay(View view)
     {
         NumberPickerDialog newFragment = new NumberPickerDialog();
         newFragment.setValueChangeListener(this);
-        newFragment.show(getFragmentManager(), "number picker");
+        newFragment.show(getFragmentManager(), "Select a start delay.");
     }
+
 
     private void storeNewPlayerStartDelay()
     {
