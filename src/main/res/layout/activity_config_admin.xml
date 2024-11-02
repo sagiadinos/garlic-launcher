@@ -32,13 +32,12 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:paddingVertical="20dp"
-        android:paddingHorizontal="10dp">
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/textViewInformation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:ems="10"
             android:textColor="#FFFFFF" />
 
@@ -48,6 +47,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
+            android:minHeight="48dp"
             android:text="@string/own_back_button"
             android:textColor="#FFFFFF" />
     
@@ -64,6 +64,7 @@
                 android:focusable="true"
                 android:onClick="onServicePassWordClicked"
                 android:text="@string/active_service_password"
+                android:minHeight="48dp"
                 android:textColor="#FFFFFF" />
     
             <EditText
@@ -71,6 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:minHeight="48dp"
                 android:accessibilityTraversalAfter="@id/cbActiveServicePassword"
                 android:ems="10"
                 android:hint="@string/service_password"
@@ -84,6 +86,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
+            android:minHeight="48dp"
             android:text="@string/reboot_after_install"
             android:textColor="#FFFFFF" />
 
@@ -92,9 +95,9 @@
             android:id="@+id/cbNoPlayerStartDelayAfterBoot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="11dp"
             android:clickable="true"
             android:focusable="true"
+            android:minHeight="48dp"
             android:text="@string/no_player_start_delay_after_booting"
             android:textColor="#FFFFFF" />
 
@@ -102,13 +105,16 @@
             android:id="@+id/editPlayerStartDelay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
             android:text="@string/start_delay_text"
             android:ems="10"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:textColor="#FFFFFF"
             android:onClick="onClickPlayerStartDelay"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            tools:ignore="RtlSymmetry" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,25 +134,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
+                android:minHeight="48dp"
                 android:text=""
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:textColor="#000000" />
         </LinearLayout>
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-    
+
             <Button
                 android:id="@+id/btSave"
+                style="@android:style/Widget.DeviceDefault.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="saveAndClose"
                 android:text="@string/save_and_close" />
-    
+
             <Button
                 android:id="@+id/btClose"
+                style="@android:style/Widget.DeviceDefault.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="closeActivity"
