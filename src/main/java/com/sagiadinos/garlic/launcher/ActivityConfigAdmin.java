@@ -21,10 +21,8 @@ package com.sagiadinos.garlic.launcher;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -35,9 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.sagiadinos.garlic.launcher.configuration.SharedPreferencesModel;
 import com.sagiadinos.garlic.launcher.dialogs.NumberPickerDialog;
@@ -83,12 +79,11 @@ public class ActivityConfigAdmin extends Activity implements NumberPicker.OnValu
         tvInformation            = findViewById(R.id.textViewInformation);
         editContentUrl           = findViewById(R.id.editContentUrl);
         editPlayerStartDelay     = findViewById(R.id.editPlayerStartDelay);
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
         for (MainConfiguration.STANDBY_MODE mode : MainConfiguration.STANDBY_MODE.values())
         {
             items.add(mode.toString());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         MyAppPermissions         = new AppPermissions(this, MyMainConfiguration, new ShellExecute(Runtime.getRuntime()));
         editContentUrl.setText(MyMainConfiguration.getSmilIndex());
         player_delay             = MyMainConfiguration.getPlayerStartDelay();
