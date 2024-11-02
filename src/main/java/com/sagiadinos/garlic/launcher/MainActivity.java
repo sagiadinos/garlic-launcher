@@ -427,9 +427,10 @@ public class MainActivity extends Activity
             return;
         }
         if (is_countdown_running)
-        {
             return;
-        }
+
+        if (PlayerCountDown != null)
+            return;
 
         int start_delay = MyMainConfiguration.getPlayerStartDelay();
         PlayerCountDown      = new CountDownTimer(start_delay * 1000L, 1000)
@@ -444,6 +445,7 @@ public class MainActivity extends Activity
             {
                 btStartPlayer.setText(R.string.play);
                 is_countdown_running = false;
+                PlayerCountDown      = null;
 
                 startGarlicPlayerInstantly(null);
             }
@@ -519,10 +521,11 @@ public class MainActivity extends Activity
     {
         has_second_app_started = false;
         has_player_started     = false;
-        is_countdown_running   = false;
         if (PlayerCountDown != null)
         {
             PlayerCountDown.cancel();
+            PlayerCountDown      = null;
+            is_countdown_running = false;
         }
         // prevent crash if exit launcher without rights
         if (btStartPlayer != null)
