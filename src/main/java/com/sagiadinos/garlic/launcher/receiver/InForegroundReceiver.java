@@ -68,9 +68,8 @@ public class InForegroundReceiver extends BroadcastReceiver
         // that means the player was closed consciously and the user wants to stay
         // in a launcher activity (waiting or for configuration)
         // => in this case do nothing!
-        boolean has_started = MyActivity.hasPlayerStarted();
-        boolean has_2nd_app_started = MyActivity.hasSecondAppStarted();
-        if (has_started || has_2nd_app_started)
+        boolean is_playing = MyActivity.isPlayerPlaying();
+        if (is_playing && !MyActivity.hasSecondAppStarted())
         {
             MyActivity.startGarlicPlayerInstantly(null);
         }

@@ -69,38 +69,31 @@ public class InfoLine extends ConnectivityManager.NetworkCallback
         setIPText("");
     }
 
-    public void displayAppInformation()
-    {
-        final String value = "Model: " + android.os.Build.MODEL + " \n Launcher: " +
-                MyVersionInformation.forLauncher() +
-                " | Player: " + MyVersionInformation.forPlayer() +
-                " | UUID: " + MyMainConfiguration.getUUID();
+    public void displayAppInformation() {
+        // calculate in background
+        new Thread(() -> {
+            final String value = "Model: " + android.os.Build.MODEL + " \n Launcher: " +
+                    MyVersionInformation.forLauncher() +
+                    " | Player: " + MyVersionInformation.forPlayer() +
+                    " | UUID: " + MyMainConfiguration.getUUID();
 
-        MyActivity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tvAppVersion.setText(value);
-            }
-        });
+            // UI-Update in main thread
+            MyActivity.runOnUiThread(() -> tvAppVersion.setText(value));
+        }).start();
     }
+
 
     public void refreshFreeDiscSpace()
     {
-        MyDiscSpace.refresh();
-        final String value ="Free: " + MyDiscSpace.getFreePercent()  +" %";
+        // calculate in background
+        new Thread(() -> {
+            MyDiscSpace.refresh();
+            final String value = "Free: " + MyDiscSpace.getFreePercent() + " %";
 
-        MyActivity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tvFreeDiscSpace.setText(value);
-            }
-        });
+            // UI-Update in main thread
+            MyActivity.runOnUiThread(() -> tvFreeDiscSpace.setText(value));
+        }).start();
     }
-
 
 
     private void setIPText(final String ip)

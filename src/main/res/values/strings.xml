@@ -26,7 +26,8 @@
     <string name="unpin_app">Unpin App</string>
     <string name="pin_app">Pin App</string>
     <string name="count_down">Cancel autoplay in %1$ss</string>
-    <string name="no_garlic_no_network">No Player and No Network - Install Digital Signage Player via USB or Activate a Network!</string>
+    <string name="no_garlic">No player: Install Digital Signage Player via USB or network.</string>
+    <string name="no_network">No Network: Activate a network.</string>
     <string name="download_player_in_progress">Try downloading Digital Signage Player - Please wait!</string>
     <string name="install_player_in_progress">Install Digital Signage Player - Please wait!</string>
     <string name="config_launcher">Launcher Setting</string>

@@ -23,13 +23,13 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
@@ -38,6 +38,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -73,9 +74,14 @@ import java.util.Objects;
 
 public class MainActivity extends Activity
 {
+    public enum PlayerState {
+        STOPPED,
+        WAITING,
+        PLAYING
+    }
+    private PlayerState current_player_state = PlayerState.STOPPED;
+
     private boolean        has_second_app_started = false;
-    private boolean        has_player_started     = false;
-    private boolean        is_countdown_running   = false;
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
@@ -187,9 +193,8 @@ public class MainActivity extends Activity
         MyReceiverManager = new ReceiverManager(this);
         MyReceiverManager.registerAllReceiver();
         initButtonViews();
-        startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
         checkForInstalledPlayer();
-        checkForNetWork();
+        checkForNetwork();
     }
 
       @Override
@@ -230,63 +235,111 @@ public class MainActivity extends Activity
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        if (!MyDeviceOwner.isDeviceOwner() ||
-                (MyKiosk != null && MyKiosk.isStrictKioskModeActive()) /* || !AppPermissions.hasAllPermissions(this)*/)
+        if (shouldIgnoreTouchEvent())
             return super.onTouchEvent(event);
 
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN &&
-                MyScreen.isEventInPermitUIArea((int)event.getX(), (int)event.getY()))
+        if (isTouchInPermitArea(event))
         {
-            stopPlayerRestart();
-            stopLockTask();
-
-            // start other Launcher Activity
-            ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
-
-            assert resolveInfo != null;
-            ComponentName name=new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-            Intent i=new Intent(Intent.ACTION_MAIN);
-
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            i.setComponent(name);
-
-            startActivity(i);
+            stopPlayerAndExitKioskMode();
+            launchOtherLauncher();
         }
 
         return super.onTouchEvent(event);
     }
 
-    private void checkForNetWork()
+    private boolean shouldIgnoreTouchEvent()
     {
+        return !MyDeviceOwner.isDeviceOwner() ||
+                (MyKiosk != null && MyKiosk.isStrictKioskModeActive());
+    }
+
+    private boolean isTouchInPermitArea(MotionEvent event)
+    {
+        return event.getActionMasked() == MotionEvent.ACTION_DOWN &&
+                MyScreen.isEventInPermitUIArea((int) event.getX(), (int) event.getY());
+    }
+
+    private void stopPlayerAndExitKioskMode()
+    {
+        stopPlayerRestart();
+        stopLockTask();
+    }
+
+    private void launchOtherLauncher()
+    {
+        ResolveInfo resolveInfo = Installer.determineOtherLauncherPackagename(getPackageManager());
+        if (resolveInfo == null)
+        {
+            Log.e("Launcher", "Other launcher package not found");
+            return;
+        }
+
+        ComponentName name = new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        intent.setComponent(name);
+
+        try
+        {
+            startActivity(intent);
+        }
+        catch (ActivityNotFoundException e)
+        {
+            Log.e("Launcher", "Launcher activity not found", e);
+        }
+
+    }
+
+    private void checkForNetwork()
+    {
+        initUIElements();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null)
+        {
+            Log.e("NetworkCheck", "ConnectivityManager not available");
+            return;
+        }
+
+        initInfoLine();
+        connectivityManager.registerDefaultNetworkCallback(MyInfoLine);
+    }
+
+    private void initUIElements() {
         TextView tvAppVersion = findViewById(R.id.tvAppVersion);
         TextView tvFreeDiscSpace = findViewById(R.id.tvFreeDiscSpace);
         TextView tvIP = findViewById(R.id.tvIP);
 
         tvIP.setVisibility(View.VISIBLE);
         tvFreeDiscSpace.setVisibility(View.VISIBLE);
+    }
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        VersionInformation MyVersionInformation = new VersionInformation(this);
-        MyInfoLine = new InfoLine(this, MyVersionInformation, MyMainConfiguration, MyDiscSpace, tvAppVersion, tvFreeDiscSpace, tvIP);
+    private void initInfoLine()
+    {
+        TextView tvAppVersion = findViewById(R.id.tvAppVersion);
+        TextView tvFreeDiscSpace = findViewById(R.id.tvFreeDiscSpace);
+        TextView tvIP = findViewById(R.id.tvIP);
+
+        VersionInformation myVersionInformation = new VersionInformation(this);
+        MyInfoLine = new InfoLine(this, myVersionInformation, MyMainConfiguration, MyDiscSpace, tvAppVersion, tvFreeDiscSpace, tvIP);
         MyInfoLine.displayAppInformation();
         MyInfoLine.refreshFreeDiscSpace();
-        assert connectivityManager != null;
-        connectivityManager.registerDefaultNetworkCallback(MyInfoLine);
     }
+
 
     private void checkForPlayerDownload()
     {
-        if (!BuildConfig.DEBUG)
-        {
+        if (!BuildConfig.DEBUG) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            ProgressBar DownloadProgressBar = findViewById(R.id.progressDownload);
-            DownloadProgressBar.setVisibility(View.VISIBLE);
-            DownloadProgressBar.setProgress(0);
+            ProgressBar downloadProgressBar = findViewById(R.id.progressDownload);
+            downloadProgressBar.setVisibility(View.VISIBLE);
+            downloadProgressBar.setProgress(0);
 
-            assert connectivityManager != null;
-            connectivityManager.registerDefaultNetworkCallback(new PlayerDownloader(this, DownloadProgressBar, tvInformation));
+            if (connectivityManager != null)
+                connectivityManager.registerDefaultNetworkCallback(new PlayerDownloader(this, downloadProgressBar, tvInformation));
+            else
+                displayInformationText(getString(R.string.no_network));
         }
     }
 
@@ -299,7 +352,7 @@ public class MainActivity extends Activity
         }
 
         checkForPlayerDownload();
-        displayInformationText(getString(R.string.no_garlic_no_network));
+        displayInformationText(getString(R.string.no_garlic));
    }
 
     private void initButtonViews()
@@ -350,9 +403,14 @@ public class MainActivity extends Activity
         return has_second_app_started;
     }
 
-    public boolean hasPlayerStarted()
+    public void setPlayerStatus(PlayerState state)
     {
-        return has_player_started;
+        current_player_state = state;
+    }
+
+    public boolean isPlayerPlaying()
+    {
+        return current_player_state == PlayerState.PLAYING;
     }
 
     public void toggleServiceMode(View view)
@@ -419,32 +477,33 @@ public class MainActivity extends Activity
     public void startGarlicPlayerDelayed()
     {
         has_second_app_started = false;
-        has_player_started     = false;
+        stopService(new Intent(this, WatchDogService.class));
 
         if (MyMainConfiguration.getSmilIndex() == null)
         {
             btStartPlayer.setText(R.string.play);
             return;
         }
-        if (is_countdown_running)
+
+        if (current_player_state == PlayerState.PLAYING || current_player_state == PlayerState.WAITING)
             return;
 
         if (PlayerCountDown != null)
             return;
 
         int start_delay = MyMainConfiguration.getPlayerStartDelay();
+        current_player_state = PlayerState.WAITING;
         PlayerCountDown      = new CountDownTimer(start_delay * 1000L, 1000)
         {
             public void onTick(long millisUntilFinished)
             {
                 btStartPlayer.setText(getString(R.string.count_down, String.valueOf(millisUntilFinished / 1000)));
-                is_countdown_running = true;
+                current_player_state = PlayerState.WAITING;
             }
 
             public void onFinish()
             {
                 btStartPlayer.setText(R.string.play);
-                is_countdown_running = false;
                 PlayerCountDown      = null;
 
                 startGarlicPlayerInstantly(null);
@@ -491,16 +550,17 @@ public class MainActivity extends Activity
     public void startGarlicPlayerInstantly(View view)
     {
         has_second_app_started = false;
-        has_player_started     = true;
         MyMainConfiguration.toggleJustBooted(false);
         NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
+        current_player_state   = PlayerState.PLAYING;
+        startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
     public void startSecondApp(String package_name)
     {
         has_second_app_started = true;
-        has_player_started     = false;
+        current_player_state   = PlayerState.STOPPED;
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
         startApp(package_name);
@@ -520,12 +580,11 @@ public class MainActivity extends Activity
     private void stopPlayerRestart()
     {
         has_second_app_started = false;
-        has_player_started     = false;
+        current_player_state   = PlayerState.STOPPED;
         if (PlayerCountDown != null)
         {
             PlayerCountDown.cancel();
             PlayerCountDown      = null;
-            is_countdown_running = false;
         }
         // prevent crash if exit launcher without rights
         if (btStartPlayer != null)

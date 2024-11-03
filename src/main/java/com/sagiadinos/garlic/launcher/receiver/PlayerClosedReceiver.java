@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
+import com.sagiadinos.garlic.launcher.services.WatchDogService;
 
 /**
  * Needed when a Player closed regularly via exit.
@@ -56,6 +57,7 @@ public class PlayerClosedReceiver extends BroadcastReceiver
         {
             return;
         }
+        MyActivity.setPlayerStatus(MainActivity.PlayerState.STOPPED);
         MyActivity.startGarlicPlayerDelayed();
     }
 }

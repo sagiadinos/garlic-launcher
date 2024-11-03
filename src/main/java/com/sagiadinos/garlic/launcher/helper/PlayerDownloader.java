@@ -64,7 +64,7 @@ public class PlayerDownloader extends ConnectivityManager.NetworkCallback
     @Override
     public void onLost(@NotNull Network network)
     {
-        setInformationText(tvInformation, MyActivity.getString(R.string.no_garlic_no_network));
+        setInformationText(tvInformation, MyActivity.getString(R.string.no_network));
     }
 
     private void startPlayerDownload()

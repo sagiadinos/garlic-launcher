@@ -74,4 +74,14 @@ public class WatchDogService extends Service
         return START_STICKY;
     }
 
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        // delete handler
+        if (handler != null && runnable != null)
+            handler.removeCallbacks(runnable);
+    }
+
 }
