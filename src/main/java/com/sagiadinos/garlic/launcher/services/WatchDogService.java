@@ -35,6 +35,9 @@ public class WatchDogService extends Service
     public static Runnable runnable = null;
     public GarlicLauncherApplication MyApplication;
 
+    public final long delay = 5000;
+    public final long post_delay = 8000;
+
     @Override
     public void onCreate()
     {
@@ -45,7 +48,7 @@ public class WatchDogService extends Service
         {
             public void run()
             {
-                handler.postDelayed(runnable, 4000);
+                handler.postDelayed(runnable, delay);
 
                 // if the Launcher is in Foreground something could be wrong, so we need
                 // to examine in InForegroundReceiver
@@ -59,7 +62,7 @@ public class WatchDogService extends Service
 
         };
 
-        handler.postDelayed(runnable, 8000);
+        handler.postDelayed(runnable, post_delay);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class WatchDogService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startid)
     {
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
