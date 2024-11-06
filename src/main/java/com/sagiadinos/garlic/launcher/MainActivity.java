@@ -52,6 +52,7 @@ import com.sagiadinos.garlic.launcher.helper.CleanUp;
 import com.sagiadinos.garlic.launcher.helper.DiscSpace;
 import com.sagiadinos.garlic.launcher.helper.InfoLine;
 import com.sagiadinos.garlic.launcher.helper.Installer;
+import com.sagiadinos.garlic.launcher.helper.LauncherCountDownTimer;
 import com.sagiadinos.garlic.launcher.helper.NavigationBar;
 import com.sagiadinos.garlic.launcher.configuration.PasswordHasher;
 import com.sagiadinos.garlic.launcher.helper.PlayerDownloader;
@@ -85,7 +86,7 @@ public class MainActivity extends Activity
     private Button         btToggleServiceMode = null;
     private Button         btStartPlayer = null;
     private TextView       tvInformation   = null;
-    private CountDownTimer      PlayerCountDown        = null;
+    private LauncherCountDownTimer PlayerCountDown        = null;
     private DeviceOwner         MyDeviceOwner          = null;
     private MainConfiguration   MyMainConfiguration = null;
     private AppPermissions      MyAppPermissions;
@@ -186,6 +187,7 @@ public class MainActivity extends Activity
                 this,
                 MyMainConfiguration
         );
+        PlayerCountDown = new LauncherCountDownTimer(this);
 
         MyKiosk.pin();
         MyDeviceOwner.determinePermittedLockTaskPackages("");
@@ -474,42 +476,23 @@ public class MainActivity extends Activity
         }
     }
 
+    public void setBtStartPlayerText(String s)
+    {
+        btStartPlayer.setText(s);
+    }
+
     public void startGarlicPlayerDelayed()
     {
-        has_second_app_started = false;
-        stopService(new Intent(this, WatchDogService.class));
-
         if (MyMainConfiguration.getSmilIndex() == null)
         {
             btStartPlayer.setText(R.string.play);
             return;
         }
 
-        if (current_player_state == PlayerState.PLAYING || current_player_state == PlayerState.WAITING)
-            return;
-
-        if (PlayerCountDown != null)
-            return;
-
-        int start_delay = MyMainConfiguration.getPlayerStartDelay();
         current_player_state = PlayerState.WAITING;
-        PlayerCountDown      = new CountDownTimer(start_delay * 1000L, 1000)
-        {
-            public void onTick(long millisUntilFinished)
-            {
-                btStartPlayer.setText(getString(R.string.count_down, String.valueOf(millisUntilFinished / 1000)));
-                current_player_state = PlayerState.WAITING;
-            }
+        PlayerCountDown.setCountDown(MyMainConfiguration.getPlayerStartDelay() * 1000L, 1000);
+        PlayerCountDown.start();
 
-            public void onFinish()
-            {
-                btStartPlayer.setText(R.string.play);
-                PlayerCountDown      = null;
-
-                startGarlicPlayerInstantly(null);
-            }
-
-        }.start();
     }
 
     public void handleTestButton(View view)
@@ -549,11 +532,12 @@ public class MainActivity extends Activity
 
     public void startGarlicPlayerInstantly(View view)
     {
+        PlayerCountDown.cancel();
         has_second_app_started = false;
         MyMainConfiguration.toggleJustBooted(false);
         NavigationBar.hide(this, MyMainConfiguration, new Intent(this, HUD.class));
-        current_player_state   = PlayerState.PLAYING;
         startService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
+        current_player_state   = PlayerState.PLAYING;
         startApp(DeviceOwner.PLAYER_PACKAGE_NAME);
     }
 
@@ -563,6 +547,7 @@ public class MainActivity extends Activity
         current_player_state   = PlayerState.STOPPED;
         NavigationBar.show(this, MyMainConfiguration, new Intent(this, HUD.class));
         MyDeviceOwner.determinePermittedLockTaskPackages(package_name);
+        stopService(new Intent(this, WatchDogService.class)); // this is ok no nesting or leaks
         startApp(package_name);
     }
 
@@ -579,15 +564,11 @@ public class MainActivity extends Activity
 
     private void stopPlayerRestart()
     {
-        has_second_app_started = false;
         current_player_state   = PlayerState.STOPPED;
-        if (PlayerCountDown != null)
-        {
-            PlayerCountDown.cancel();
-            PlayerCountDown      = null;
-        }
-        // prevent crash if exit launcher without rights
-        if (btStartPlayer != null)
+        stopService(new Intent(this, WatchDogService.class));
+        PlayerCountDown.cancel();
+
+        if (btStartPlayer != null) // prevent crash if exit launcher without rights
             btStartPlayer.setText(R.string.play);
     }
 
