@@ -31,8 +31,6 @@ import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-
 
 import android.os.Environment;
 import android.os.StatFs;
@@ -408,10 +406,12 @@ public class MainActivity extends Activity
     public void setPlayerStatus(PlayerState state)
     {
         current_player_state = state;
+        Log.d("PlayerStatus", "Current state set to: " + current_player_state);
     }
 
     public boolean isPlayerPlaying()
     {
+        Log.d("PlayerStatus", "Checking if player is playing. Current state: " + current_player_state);
         return current_player_state == PlayerState.PLAYING;
     }
 
@@ -497,11 +497,26 @@ public class MainActivity extends Activity
 
     public void handleTestButton(View view)
     {
-        Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
+/*        Intent i = new Intent("com.sagiadinos.garlic.launcher.receiver.CommandReceiver");
         i.putExtra("command", "screen_off");
         i.putExtra("task_id", "app_installed");
         sendBroadcast(i);
+ */
+        // start an app
+
+        startApp("com.google.android.apps.maps");
     }
+
+    public void stopPlayer()
+    {
+        current_player_state   = PlayerState.STOPPED;
+        stopService(new Intent(this, WatchDogService.class));
+
+        if (btStartPlayer != null) // prevent crash if exit launcher without rights
+            btStartPlayer.setText(R.string.play);
+    }
+
+
 
     public void handleGarlicPlayerStartTimer(View view)
     {

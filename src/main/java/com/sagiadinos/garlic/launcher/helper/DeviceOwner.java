@@ -19,10 +19,8 @@
 
 package com.sagiadinos.garlic.launcher.helper;
 
-import android.Manifest;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -70,7 +68,6 @@ public class DeviceOwner
      */
     public boolean makeDeviceOwner(ShellExecute MyShellExecute)
     {
-
        if (!MyShellExecute.executeAsRoot("dpm set-device-owner com.sagiadinos.garlic.launcher/.receiver.AdminReceiver"))
        {
            Log.e(TAG, MyShellExecute.getErrorText());

@@ -138,7 +138,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="handleTestButton"
-        android:text="Test (DeepStandBy)"
+        android:text="Test"
         android:textSize="16sp"
         android:visibility="gone" />
 

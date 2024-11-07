@@ -57,7 +57,6 @@ public class PlayerClosedReceiver extends BroadcastReceiver
         {
             return;
         }
-        MyActivity.setPlayerStatus(MainActivity.PlayerState.STOPPED);
-        MyActivity.startGarlicPlayerDelayed();
+        MyActivity.stopPlayer();
     }
 }
