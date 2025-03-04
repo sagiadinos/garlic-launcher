@@ -19,14 +19,14 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@android:drawable/screen_background_dark_transparent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:padding="20dp">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/main"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:background="@android:drawable/screen_background_dark_transparent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:padding="20dp">
 
     <TextView
         android:id="@+id/tvInformation"
@@ -42,10 +42,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textAlignment="center"
-        android:textSize="14sp"
         android:lines="2"
-        />
+        android:textAlignment="center"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,23 +52,22 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:padding="10dp">
+
         <TextView
             android:id="@+id/tvFreeDiscSpace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/discspace"
             android:textSize="14sp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvIP"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
             android:text="@string/ip"
-            android:visibility="gone"
-            />
+            android:textSize="14sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <ProgressBar
@@ -87,6 +85,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/btToggleServiceMode"
             style="?android:attr/buttonBarButtonStyle"
@@ -129,17 +128,16 @@
             android:text="@string/play"
             android:textSize="16sp"
             android:visibility="gone" />
+        <Button
+            android:id="@+id/btForTest"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="handleTestButton"
+            android:text="Test ldpi"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btForTest"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="handleTestButton"
-        android:text="Test"
-        android:textSize="16sp"
-        android:visibility="gone" />
 
 </LinearLayout>
