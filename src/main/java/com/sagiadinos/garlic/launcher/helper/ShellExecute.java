@@ -54,6 +54,28 @@ public class ShellExecute
         {
             MyProcess = MyRuntime.exec(cmd);
             succeed   = (executeCommand() == 0);
+
+            // Lese die Standardausgabe des Befehls
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(MyProcess.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = stdInput.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            // Lese die Fehlerausgabe des Befehls
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(MyProcess.getErrorStream()));
+            StringBuilder error = new StringBuilder();
+            while ((line = stdError.readLine()) != null) {
+                error.append(line).append("\n");
+            }
+
+            int exitCode = MyProcess.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Output: " + output.toString());
+            } else {
+                System.out.println("Error: " + error.toString());
+            }
         }
         catch (IOException | InterruptedException e)
         {
