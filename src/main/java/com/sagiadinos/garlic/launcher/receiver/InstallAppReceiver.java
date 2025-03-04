@@ -22,7 +22,6 @@ package com.sagiadinos.garlic.launcher.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,24 +91,11 @@ public class InstallAppReceiver extends BroadcastReceiver
 
         // delete downloaded files in all cases which are in player cache
         // important! No delete - No further updates
-        if (file_path == null || !file_path.contains("cache"))
-            return;
-
-        File file = new File(file_path);
-        if (file.delete() && !MyMainConfiguration.isDeviceRooted())
+        if (file_path != null && file_path.contains("cache"))
         {
-            Log.e("InstallAppReceiver", "Delete failed and no root");
-            return;
+            File file = new File(file_path);
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
         }
-
-        // if root and file is not deleted
-        ShellExecute MyShellExecute = new ShellExecute(Runtime.getRuntime());
-        boolean result = MyShellExecute.executeAsRoot("rm -rf "+ file_path);
-        if (!result)
-        {
-            Log.e("InstallAppReceiver", "Even root delete failed: " + MyShellExecute.getErrorText() );
-        }
-
-
     }
 }

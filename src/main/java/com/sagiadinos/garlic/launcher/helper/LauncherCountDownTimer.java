@@ -1,6 +1,7 @@
 package com.sagiadinos.garlic.launcher.helper;
 
 import android.os.CountDownTimer;
+import android.util.Log;
 
 import com.sagiadinos.garlic.launcher.MainActivity;
 import com.sagiadinos.garlic.launcher.R;
@@ -8,6 +9,7 @@ import com.sagiadinos.garlic.launcher.R;
 public class LauncherCountDownTimer
 {
     private final MainActivity MyMainActivity;
+    private static int count_instances = 0;
     private CountDownTimer MyCountDownTimer;
     private boolean is_running = false;
     private long startTimeMillis;
@@ -15,6 +17,10 @@ public class LauncherCountDownTimer
 
     public LauncherCountDownTimer(MainActivity myMainActivity)
     {
+        count_instances++;
+        if (count_instances > 1)
+            Log.d("Player", "Warning: More than one instance created!");
+
         this.MyMainActivity  = myMainActivity;
     }
 
